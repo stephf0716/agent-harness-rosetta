@@ -50,21 +50,26 @@
   .hpick button:focus-visible{outline:2px solid var(--c-mcp);outline-offset:2px}
   .hpick .plabel{flex:none;align-self:center;font-family:'IBM Plex Mono',monospace;font-size:10.5px;letter-spacing:.12em;text-transform:uppercase;color:var(--faint);padding-right:2px}
 
-  /* single-harness filtering: matrix columns (order: concept, claude, codex, goose, hermes, osaurus) */
+  /* single-harness filtering: matrix columns (order: concept, claude, codex, goose, hermes, osaurus, gemini, cursor, opencode, openclaw, copilot) */
   body:not([data-hf="0"]) .matrix-shell table{min-width:0}
   body[data-hf="1"] .matrix-shell th:not(:first-child):not(:nth-child(2)),body[data-hf="1"] .matrix-shell td:not(:first-child):not(:nth-child(2)){display:none}
   body[data-hf="2"] .matrix-shell th:not(:first-child):not(:nth-child(3)),body[data-hf="2"] .matrix-shell td:not(:first-child):not(:nth-child(3)){display:none}
   body[data-hf="3"] .matrix-shell th:not(:first-child):not(:nth-child(4)),body[data-hf="3"] .matrix-shell td:not(:first-child):not(:nth-child(4)){display:none}
   body[data-hf="4"] .matrix-shell th:not(:first-child):not(:nth-child(5)),body[data-hf="4"] .matrix-shell td:not(:first-child):not(:nth-child(5)){display:none}
   body[data-hf="5"] .matrix-shell th:not(:first-child):not(:nth-child(6)),body[data-hf="5"] .matrix-shell td:not(:first-child):not(:nth-child(6)){display:none}
+  body[data-hf="6"] .matrix-shell th:not(:first-child):not(:nth-child(7)),body[data-hf="6"] .matrix-shell td:not(:first-child):not(:nth-child(7)){display:none}
+  body[data-hf="7"] .matrix-shell th:not(:first-child):not(:nth-child(8)),body[data-hf="7"] .matrix-shell td:not(:first-child):not(:nth-child(8)){display:none}
+  body[data-hf="8"] .matrix-shell th:not(:first-child):not(:nth-child(9)),body[data-hf="8"] .matrix-shell td:not(:first-child):not(:nth-child(9)){display:none}
+  body[data-hf="9"] .matrix-shell th:not(:first-child):not(:nth-child(10)),body[data-hf="9"] .matrix-shell td:not(:first-child):not(:nth-child(10)){display:none}
+  body[data-hf="10"] .matrix-shell th:not(:first-child):not(:nth-child(11)),body[data-hf="10"] .matrix-shell td:not(:first-child):not(:nth-child(11)){display:none}
   /* concept-card platform grids share the same order */
-  body[data-hf="1"] .plat:not(:nth-child(1)),body[data-hf="2"] .plat:not(:nth-child(2)),body[data-hf="3"] .plat:not(:nth-child(3)),body[data-hf="4"] .plat:not(:nth-child(4)),body[data-hf="5"] .plat:not(:nth-child(5)){display:none}
+  body[data-hf="1"] .plat:not(:nth-child(1)),body[data-hf="2"] .plat:not(:nth-child(2)),body[data-hf="3"] .plat:not(:nth-child(3)),body[data-hf="4"] .plat:not(:nth-child(4)),body[data-hf="5"] .plat:not(:nth-child(5)),body[data-hf="6"] .plat:not(:nth-child(6)),body[data-hf="7"] .plat:not(:nth-child(7)),body[data-hf="8"] .plat:not(:nth-child(8)),body[data-hf="9"] .plat:not(:nth-child(9)),body[data-hf="10"] .plat:not(:nth-child(10)){display:none}
   body:not([data-hf="0"]) .matrix-shell .hint .scrollnote{display:none}
 
   /* matrix */
   .matrix-shell{border:1px solid var(--line);border-radius:4px;background:var(--surface);overflow:hidden}
   .matrix-scroll{overflow-x:auto;-webkit-overflow-scrolling:touch}
-  table{border-collapse:separate;border-spacing:0;width:100%;min-width:1160px}
+  table{border-collapse:separate;border-spacing:0;width:100%;min-width:2320px}
   th,td{padding:13px 16px;text-align:left;vertical-align:top;border-bottom:1px solid var(--line-soft)}
   thead th{font-family:'IBM Plex Mono',monospace;font-size:11px;font-weight:600;letter-spacing:.1em;text-transform:uppercase;color:var(--faint);background:var(--surface2);position:sticky;top:0;border-bottom:1px solid var(--line)}
   tbody tr:last-child td{border-bottom:none}
@@ -107,20 +112,8 @@
   .plat .pname{font-family:'IBM Plex Mono',monospace;font-size:10px;letter-spacing:.13em;text-transform:uppercase;color:var(--faint);margin-bottom:6px}
   .plat .pterm{font-family:'IBM Plex Mono',monospace;font-size:13px;font-weight:600;color:var(--cc)}
   .plat .pdesc{font-size:12.5px;color:var(--muted);margin-top:5px}
-  .elsewhere{margin-top:12px;font-size:12.5px;color:var(--faint)}
-  .elsewhere b{color:var(--muted);font-weight:600}
   code{font-family:'IBM Plex Mono',monospace;font-size:.92em;background:var(--surface2);padding:1px 5px;border-radius:3px;color:var(--text)}
-
-  /* secondary table */
-  .mini-shell{border:1px solid var(--line);border-radius:4px;background:var(--surface);overflow:hidden}
-  .mini-shell table{min-width:880px}
-  .mini-shell td:first-child{font-family:'Archivo',sans-serif;font-weight:700;font-size:14px;white-space:nowrap}
-  .mini-shell td{font-size:12.5px;color:var(--muted)}
-  .mini-shell td .term{font-size:12px}
-  .mini-shell thead th span.sq{display:inline-block;width:8px;height:8px;border-radius:1px;margin-right:7px}
   .dash{color:var(--faint)}
-  .mini-shell tbody tr{cursor:default}
-  .mini-shell tbody tr:hover td{background:none}
 
   /* traps + mcp: ruled prose sections */
   .trap ul{list-style:none;margin:6px 0 0}
@@ -147,7 +140,7 @@
 <div class="wrap">
 
 <div class="masthead">
-  <span>agent-harness-rosetta · v5</span>
+  <span>agent-harness-rosetta · v6</span>
   <button class="theme-btn" id="themeBtn" onclick="toggleTheme()" aria-label="Toggle color theme">dark / light</button>
 </div>
 
@@ -172,6 +165,11 @@
   <button aria-pressed="false" onclick="setHarness(3,this)">Goose</button>
   <button aria-pressed="false" onclick="setHarness(4,this)">Hermes</button>
   <button aria-pressed="false" onclick="setHarness(5,this)">Osaurus</button>
+  <button aria-pressed="false" onclick="setHarness(6,this)">Gemini</button>
+  <button aria-pressed="false" onclick="setHarness(7,this)">Cursor</button>
+  <button aria-pressed="false" onclick="setHarness(8,this)">OpenCode</button>
+  <button aria-pressed="false" onclick="setHarness(9,this)">OpenClaw</button>
+  <button aria-pressed="false" onclick="setHarness(10,this)">Copilot</button>
 </div>
 
 <div class="matrix-shell">
@@ -185,6 +183,11 @@
       <th>Goose</th>
       <th>Hermes Agent</th>
       <th>Osaurus</th>
+      <th>Gemini CLI</th>
+      <th>Cursor</th>
+      <th>OpenCode</th>
+      <th>OpenClaw</th>
+      <th>GitHub Copilot</th>
     </tr>
   </thead>
   <tbody>
@@ -195,6 +198,11 @@
       <td><span class="term">.goosehints</span><span class="loc">+ recipe instructions: block</span></td>
       <td><span class="term">SOUL.md</span><span class="loc">identity file · also auto-reads AGENTS.md, CLAUDE.md, .hermes.md, .cursorrules</span></td>
       <td><span class="term">Agent prompts</span><span class="loc">per-agent system prompt + identity layer of the memory system</span></td>
+      <td><span class="term">GEMINI.md</span><span class="loc">repo root · ~/.gemini · also reads AGENTS.md</span></td>
+      <td><span class="term">Rules</span><span class="loc">.cursor/rules/ · was .cursorrules</span><span class="note">path-scoped or always-on</span></td>
+      <td><span class="term">AGENTS.md</span><span class="loc">repo root + global · open standard</span></td>
+      <td><span class="term">AGENTS.md + SOUL.md</span><span class="loc">workspace files · Hermes's lineage</span></td>
+      <td><span class="term">copilot-instructions.md</span><span class="loc">.github/ · path-scoped *.instructions.md variants</span></td>
     </tr>
     <tr class="r-skill" onclick="jump('c-skill')">
       <td class="concept"><span class="lnum">L2</span><div class="cname">Skills</div><div class="cq">reusable know-how</div></td>
@@ -203,6 +211,11 @@
       <td><span class="term">Skills</span><span class="loc">instruction sets · skills marketplace</span></td>
       <td><span class="term">Skills</span><span class="loc">SKILL.md · ~/.hermes/skills/ · Skills Hub</span><span class="note">also self-generated from experience; Curator prunes stale ones</span></td>
       <td><span class="term">Skills</span><span class="loc">SKILL.md shipped inside plugins</span><span class="note">auto-selected via RAG search, not description match</span></td>
+      <td><span class="term">Skills</span><span class="loc">same SKILL.md standard</span></td>
+      <td><span class="term">Skills</span><span class="loc">SKILL.md format supported</span><span class="note">alongside Cursor's own Rules</span></td>
+      <td><span class="term">Skills</span><span class="loc">same SKILL.md standard</span></td>
+      <td><span class="term">Skills</span><span class="loc">npm packages · ClawHub registry</span><span class="note">same SKILL.md inside</span></td>
+      <td><span class="dash">—</span><span class="note">path-scoped custom instructions cover some of this</span></td>
     </tr>
     <tr class="r-mcp" onclick="jump('c-mcp')">
       <td class="concept"><span class="lnum">L3</span><div class="cname">Tool access</div><div class="cq">external systems</div></td>
@@ -211,6 +224,11 @@
       <td><span class="term">Extensions</span><span class="loc">every extension is an MCP server</span></td>
       <td><span class="term">MCP servers + Plugins</span><span class="loc">hermes mcp · ~/.hermes/plugins/</span><span class="note warn">⚠ "plugin" here = code extension (tools, hooks, providers), not a bundle</span></td>
       <td><span class="term">Plugins + MCP</span><span class="loc">native Swift/Rust plugins · Tools Registry</span><span class="note">MCP both directions: serves its tools to any client and aggregates remote servers</span></td>
+      <td><span class="term">MCP servers</span><span class="loc">settings.json · or shipped inside extensions</span></td>
+      <td><span class="term">MCP servers</span><span class="loc">mcp.json · one-click installs</span></td>
+      <td><span class="term">MCP servers</span><span class="loc">opencode.json · local + remote</span></td>
+      <td><span class="term">Built-in tools + MCP</span><span class="loc">MCP reach added via plugins</span></td>
+      <td><span class="term">MCP servers</span><span class="loc">VS Code + the coding agent</span></td>
     </tr>
     <tr class="r-bundle" onclick="jump('c-bundle')">
       <td class="concept"><span class="lnum">L4</span><div class="cname">Bundles</div><div class="cq">shareable packages</div></td>
@@ -219,6 +237,11 @@
       <td><span class="term">Recipes</span><span class="loc">YAML · instructions + extensions + params + sub-recipes</span></td>
       <td><span class="term">Profiles / skill packs</span><span class="loc">profile = model + skills + MCPs + identity</span></td>
       <td><span class="term">Plugin package</span><span class="loc">zip = tool binary + SKILL.md + web UI</span><span class="note">here the plugin IS the bundle</span></td>
+      <td><span class="term">Extensions</span><span class="loc">MCP + context files + commands</span><span class="note warn">⚠ "extension" here = bundle, not MCP server (Goose's usage)</span></td>
+      <td><span class="dash">—</span><span class="note">share rules + skills via the repo</span></td>
+      <td><span class="dash">—</span><span class="note warn">⚠ "plugins" exist but are JS/TS code extensions, not bundles</span></td>
+      <td><span class="dash">—</span><span class="note warn">⚠ "plugins" = code extensions · skills travel as npm packages instead</span></td>
+      <td><span class="term">Extensions</span><span class="loc">marketplace GitHub Apps</span></td>
     </tr>
     <tr class="r-agent" onclick="jump('c-agent')">
       <td class="concept"><span class="lnum">L5</span><div class="cname">Delegation</div><div class="cq">parallel workers</div></td>
@@ -227,11 +250,16 @@
       <td><span class="term">Subagents</span><span class="loc">+ sub-recipes (isolated sessions)</span></td>
       <td><span class="term">Subagents</span><span class="loc">delegate_task · isolated context + terminal · + cron for scheduled runs</span></td>
       <td><span class="term">Agents / dispatch</span><span class="loc">background task dispatch · self-scheduling agents · parallel jobs</span></td>
+      <td><span class="dash">—</span><span class="note">no first-class equivalent</span></td>
+      <td><span class="term">Background agents</span><span class="loc">async cloud runs alongside the editor</span></td>
+      <td><span class="term">Agents / modes</span><span class="loc">primary agents + subagents they invoke</span></td>
+      <td><span class="term">Subagents</span><span class="loc">isolated sessions · Hermes-style</span></td>
+      <td><span class="term">Coding agent</span><span class="loc">async task delegation on GitHub · returns a PR</span></td>
     </tr>
   </tbody>
 </table>
 </div>
-<div class="hint"><span class="scrollnote">← scroll → on mobile · </span>tap a row for the full explanation · more harnesses further down</div>
+<div class="hint"><span class="scrollnote">← scroll → on mobile · </span>tap a row for the full explanation · use the picker to focus one harness</div>
 </div>
 
 <div class="rule-h">
@@ -249,8 +277,12 @@
       <div class="plat"><div class="pname">Goose</div><div class="pterm">.goosehints</div><div class="pdesc">Plus the <code>instructions:</code> block inside a recipe, which acts as a per-workflow system prompt.</div></div>
       <div class="plat"><div class="pname">Hermes</div><div class="pterm">SOUL.md</div><div class="pdesc">The agent's identity file — first thing in the system prompt (role, tone, boundaries). Hermes also auto-discovers project context files: <code>.hermes.md</code>, <code>AGENTS.md</code>, <code>CLAUDE.md</code>, <code>.cursorrules</code>.</div></div>
       <div class="plat"><div class="pname">Osaurus</div><div class="pterm">Agent prompts</div><div class="pdesc">Configured per agent in-app rather than as a repo file — each agent carries its own system prompt, and the memory system's identity layer plays the persistent-personality role.</div></div>
+      <div class="plat"><div class="pname">Gemini CLI</div><div class="pterm">GEMINI.md</div><div class="pdesc">Same pattern as CLAUDE.md, hierarchical from home dir to subdirectory — and it reads AGENTS.md too, so one file can serve both harnesses.</div></div>
+      <div class="plat"><div class="pname">Cursor</div><div class="pterm">Rules</div><div class="pdesc">A <code>.cursor/rules/</code> directory of rule files (successor to the single .cursorrules) — each rule can be always-on, path-scoped, or attached on demand.</div></div>
+      <div class="plat"><div class="pname">OpenCode</div><div class="pterm">AGENTS.md</div><div class="pdesc">Uses the open standard directly: repo root for project rules plus a global file for personal ones.</div></div>
+      <div class="plat"><div class="pname">OpenClaw</div><div class="pterm">AGENTS.md + SOUL.md</div><div class="pdesc">Workspace instruction files, inheriting the SOUL.md identity-file idea from its Hermes lineage.</div></div>
+      <div class="plat"><div class="pname">Copilot</div><div class="pterm">copilot-instructions.md</div><div class="pdesc">Lives in <code>.github/</code>; path-scoped <code>*.instructions.md</code> variants target parts of the repo. The content transfers almost verbatim between all of these files.</div></div>
     </div>
-    <p class="elsewhere"><b>Elsewhere:</b> Gemini CLI uses GEMINI.md (and reads AGENTS.md); Cursor uses Rules; Copilot uses copilot-instructions.md. The content transfers almost verbatim between all of them.</p>
   </div>
 </details>
 
@@ -265,8 +297,12 @@
       <div class="plat"><div class="pname">Goose</div><div class="pterm">Skills</div><div class="pdesc">Reusable instruction sets attached to sessions; browsable via a skills marketplace, or write your own.</div></div>
       <div class="plat"><div class="pname">Hermes</div><div class="pterm">Skills</div><div class="pdesc">Same format, plus Hermes's signature move: it <em>writes its own skills from experience</em> ("procedural memory") and a background Curator archives stale ones. Huge public Skills Hub; install via <code>hermes skills install</code>.</div></div>
       <div class="plat"><div class="pname">Osaurus</div><div class="pterm">Skills</div><div class="pdesc">A plugin can ship a SKILL.md alongside its tool, so the know-how travels with the capability. Selection is different: skills and tools are picked by RAG search over the task, not by description matching.</div></div>
+      <div class="plat"><div class="pname">Gemini CLI</div><div class="pterm">Skills</div><div class="pdesc">Same SKILL.md standard — skills written for Claude or Codex usually run here with little or no change.</div></div>
+      <div class="plat"><div class="pname">Cursor</div><div class="pterm">Skills</div><div class="pdesc">Supports the SKILL.md format alongside its own Rules; rules cover the always-on layer, skills the on-demand one.</div></div>
+      <div class="plat"><div class="pname">OpenCode</div><div class="pterm">Skills</div><div class="pdesc">Same SKILL.md standard, discovered from project and global skill directories.</div></div>
+      <div class="plat"><div class="pname">OpenClaw</div><div class="pterm">Skills</div><div class="pdesc">Same format inside, but distributed as npm packages through the ClawHub registry — install and version them like dependencies.</div></div>
+      <div class="plat"><div class="pname">Copilot</div><div class="pterm">—</div><div class="pdesc">No first-class skills layer yet; path-scoped custom instructions cover some of the territory.</div></div>
     </div>
-    <p class="elsewhere"><b>Elsewhere:</b> the same skills work in Gemini CLI, Cursor, OpenCode, and OpenClaw. Skills written for one harness usually run in the others with little or no change.</p>
   </div>
 </details>
 
@@ -280,8 +316,12 @@
       <div class="plat"><div class="pname">Goose</div><div class="pterm">Extensions</div><div class="pdesc">Goose's entire tool system: every extension is literally an MCP server, built-in or external. Fully swappable.</div></div>
       <div class="plat"><div class="pname">Hermes</div><div class="pterm">MCP + Plugins</div><div class="pdesc">Native MCP support (<code>hermes mcp</code>, OAuth for remote servers). Separately, "plugins" are Python files in <code>~/.hermes/plugins/</code> that add tools, hooks, memory providers, dashboards, and gateways — a code-extension mechanism, not a bundle.</div></div>
       <div class="plat"><div class="pname">Osaurus</div><div class="pterm">Plugins + MCP</div><div class="pdesc">Native Swift/Rust plugins from a community Tools Registry provide tools locally. Uniquely, Osaurus sits on <em>both</em> sides of MCP: it's a server exposing its tools to any MCP client (Claude Desktop included) and an aggregator pulling in remote servers like GitHub, Linear, and Notion.</div></div>
+      <div class="plat"><div class="pname">Gemini CLI</div><div class="pterm">MCP servers</div><div class="pdesc">Configured in settings.json, or shipped inside an extension. A server you set up for one harness works across all of them.</div></div>
+      <div class="plat"><div class="pname">Cursor</div><div class="pterm">MCP servers</div><div class="pdesc">Configured in mcp.json, with one-click installs from a directory of popular servers.</div></div>
+      <div class="plat"><div class="pname">OpenCode</div><div class="pterm">MCP servers</div><div class="pdesc">Local and remote servers configured in opencode.json.</div></div>
+      <div class="plat"><div class="pname">OpenClaw</div><div class="pterm">Built-in tools + MCP</div><div class="pdesc">Ships a built-in tool set; MCP reach is added through plugins rather than native config.</div></div>
+      <div class="plat"><div class="pname">Copilot</div><div class="pterm">MCP servers</div><div class="pdesc">MCP client in VS Code and in the async coding agent.</div></div>
     </div>
-    <p class="elsewhere"><b>Elsewhere:</b> Cursor, Gemini CLI, OpenCode, Copilot, and most other harnesses are MCP clients too. A server you set up once works across all of them.</p>
   </div>
 </details>
 
@@ -296,6 +336,11 @@
       <div class="plat"><div class="pname">Goose</div><div class="pterm">Recipes</div><div class="pdesc">Shareable YAML workflow: instructions + prompt + extensions + parameters + sub-recipes. Parameterized like a function; can run on a schedule.</div></div>
       <div class="plat"><div class="pname">Hermes</div><div class="pterm">Profiles</div><div class="pdesc">A profile bundles model choice, skills, MCPs, and identity for a purpose ("research me" vs "ops me"). Skill packs distribute related skills together via the Hub.</div></div>
       <div class="plat"><div class="pname">Osaurus</div><div class="pterm">Plugin package</div><div class="pdesc">One zip carries the tool, its SKILL.md guidance, and a web frontend — capability, know-how, and UI ship as a unit through the Tools Registry.</div></div>
+      <div class="plat"><div class="pname">Gemini CLI</div><div class="pterm">Extensions</div><div class="pdesc">Bundle MCP servers, context files, and commands into one install. Note the trap: "extension" means <em>bundle</em> here, not MCP server as in Goose.</div></div>
+      <div class="plat"><div class="pname">Cursor</div><div class="pterm">—</div><div class="pdesc">No bundle layer; teams share rules and skills by committing them to the repo.</div></div>
+      <div class="plat"><div class="pname">OpenCode</div><div class="pterm">—</div><div class="pdesc">Its "plugins" are JS/TS code extensions that hook the runtime, not distribution bundles.</div></div>
+      <div class="plat"><div class="pname">OpenClaw</div><div class="pterm">—</div><div class="pdesc">Same story: plugins are code extensions. Distribution happens at the skill layer, via npm packages.</div></div>
+      <div class="plat"><div class="pname">Copilot</div><div class="pterm">Extensions</div><div class="pdesc">Marketplace GitHub Apps that extend Copilot — closer to installable integrations than to a skills-plus-MCP bundle.</div></div>
     </div>
   </div>
 </details>
@@ -310,73 +355,14 @@
       <div class="plat"><div class="pname">Goose</div><div class="pterm">Subagents / sub-recipes</div><div class="pdesc">Each sub-recipe runs as its own agent in an isolated session with its own extensions and model — sequential or parallel.</div></div>
       <div class="plat"><div class="pname">Hermes</div><div class="pterm">Subagents</div><div class="pdesc">The <code>delegate_task</code> tool spawns children with isolated context, restricted toolsets, and their own terminal sessions; background subagents can fan out in parallel. Built-in cron covers the scheduled/unattended case.</div></div>
       <div class="plat"><div class="pname">Osaurus</div><div class="pterm">Agents / dispatch</div><div class="pdesc">Named agents are first-class (each with its own prompt, memory, and tools), plugins can dispatch background agent tasks with full tool access, and agents can self-schedule their next run — cron-like autonomy without a separate scheduler.</div></div>
+      <div class="plat"><div class="pname">Gemini CLI</div><div class="pterm">—</div><div class="pdesc">No first-class subagents; parallel work means scripting multiple CLI invocations yourself.</div></div>
+      <div class="plat"><div class="pname">Cursor</div><div class="pterm">Background agents</div><div class="pdesc">Async cloud agents run tasks in parallel with your editor session and hand back diffs.</div></div>
+      <div class="plat"><div class="pname">OpenCode</div><div class="pterm">Agents / modes</div><div class="pdesc">Primary agents you switch between, plus subagents they can invoke for isolated work.</div></div>
+      <div class="plat"><div class="pname">OpenClaw</div><div class="pterm">Subagents</div><div class="pdesc">Spawns isolated sessions Hermes-style for parallel or contained tasks.</div></div>
+      <div class="plat"><div class="pname">Copilot</div><div class="pterm">Coding agent</div><div class="pdesc">Assign it an issue or task; it works asynchronously on GitHub's infrastructure and returns a pull request.</div></div>
     </div>
   </div>
 </details>
-
-<div class="rule-h">
-<h2>More harnesses at a glance</h2>
-<p class="sub">Coarser-grained, but the five layers hold. "—" means no first-class equivalent (you can usually improvise with instruction files).</p>
-</div>
-<div class="mini-shell">
-<div class="matrix-scroll">
-<table>
-  <thead>
-    <tr>
-      <th>Harness</th>
-      <th><span class="sq" style="background:var(--c-instr)"></span>Instructions</th>
-      <th><span class="sq" style="background:var(--c-skill)"></span>Skills</th>
-      <th><span class="sq" style="background:var(--c-mcp)"></span>Tool access</th>
-      <th><span class="sq" style="background:var(--c-bundle)"></span>Bundles</th>
-      <th><span class="sq" style="background:var(--c-agent)"></span>Delegation</th>
-    </tr>
-  </thead>
-  <tbody>
-    <tr>
-      <td>Gemini CLI</td>
-      <td><span class="term">GEMINI.md</span><br>also reads AGENTS.md</td>
-      <td><span class="term">Skills</span><br>same SKILL.md format</td>
-      <td><span class="term">MCP servers</span></td>
-      <td><span class="term">Extensions</span><br>bundle MCP + context files + commands</td>
-      <td class="dash">—</td>
-    </tr>
-    <tr>
-      <td>Cursor</td>
-      <td><span class="term">Rules</span><br>.cursor/rules (was .cursorrules)</td>
-      <td><span class="term">Skills</span><br>SKILL.md format supported</td>
-      <td><span class="term">MCP servers</span></td>
-      <td class="dash">—</td>
-      <td><span class="term">Background agents</span></td>
-    </tr>
-    <tr>
-      <td>OpenCode</td>
-      <td><span class="term">AGENTS.md</span></td>
-      <td><span class="term">Skills</span></td>
-      <td><span class="term">MCP servers</span></td>
-      <td><span class="term">Plugins</span><br>JS/TS code extensions</td>
-      <td><span class="term">Agents / modes</span></td>
-    </tr>
-    <tr>
-      <td>OpenClaw</td>
-      <td><span class="term">AGENTS.md + SOUL.md</span><br>workspace files (Hermes's lineage)</td>
-      <td><span class="term">Skills</span><br>npm packages via ClawHub</td>
-      <td><span class="term">MCP</span> (via plugins) + built-in tools</td>
-      <td><span class="term">Plugins</span><br>code extensions, not bundles</td>
-      <td><span class="term">Subagents</span></td>
-    </tr>
-    <tr>
-      <td>GitHub Copilot</td>
-      <td><span class="term">copilot-instructions.md</span><br>.github/ · path-scoped variants</td>
-      <td class="dash">— (custom instructions cover some of this)</td>
-      <td><span class="term">MCP servers</span></td>
-      <td><span class="term">Extensions</span><br>marketplace GitHub Apps</td>
-      <td><span class="term">Coding agent</span><br>async task delegation</td>
-    </tr>
-  </tbody>
-</table>
-</div>
-<div class="hint">← scroll → on mobile</div>
-</div>
 
 <section class="trap r-instr">
   <div class="rule-h hue"><h2>Terminology traps</h2></div>
