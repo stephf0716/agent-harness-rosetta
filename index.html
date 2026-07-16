@@ -1,0 +1,438 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Agent Harness Rosetta Stone</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Archivo:wght@500;600;700;800&family=IBM+Plex+Sans:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+  :root, html[data-theme="dark"]{
+    --bg:#14161A; --surface:#1B1E23; --surface2:#22262C; --line:#2C3138; --line-soft:#24282E;
+    --text:#EAECEF; --muted:#9AA1AB; --faint:#697079;
+    --c-instr:#DFA83E; --c-skill:#42C0A5; --c-mcp:#5EA9F2; --c-bundle:#A88EF5; --c-agent:#E4718F;
+  }
+  html[data-theme="light"]{
+    --bg:#FAFAF7; --surface:#FFFFFF; --surface2:#F1F1EC; --line:#DDDCD4; --line-soft:#E8E7E0;
+    --text:#1E2126; --muted:#5B616B; --faint:#8E939B;
+    --c-instr:#9A6A08; --c-skill:#0C8168; --c-mcp:#1D6FD1; --c-bundle:#6748C9; --c-agent:#BC3A61;
+  }
+  *{box-sizing:border-box;margin:0;padding:0}
+  html{scroll-behavior:smooth}
+  @media (prefers-reduced-motion: reduce){html{scroll-behavior:auto} *{transition:none!important}}
+  body{background:var(--bg);color:var(--text);font-family:'IBM Plex Sans',system-ui,sans-serif;line-height:1.55;font-size:15px;transition:background .2s,color .2s}
+  .wrap{max-width:1180px;margin:0 auto;padding:0 20px 72px}
+
+  /* masthead */
+  .masthead{display:flex;justify-content:space-between;align-items:center;padding:16px 0;border-bottom:1px solid var(--line);font-family:'IBM Plex Mono',monospace;font-size:11.5px;color:var(--faint)}
+  .theme-btn{appearance:none;background:none;border:1px solid var(--line);color:var(--muted);font-family:'IBM Plex Mono',monospace;font-size:11.5px;padding:5px 11px;border-radius:3px;cursor:pointer}
+  .theme-btn:hover{color:var(--text);border-color:var(--muted)}
+  .theme-btn:focus-visible{outline:2px solid var(--c-mcp);outline-offset:2px}
+
+  header.title{padding:38px 0 6px}
+  h1{font-family:'Archivo',sans-serif;font-weight:800;font-size:clamp(30px,6.2vw,50px);line-height:1.02;letter-spacing:-.022em}
+  h1 .dim{color:var(--muted);font-weight:600}
+  .lede{color:var(--muted);max-width:660px;margin:14px 0 0;font-size:15.5px}
+  .lede strong{color:var(--text);font-weight:600}
+
+  /* legend */
+  .legend{display:flex;flex-wrap:wrap;gap:4px 22px;margin:24px 0 14px;font-family:'IBM Plex Mono',monospace;font-size:12px}
+  .legend button{appearance:none;background:none;border:none;color:var(--muted);font:inherit;cursor:pointer;display:flex;align-items:center;gap:7px;padding:4px 0;border-bottom:1px solid transparent}
+  .legend button .sq{width:9px;height:9px;border-radius:1px}
+  .legend button:hover{color:var(--text);border-bottom-color:var(--muted)}
+  .legend button:focus-visible{outline:2px solid var(--c-mcp);outline-offset:2px}
+
+  /* harness picker (mobile-first, sticky) */
+  .hpick{position:sticky;top:0;z-index:20;background:var(--bg);margin:14px -20px 14px;padding:10px 20px;border-bottom:1px solid var(--line);display:flex;gap:8px;overflow-x:auto;-webkit-overflow-scrolling:touch;scrollbar-width:none}
+  .hpick::-webkit-scrollbar{display:none}
+  .hpick button{flex:none;appearance:none;border:1px solid var(--line);background:var(--surface);color:var(--muted);font-family:'IBM Plex Mono',monospace;font-size:12.5px;padding:9px 14px;min-height:40px;border-radius:3px;cursor:pointer}
+  .hpick button[aria-pressed="true"]{background:var(--text);color:var(--bg);border-color:var(--text);font-weight:600}
+  .hpick button:focus-visible{outline:2px solid var(--c-mcp);outline-offset:2px}
+  .hpick .plabel{flex:none;align-self:center;font-family:'IBM Plex Mono',monospace;font-size:10.5px;letter-spacing:.12em;text-transform:uppercase;color:var(--faint);padding-right:2px}
+
+  /* single-harness filtering: matrix columns (order: concept, claude, codex, goose, hermes, osaurus) */
+  body:not([data-hf="0"]) .matrix-shell table{min-width:0}
+  body[data-hf="1"] .matrix-shell th:not(:first-child):not(:nth-child(2)),body[data-hf="1"] .matrix-shell td:not(:first-child):not(:nth-child(2)){display:none}
+  body[data-hf="2"] .matrix-shell th:not(:first-child):not(:nth-child(3)),body[data-hf="2"] .matrix-shell td:not(:first-child):not(:nth-child(3)){display:none}
+  body[data-hf="3"] .matrix-shell th:not(:first-child):not(:nth-child(4)),body[data-hf="3"] .matrix-shell td:not(:first-child):not(:nth-child(4)){display:none}
+  body[data-hf="4"] .matrix-shell th:not(:first-child):not(:nth-child(5)),body[data-hf="4"] .matrix-shell td:not(:first-child):not(:nth-child(5)){display:none}
+  body[data-hf="5"] .matrix-shell th:not(:first-child):not(:nth-child(6)),body[data-hf="5"] .matrix-shell td:not(:first-child):not(:nth-child(6)){display:none}
+  /* concept-card platform grids share the same order */
+  body[data-hf="1"] .plat:not(:nth-child(1)),body[data-hf="2"] .plat:not(:nth-child(2)),body[data-hf="3"] .plat:not(:nth-child(3)),body[data-hf="4"] .plat:not(:nth-child(4)),body[data-hf="5"] .plat:not(:nth-child(5)){display:none}
+  body:not([data-hf="0"]) .matrix-shell .hint .scrollnote{display:none}
+
+  /* matrix */
+  .matrix-shell{border:1px solid var(--line);border-radius:4px;background:var(--surface);overflow:hidden}
+  .matrix-scroll{overflow-x:auto;-webkit-overflow-scrolling:touch}
+  table{border-collapse:separate;border-spacing:0;width:100%;min-width:1160px}
+  th,td{padding:13px 16px;text-align:left;vertical-align:top;border-bottom:1px solid var(--line-soft)}
+  thead th{font-family:'IBM Plex Mono',monospace;font-size:11px;font-weight:600;letter-spacing:.1em;text-transform:uppercase;color:var(--faint);background:var(--surface2);position:sticky;top:0;border-bottom:1px solid var(--line)}
+  tbody tr:last-child td{border-bottom:none}
+  td.concept{position:sticky;left:0;background:var(--surface);min-width:150px;border-right:1px solid var(--line);z-index:1;box-shadow:inset 3px 0 0 var(--cc)}
+  th.concept-h{position:sticky;left:0;background:var(--surface2);z-index:2;border-right:1px solid var(--line)}
+  .lnum{font-family:'IBM Plex Mono',monospace;font-size:10.5px;color:var(--cc);font-weight:600}
+  .concept .cname{font-family:'Archivo',sans-serif;font-weight:700;font-size:14.5px;margin-top:2px}
+  .concept .cq{color:var(--faint);font-size:12px;margin-top:3px}
+  .term{font-family:'IBM Plex Mono',monospace;font-size:13px;font-weight:600;color:var(--text)}
+  .loc{display:block;font-family:'IBM Plex Mono',monospace;font-size:11px;color:var(--faint);margin-top:5px;word-break:break-word}
+  .note{display:block;font-size:12.5px;color:var(--muted);margin-top:5px}
+  .warn{color:var(--c-instr)}
+  tbody tr{cursor:pointer;transition:background .12s}
+  tbody tr:hover td{background:var(--surface2)}
+  .hint{font-size:11.5px;color:var(--faint);padding:9px 16px;border-top:1px solid var(--line);font-family:'IBM Plex Mono',monospace}
+
+  /* section headings */
+  h2{font-family:'Archivo',sans-serif;font-size:22px;font-weight:700;margin:56px 0 4px;letter-spacing:-.015em}
+  .rule-h{border-top:2px solid var(--text);padding-top:14px;margin-top:56px}
+  .rule-h h2{margin:0 0 4px}
+  .sub{color:var(--muted);font-size:14px;margin-bottom:18px;max-width:680px}
+
+  /* concept entries */
+  details.card{border-top:1px solid var(--line);background:none}
+  details.card:last-of-type{border-bottom:1px solid var(--line)}
+  details.card summary{list-style:none;cursor:pointer;padding:15px 4px;display:flex;align-items:baseline;gap:14px;flex-wrap:wrap}
+  details.card summary::-webkit-details-marker{display:none}
+  details.card summary:focus-visible{outline:2px solid var(--cc);outline-offset:-2px}
+  .card summary .ln{font-family:'IBM Plex Mono',monospace;font-size:11px;font-weight:600;color:var(--cc);min-width:22px}
+  .card summary .t{font-family:'Archivo',sans-serif;font-weight:700;font-size:17px}
+  .card summary .oneliner{color:var(--muted);font-size:13.5px;flex:1;min-width:200px}
+  .card summary .chev{color:var(--faint);font-family:'IBM Plex Mono',monospace;font-size:12px;transition:transform .15s}
+  details[open] summary .chev{transform:rotate(90deg)}
+  .card .body{padding:0 4px 20px 4px}
+  @media(min-width:720px){.card .body{padding-left:36px}}
+  .card .body p{color:var(--muted);font-size:14px;margin:10px 0}
+  .card .body p strong{color:var(--text)}
+  .plat-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(215px,1fr));gap:1px;background:var(--line);border:1px solid var(--line);border-radius:3px;overflow:hidden;margin-top:14px}
+  .plat{background:var(--surface);padding:12px 14px}
+  .plat .pname{font-family:'IBM Plex Mono',monospace;font-size:10px;letter-spacing:.13em;text-transform:uppercase;color:var(--faint);margin-bottom:6px}
+  .plat .pterm{font-family:'IBM Plex Mono',monospace;font-size:13px;font-weight:600;color:var(--cc)}
+  .plat .pdesc{font-size:12.5px;color:var(--muted);margin-top:5px}
+  .elsewhere{margin-top:12px;font-size:12.5px;color:var(--faint)}
+  .elsewhere b{color:var(--muted);font-weight:600}
+  code{font-family:'IBM Plex Mono',monospace;font-size:.92em;background:var(--surface2);padding:1px 5px;border-radius:3px;color:var(--text)}
+
+  /* secondary table */
+  .mini-shell{border:1px solid var(--line);border-radius:4px;background:var(--surface);overflow:hidden}
+  .mini-shell table{min-width:880px}
+  .mini-shell td:first-child{font-family:'Archivo',sans-serif;font-weight:700;font-size:14px;white-space:nowrap}
+  .mini-shell td{font-size:12.5px;color:var(--muted)}
+  .mini-shell td .term{font-size:12px}
+  .mini-shell thead th span.sq{display:inline-block;width:8px;height:8px;border-radius:1px;margin-right:7px}
+  .dash{color:var(--faint)}
+  .mini-shell tbody tr{cursor:default}
+  .mini-shell tbody tr:hover td{background:none}
+
+  /* traps + mcp: ruled prose sections */
+  .trap ul{list-style:none;margin:6px 0 0}
+  .trap li{color:var(--muted);font-size:14px;padding:11px 0;border-top:1px solid var(--line-soft);max-width:820px}
+  .trap li:first-child{border-top:none}
+  .trap li strong{color:var(--text)}
+  .mcp-sec p{color:var(--muted);font-size:14px;margin:8px 0;max-width:820px}
+  .mcp-sec p strong{color:var(--text)}
+  .rule-h.hue{border-top-color:var(--cc)}
+
+  /* decision guide */
+  .decide{display:grid;grid-template-columns:repeat(auto-fit,minmax(250px,1fr));gap:1px;background:var(--line);border:1px solid var(--line);border-radius:3px;overflow:hidden}
+  .decide .d{background:var(--surface);padding:14px 16px;box-shadow:inset 0 3px 0 var(--cc)}
+  .decide .want{font-size:13.5px;color:var(--muted);margin-top:4px}
+  .decide .use{font-family:'Archivo',sans-serif;font-weight:700;font-size:15px;margin-top:6px;color:var(--cc)}
+  .decide .how{font-family:'IBM Plex Mono',monospace;font-size:11.5px;color:var(--faint);margin-top:5px}
+
+  footer{margin-top:56px;color:var(--faint);font-size:12px;font-family:'IBM Plex Mono',monospace;border-top:1px solid var(--line);padding-top:14px;display:flex;justify-content:space-between;gap:12px;flex-wrap:wrap}
+
+  .r-instr{--cc:var(--c-instr)} .r-skill{--cc:var(--c-skill)} .r-mcp{--cc:var(--c-mcp)} .r-bundle{--cc:var(--c-bundle)} .r-agent{--cc:var(--c-agent)}
+</style>
+</head>
+<body>
+<div class="wrap">
+
+<div class="masthead">
+  <span>agent-harness-rosetta · v5</span>
+  <button class="theme-btn" id="themeBtn" onclick="toggleTheme()" aria-label="Toggle color theme">dark / light</button>
+</div>
+
+<header class="title">
+  <h1>Agent Harness<br><span class="dim">Rosetta Stone</span></h1>
+  <p class="lede">Every agent harness has the same five extension layers — they just use different names for them (and occasionally the <em>same</em> name for different things). <strong>Skills teach, MCP connects, bundles ship, instructions persist, subagents delegate.</strong> Tap any row for detail.</p>
+</header>
+
+<nav class="legend" aria-label="Concept legend">
+  <button onclick="jump('c-instr')"><span class="sq" style="background:var(--c-instr)"></span>L1 instructions</button>
+  <button onclick="jump('c-skill')"><span class="sq" style="background:var(--c-skill)"></span>L2 skills</button>
+  <button onclick="jump('c-mcp')"><span class="sq" style="background:var(--c-mcp)"></span>L3 tool access</button>
+  <button onclick="jump('c-bundle')"><span class="sq" style="background:var(--c-bundle)"></span>L4 bundles</button>
+  <button onclick="jump('c-agent')"><span class="sq" style="background:var(--c-agent)"></span>L5 delegation</button>
+</nav>
+
+<div class="hpick" role="group" aria-label="Filter by harness">
+  <span class="plabel">show</span>
+  <button aria-pressed="true" onclick="setHarness(0,this)">All</button>
+  <button aria-pressed="false" onclick="setHarness(1,this)">Claude</button>
+  <button aria-pressed="false" onclick="setHarness(2,this)">Codex</button>
+  <button aria-pressed="false" onclick="setHarness(3,this)">Goose</button>
+  <button aria-pressed="false" onclick="setHarness(4,this)">Hermes</button>
+  <button aria-pressed="false" onclick="setHarness(5,this)">Osaurus</button>
+</div>
+
+<div class="matrix-shell">
+<div class="matrix-scroll">
+<table>
+  <thead>
+    <tr>
+      <th class="concept-h">Concept</th>
+      <th>Claude</th>
+      <th>Codex / ChatGPT</th>
+      <th>Goose</th>
+      <th>Hermes Agent</th>
+      <th>Osaurus</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr class="r-instr" onclick="jump('c-instr')">
+      <td class="concept"><span class="lnum">L1</span><div class="cname">Instructions</div><div class="cq">persistent rules</div></td>
+      <td><span class="term">CLAUDE.md</span><span class="loc">repo root · ~/.claude · Project instructions in claude.ai</span></td>
+      <td><span class="term">AGENTS.md</span><span class="loc">repo root · ~/ · open standard</span></td>
+      <td><span class="term">.goosehints</span><span class="loc">+ recipe instructions: block</span></td>
+      <td><span class="term">SOUL.md</span><span class="loc">identity file · also auto-reads AGENTS.md, CLAUDE.md, .hermes.md, .cursorrules</span></td>
+      <td><span class="term">Agent prompts</span><span class="loc">per-agent system prompt + identity layer of the memory system</span></td>
+    </tr>
+    <tr class="r-skill" onclick="jump('c-skill')">
+      <td class="concept"><span class="lnum">L2</span><div class="cname">Skills</div><div class="cq">reusable know-how</div></td>
+      <td><span class="term">Skills</span><span class="loc">SKILL.md folder · .claude/skills/</span></td>
+      <td><span class="term">Skills</span><span class="loc">SKILL.md · ~/.agents/skills/ · $skill-name</span></td>
+      <td><span class="term">Skills</span><span class="loc">instruction sets · skills marketplace</span></td>
+      <td><span class="term">Skills</span><span class="loc">SKILL.md · ~/.hermes/skills/ · Skills Hub</span><span class="note">also self-generated from experience; Curator prunes stale ones</span></td>
+      <td><span class="term">Skills</span><span class="loc">SKILL.md shipped inside plugins</span><span class="note">auto-selected via RAG search, not description match</span></td>
+    </tr>
+    <tr class="r-mcp" onclick="jump('c-mcp')">
+      <td class="concept"><span class="lnum">L3</span><div class="cname">Tool access</div><div class="cq">external systems</div></td>
+      <td><span class="term">Connectors</span><span class="loc">packaged MCP servers · Directory</span><span class="note">MCP servers directly in Claude Code</span></td>
+      <td><span class="term">MCP servers</span><span class="loc">config.toml · "apps" in ChatGPT</span></td>
+      <td><span class="term">Extensions</span><span class="loc">every extension is an MCP server</span></td>
+      <td><span class="term">MCP servers + Plugins</span><span class="loc">hermes mcp · ~/.hermes/plugins/</span><span class="note warn">⚠ "plugin" here = code extension (tools, hooks, providers), not a bundle</span></td>
+      <td><span class="term">Plugins + MCP</span><span class="loc">native Swift/Rust plugins · Tools Registry</span><span class="note">MCP both directions: serves its tools to any client and aggregates remote servers</span></td>
+    </tr>
+    <tr class="r-bundle" onclick="jump('c-bundle')">
+      <td class="concept"><span class="lnum">L4</span><div class="cname">Bundles</div><div class="cq">shareable packages</div></td>
+      <td><span class="term">Plugins</span><span class="loc">.claude-plugin/ · skills + MCP + commands + agents + hooks</span></td>
+      <td><span class="term">Plugins</span><span class="loc">skills + apps + MCP servers · marketplace</span></td>
+      <td><span class="term">Recipes</span><span class="loc">YAML · instructions + extensions + params + sub-recipes</span></td>
+      <td><span class="term">Profiles / skill packs</span><span class="loc">profile = model + skills + MCPs + identity</span></td>
+      <td><span class="term">Plugin package</span><span class="loc">zip = tool binary + SKILL.md + web UI</span><span class="note">here the plugin IS the bundle</span></td>
+    </tr>
+    <tr class="r-agent" onclick="jump('c-agent')">
+      <td class="concept"><span class="lnum">L5</span><div class="cname">Delegation</div><div class="cq">parallel workers</div></td>
+      <td><span class="term">Subagents</span><span class="loc">.claude/agents/ · Task tool</span></td>
+      <td><span class="term">Subagents</span><span class="loc">agent definitions</span></td>
+      <td><span class="term">Subagents</span><span class="loc">+ sub-recipes (isolated sessions)</span></td>
+      <td><span class="term">Subagents</span><span class="loc">delegate_task · isolated context + terminal · + cron for scheduled runs</span></td>
+      <td><span class="term">Agents / dispatch</span><span class="loc">background task dispatch · self-scheduling agents · parallel jobs</span></td>
+    </tr>
+  </tbody>
+</table>
+</div>
+<div class="hint"><span class="scrollnote">← scroll → on mobile · </span>tap a row for the full explanation · more harnesses further down</div>
+</div>
+
+<div class="rule-h">
+<h2>The five layers, explained</h2>
+<p class="sub">Same architecture everywhere, and the order is the stack: rules → know-how → access → packaging → parallelism. Each layer only earns its place when the one before it isn't enough.</p>
+</div>
+
+<details class="card r-instr" id="c-instr">
+  <summary><span class="ln">L1</span><span class="t">Instructions</span><span class="oneliner">Persistent rules the agent reads every session</span><span class="chev">▶</span></summary>
+  <div class="body">
+    <p>A plain markdown file that travels with your project (or lives in your home directory) and gets loaded before the agent starts work. Use it for the rules that apply <strong>every time</strong>: code conventions, "always run tests before committing," what to never touch. Keep it short — long instruction files get truncated or ignored; push detail into skills instead.</p>
+    <div class="plat-grid">
+      <div class="plat"><div class="pname">Claude</div><div class="pterm">CLAUDE.md</div><div class="pdesc">Hierarchy: home dir → repo root → subdirectory. Custom instructions / Project instructions play this role in claude.ai.</div></div>
+      <div class="plat"><div class="pname">Codex</div><div class="pterm">AGENTS.md</div><div class="pdesc">Same hierarchy idea; concatenated with more specific files winning. AGENTS.md is an open standard many other tools now read.</div></div>
+      <div class="plat"><div class="pname">Goose</div><div class="pterm">.goosehints</div><div class="pdesc">Plus the <code>instructions:</code> block inside a recipe, which acts as a per-workflow system prompt.</div></div>
+      <div class="plat"><div class="pname">Hermes</div><div class="pterm">SOUL.md</div><div class="pdesc">The agent's identity file — first thing in the system prompt (role, tone, boundaries). Hermes also auto-discovers project context files: <code>.hermes.md</code>, <code>AGENTS.md</code>, <code>CLAUDE.md</code>, <code>.cursorrules</code>.</div></div>
+      <div class="plat"><div class="pname">Osaurus</div><div class="pterm">Agent prompts</div><div class="pdesc">Configured per agent in-app rather than as a repo file — each agent carries its own system prompt, and the memory system's identity layer plays the persistent-personality role.</div></div>
+    </div>
+    <p class="elsewhere"><b>Elsewhere:</b> Gemini CLI uses GEMINI.md (and reads AGENTS.md); Cursor uses Rules; Copilot uses copilot-instructions.md. The content transfers almost verbatim between all of them.</p>
+  </div>
+</details>
+
+<details class="card r-skill" id="c-skill">
+  <summary><span class="ln">L2</span><span class="t">Skills</span><span class="oneliner">Reusable know-how, loaded only when relevant</span><span class="chev">▶</span></summary>
+  <div class="body">
+    <p>A folder containing a <code>SKILL.md</code> file (instructions + YAML frontmatter) plus optional scripts, references, and templates. The key trick is <strong>progressive disclosure</strong>: the agent sees only each skill's name and description up front, and loads the full instructions only when the task matches. That's why fifty installed skills don't blow up your context window. Skills teach <em>how</em> to do something — a review checklist, a document format, a deployment procedure. They make no network calls and need no credentials.</p>
+    <p>This is the layer where the ecosystem has genuinely converged: the same SKILL.md format is an open standard (Agent Skills / agentskills.io) shared across vendors, with large cross-harness registries.</p>
+    <div class="plat-grid">
+      <div class="plat"><div class="pname">Claude</div><div class="pterm">Skills</div><div class="pdesc">.claude/skills/ in Claude Code; also in claude.ai, Cowork, and the API. Triggered implicitly by description match.</div></div>
+      <div class="plat"><div class="pname">Codex</div><div class="pterm">Skills</div><div class="pdesc">Same SKILL.md standard. ~/.agents/skills/ (personal) or .agents/skills/ (repo). Invoke with $skill-name or implicitly; $skill-installer pulls from registries.</div></div>
+      <div class="plat"><div class="pname">Goose</div><div class="pterm">Skills</div><div class="pdesc">Reusable instruction sets attached to sessions; browsable via a skills marketplace, or write your own.</div></div>
+      <div class="plat"><div class="pname">Hermes</div><div class="pterm">Skills</div><div class="pdesc">Same format, plus Hermes's signature move: it <em>writes its own skills from experience</em> ("procedural memory") and a background Curator archives stale ones. Huge public Skills Hub; install via <code>hermes skills install</code>.</div></div>
+      <div class="plat"><div class="pname">Osaurus</div><div class="pterm">Skills</div><div class="pdesc">A plugin can ship a SKILL.md alongside its tool, so the know-how travels with the capability. Selection is different: skills and tools are picked by RAG search over the task, not by description matching.</div></div>
+    </div>
+    <p class="elsewhere"><b>Elsewhere:</b> the same skills work in Gemini CLI, Cursor, OpenCode, and OpenClaw. Skills written for one harness usually run in the others with little or no change.</p>
+  </div>
+</details>
+
+<details class="card r-mcp" id="c-mcp">
+  <summary><span class="ln">L3</span><span class="t">Tool access</span><span class="oneliner">Connections to external systems — all MCP underneath</span><span class="chev">▶</span></summary>
+  <div class="body">
+    <p>This is where the naming confusion is worst, because every harness gives MCP servers a friendlier product name. An <strong>MCP server</strong> is a process (local or remote) that publishes callable tools — read email, query a database, create a Jira ticket — over a standard protocol. Unlike skills, these <em>do</em> reach external systems, use real credentials (usually OAuth acting as you), and consume meaningful context per connected server. Install only what you use.</p>
+    <div class="plat-grid">
+      <div class="plat"><div class="pname">Claude</div><div class="pterm">Connectors</div><div class="pdesc">Anthropic's packaging of remote MCP servers inside the Claude apps (Gmail, Drive, Slack…), one-click OAuth. In Claude Code you configure MCP servers directly.</div></div>
+      <div class="plat"><div class="pname">Codex</div><div class="pterm">MCP servers</div><div class="pdesc">Configured in config.toml, or bundled inside plugins. The ChatGPT side calls the consumer-facing versions "apps."</div></div>
+      <div class="plat"><div class="pname">Goose</div><div class="pterm">Extensions</div><div class="pdesc">Goose's entire tool system: every extension is literally an MCP server, built-in or external. Fully swappable.</div></div>
+      <div class="plat"><div class="pname">Hermes</div><div class="pterm">MCP + Plugins</div><div class="pdesc">Native MCP support (<code>hermes mcp</code>, OAuth for remote servers). Separately, "plugins" are Python files in <code>~/.hermes/plugins/</code> that add tools, hooks, memory providers, dashboards, and gateways — a code-extension mechanism, not a bundle.</div></div>
+      <div class="plat"><div class="pname">Osaurus</div><div class="pterm">Plugins + MCP</div><div class="pdesc">Native Swift/Rust plugins from a community Tools Registry provide tools locally. Uniquely, Osaurus sits on <em>both</em> sides of MCP: it's a server exposing its tools to any MCP client (Claude Desktop included) and an aggregator pulling in remote servers like GitHub, Linear, and Notion.</div></div>
+    </div>
+    <p class="elsewhere"><b>Elsewhere:</b> Cursor, Gemini CLI, OpenCode, Copilot, and most other harnesses are MCP clients too. A server you set up once works across all of them.</p>
+  </div>
+</details>
+
+<details class="card r-bundle" id="c-bundle">
+  <summary><span class="ln">L4</span><span class="t">Bundles</span><span class="oneliner">Package everything above into one installable unit</span><span class="chev">▶</span></summary>
+  <div class="body">
+    <p>Once you have skills, MCP servers, and commands that work together, bundles let you ship the whole setup as one install — mainly a team-distribution mechanism. If you're working solo, you rarely need this layer: just write skills and add MCP servers directly.</p>
+    <p><strong>Important asymmetries:</strong> Claude and Codex plugins are static packages (install once, contents registered). A Goose <em>recipe</em> is a runnable, parameterized workflow — a bundle and an automation in one. Hermes has no plugin-style bundle at all; the closest analogs are <em>profiles</em> (a saved combination of model + skills + MCPs + identity you can switch between) and installable skill packs. Osaurus collapses two layers into one: its plugin package (a zip containing the tool binary, an optional SKILL.md, and an optional web UI) is simultaneously the code extension and the distribution bundle.</p>
+    <div class="plat-grid">
+      <div class="plat"><div class="pname">Claude</div><div class="pterm">Plugins</div><div class="pdesc">A .claude-plugin/ manifest bundling skills, MCP servers, slash commands, subagents, and hooks. Marketplace + official plugins; surfaces vary (Claude Code, Cowork).</div></div>
+      <div class="plat"><div class="pname">Codex</div><div class="pterm">Plugins</div><div class="pdesc">Bundle skills, app mappings, and MCP server config into one package. First-class since early 2026, with a large marketplace of first- and third-party plugins.</div></div>
+      <div class="plat"><div class="pname">Goose</div><div class="pterm">Recipes</div><div class="pdesc">Shareable YAML workflow: instructions + prompt + extensions + parameters + sub-recipes. Parameterized like a function; can run on a schedule.</div></div>
+      <div class="plat"><div class="pname">Hermes</div><div class="pterm">Profiles</div><div class="pdesc">A profile bundles model choice, skills, MCPs, and identity for a purpose ("research me" vs "ops me"). Skill packs distribute related skills together via the Hub.</div></div>
+      <div class="plat"><div class="pname">Osaurus</div><div class="pterm">Plugin package</div><div class="pdesc">One zip carries the tool, its SKILL.md guidance, and a web frontend — capability, know-how, and UI ship as a unit through the Tools Registry.</div></div>
+    </div>
+  </div>
+</details>
+
+<details class="card r-agent" id="c-agent">
+  <summary><span class="ln">L5</span><span class="t">Delegation</span><span class="oneliner">Spin up specialized workers, often in parallel</span><span class="chev">▶</span></summary>
+  <div class="body">
+    <p>Subagents are independent agent instances the main agent can hand tasks to — each with its own context window, and often its own tool access and instructions. Useful for parallelizing (review three files at once) or isolating noisy work (a research subagent digests 50 pages and returns a summary, keeping the main context clean).</p>
+    <div class="plat-grid">
+      <div class="plat"><div class="pname">Claude</div><div class="pterm">Subagents</div><div class="pdesc">Defined as markdown files in .claude/agents/; the main agent delegates via its task tool. Can ship inside plugins.</div></div>
+      <div class="plat"><div class="pname">Codex</div><div class="pterm">Subagents</div><div class="pdesc">Specialized agent definitions Codex delegates to; a large third-party ecosystem of agent collections exists.</div></div>
+      <div class="plat"><div class="pname">Goose</div><div class="pterm">Subagents / sub-recipes</div><div class="pdesc">Each sub-recipe runs as its own agent in an isolated session with its own extensions and model — sequential or parallel.</div></div>
+      <div class="plat"><div class="pname">Hermes</div><div class="pterm">Subagents</div><div class="pdesc">The <code>delegate_task</code> tool spawns children with isolated context, restricted toolsets, and their own terminal sessions; background subagents can fan out in parallel. Built-in cron covers the scheduled/unattended case.</div></div>
+      <div class="plat"><div class="pname">Osaurus</div><div class="pterm">Agents / dispatch</div><div class="pdesc">Named agents are first-class (each with its own prompt, memory, and tools), plugins can dispatch background agent tasks with full tool access, and agents can self-schedule their next run — cron-like autonomy without a separate scheduler.</div></div>
+    </div>
+  </div>
+</details>
+
+<div class="rule-h">
+<h2>More harnesses at a glance</h2>
+<p class="sub">Coarser-grained, but the five layers hold. "—" means no first-class equivalent (you can usually improvise with instruction files).</p>
+</div>
+<div class="mini-shell">
+<div class="matrix-scroll">
+<table>
+  <thead>
+    <tr>
+      <th>Harness</th>
+      <th><span class="sq" style="background:var(--c-instr)"></span>Instructions</th>
+      <th><span class="sq" style="background:var(--c-skill)"></span>Skills</th>
+      <th><span class="sq" style="background:var(--c-mcp)"></span>Tool access</th>
+      <th><span class="sq" style="background:var(--c-bundle)"></span>Bundles</th>
+      <th><span class="sq" style="background:var(--c-agent)"></span>Delegation</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>Gemini CLI</td>
+      <td><span class="term">GEMINI.md</span><br>also reads AGENTS.md</td>
+      <td><span class="term">Skills</span><br>same SKILL.md format</td>
+      <td><span class="term">MCP servers</span></td>
+      <td><span class="term">Extensions</span><br>bundle MCP + context files + commands</td>
+      <td class="dash">—</td>
+    </tr>
+    <tr>
+      <td>Cursor</td>
+      <td><span class="term">Rules</span><br>.cursor/rules (was .cursorrules)</td>
+      <td><span class="term">Skills</span><br>SKILL.md format supported</td>
+      <td><span class="term">MCP servers</span></td>
+      <td class="dash">—</td>
+      <td><span class="term">Background agents</span></td>
+    </tr>
+    <tr>
+      <td>OpenCode</td>
+      <td><span class="term">AGENTS.md</span></td>
+      <td><span class="term">Skills</span></td>
+      <td><span class="term">MCP servers</span></td>
+      <td><span class="term">Plugins</span><br>JS/TS code extensions</td>
+      <td><span class="term">Agents / modes</span></td>
+    </tr>
+    <tr>
+      <td>OpenClaw</td>
+      <td><span class="term">AGENTS.md + SOUL.md</span><br>workspace files (Hermes's lineage)</td>
+      <td><span class="term">Skills</span><br>npm packages via ClawHub</td>
+      <td><span class="term">MCP</span> (via plugins) + built-in tools</td>
+      <td><span class="term">Plugins</span><br>code extensions, not bundles</td>
+      <td><span class="term">Subagents</span></td>
+    </tr>
+    <tr>
+      <td>GitHub Copilot</td>
+      <td><span class="term">copilot-instructions.md</span><br>.github/ · path-scoped variants</td>
+      <td class="dash">— (custom instructions cover some of this)</td>
+      <td><span class="term">MCP servers</span></td>
+      <td><span class="term">Extensions</span><br>marketplace GitHub Apps</td>
+      <td><span class="term">Coding agent</span><br>async task delegation</td>
+    </tr>
+  </tbody>
+</table>
+</div>
+<div class="hint">← scroll → on mobile</div>
+</div>
+
+<section class="trap r-instr">
+  <div class="rule-h hue"><h2>Terminology traps</h2></div>
+  <ul>
+    <li><strong>"Plugin" is the most overloaded word in the ecosystem.</strong> In Claude and Codex, a plugin is a distribution bundle (skills + MCP + commands). In Hermes, OpenClaw, and OpenCode, a plugin is a code extension — a Python or JS file that adds tools and hooks to the runtime. Osaurus splits the difference: its plugin is a native code extension <em>packaged as</em> a bundle (binary + SKILL.md + UI in one zip). Same word, three different meanings.</li>
+    <li><strong>"Extension" flips meaning too.</strong> In Goose, an extension is an MCP server (tool access). In Gemini CLI and Copilot, an extension is a bundle. Check which layer before assuming.</li>
+    <li><strong>"Skills" is the safest word.</strong> Nearly everyone means the same SKILL.md open standard. The one wrinkle: Hermes skills can be written by the agent itself, and OpenClaw distributes them as npm packages.</li>
+    <li><strong>"Connector" is mostly Claude-speak</strong> for a packaged remote MCP server — though the word shows up generically elsewhere to mean any MCP integration.</li>
+  </ul>
+</section>
+
+<section class="mcp-sec r-mcp">
+  <div class="rule-h hue"><h2>The layer underneath: MCP</h2></div>
+  <p>The <strong>Model Context Protocol</strong> (open standard, released by Anthropic in Nov 2024) is the shared plumbing for the "tool access" row — a JSON-RPC protocol where a server publishes tools any compatible agent can discover and call. This is why the ecosystem interoperates: a Goose <em>extension</em>, a Claude <em>connector</em>, a Hermes MCP entry, and an MCP server inside a Codex <em>plugin</em> can be the exact same server. Osaurus demonstrates the two-way nature of the standard: it consumes remote MCP servers <em>and</em> exposes its own local tools as an MCP server that other harnesses can connect to — so your Osaurus toolbox can serve Claude Desktop. Skills (SKILL.md / agentskills.io) and instruction files (AGENTS.md) are similarly portable open standards. The names are vendor branding; the files and protocols underneath increasingly are not.</p>
+</section>
+
+<div class="rule-h">
+<h2>Which one do I need?</h2>
+<p class="sub">Start from what you're trying to change, not from the feature name.</p>
+</div>
+<div class="decide">
+  <div class="d r-instr"><div class="want">"Follow these rules in this project, every time"</div><div class="use">Instructions</div><div class="how">CLAUDE.md · AGENTS.md · SOUL.md · .goosehints</div></div>
+  <div class="d r-skill"><div class="want">"Do this kind of task my way, when it comes up"</div><div class="use">Skill</div><div class="how">SKILL.md folder</div></div>
+  <div class="d r-mcp"><div class="want">"Read/act on my email, files, tickets, database…"</div><div class="use">MCP server</div><div class="how">Connector · Extension · app</div></div>
+  <div class="d r-bundle"><div class="want">"Give my whole team this setup in one install"</div><div class="use">Plugin / Recipe / Profile</div><div class="how">bundle of all the above</div></div>
+  <div class="d r-agent"><div class="want">"Split this into parallel or isolated work"</div><div class="use">Subagents</div><div class="how">delegated agent instances</div></div>
+</div>
+
+<footer>
+  <span>compiled july 2026</span>
+  <span>terminology moves fast — verify against each project's docs before betting a workflow on it</span>
+</footer>
+
+</div>
+<script>
+(function(){
+  var prefersDark = window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches;
+  document.documentElement.setAttribute('data-theme', prefersDark ? 'dark' : 'light');
+  document.body.setAttribute('data-hf','0');
+})();
+function setHarness(i, btn){
+  document.body.setAttribute('data-hf', String(i));
+  var btns = document.querySelectorAll('.hpick button');
+  for(var k=0;k<btns.length;k++){ btns[k].setAttribute('aria-pressed', btns[k]===btn ? 'true' : 'false'); }
+}
+function toggleTheme(){
+  var root = document.documentElement;
+  var next = root.getAttribute('data-theme') === 'dark' ? 'light' : 'dark';
+  root.setAttribute('data-theme', next);
+}
+function jump(id){
+  var el = document.getElementById(id);
+  if(!el) return;
+  el.open = true;
+  el.scrollIntoView({behavior:'smooth', block:'start'});
+}
+</script>
+</body>
+</html>
