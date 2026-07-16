@@ -3,19 +3,21 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Agent Harness Rosetta Stone</title>
+<title>AI Tool Reference</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Archivo:wght@500;600;700;800&family=IBM+Plex+Sans:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet">
 <style>
   :root, html[data-theme="dark"]{
     --bg:#14161A; --surface:#1B1E23; --surface2:#22262C; --line:#2C3138; --line-soft:#24282E;
-    --text:#EAECEF; --muted:#9AA1AB; --faint:#697079;
+    --text:#EAECEF; --muted:#9AA1AB; --faint:#848C98;
     --c-instr:#DFA83E; --c-skill:#42C0A5; --c-mcp:#5EA9F2; --c-bundle:#A88EF5; --c-agent:#E4718F;
+    --m-key:#F0AC5C; --m-oauth:#5FD1BE; --m-local:#9AD17A; --m-native:#C9BBA0; --m-restr:#EB8477;
   }
   html[data-theme="light"]{
     --bg:#FAFAF7; --surface:#FFFFFF; --surface2:#F1F1EC; --line:#DDDCD4; --line-soft:#E8E7E0;
-    --text:#1E2126; --muted:#5B616B; --faint:#8E939B;
+    --text:#1E2126; --muted:#5B616B; --faint:#6E747D;
     --c-instr:#9A6A08; --c-skill:#0C8168; --c-mcp:#1D6FD1; --c-bundle:#6748C9; --c-agent:#BC3A61;
+    --m-key:#9C5F22; --m-oauth:#2B6E63; --m-local:#4C6B2F; --m-native:#6B5B45; --m-restr:#A23B2E;
   }
   *{box-sizing:border-box;margin:0;padding:0}
   html{scroll-behavior:smooth}
@@ -29,6 +31,15 @@
   .theme-btn:hover{color:var(--text);border-color:var(--muted)}
   .theme-btn:focus-visible{outline:2px solid var(--c-mcp);outline-offset:2px}
 
+  /* tabs */
+  .tabs{display:flex;gap:4px;border-bottom:1px solid var(--line);margin-top:6px}
+  .tabs button{appearance:none;background:none;border:none;border-bottom:2px solid transparent;color:var(--muted);font-family:'IBM Plex Mono',monospace;font-size:13px;padding:13px 14px 11px;cursor:pointer;margin-bottom:-1px;min-height:44px}
+  .tabs button:hover{color:var(--text)}
+  .tabs button[aria-selected="true"]{color:var(--text);border-bottom-color:var(--text);font-weight:600}
+  .tabs button:focus-visible{outline:2px solid var(--c-mcp);outline-offset:-2px}
+  body[data-tab="harness"] #panel-providers{display:none}
+  body[data-tab="providers"] #panel-harness{display:none}
+
   header.title{padding:38px 0 6px}
   h1{font-family:'Archivo',sans-serif;font-weight:800;font-size:clamp(30px,6.2vw,50px);line-height:1.02;letter-spacing:-.022em}
   h1 .dim{color:var(--muted);font-weight:600}
@@ -37,34 +48,40 @@
 
   /* legend */
   .legend{display:flex;flex-wrap:wrap;gap:4px 22px;margin:24px 0 14px;font-family:'IBM Plex Mono',monospace;font-size:12px}
-  .legend button{appearance:none;background:none;border:none;color:var(--muted);font:inherit;cursor:pointer;display:flex;align-items:center;gap:7px;padding:4px 0;border-bottom:1px solid transparent}
-  .legend button .sq{width:9px;height:9px;border-radius:1px}
+  .legend button,.legend .lg{appearance:none;background:none;border:none;color:var(--muted);font:inherit;display:flex;align-items:center;gap:7px;padding:4px 0;border-bottom:1px solid transparent}
+  .legend button{cursor:pointer}
+  .legend .sq{width:9px;height:9px;border-radius:1px}
   .legend button:hover{color:var(--text);border-bottom-color:var(--muted)}
   .legend button:focus-visible{outline:2px solid var(--c-mcp);outline-offset:2px}
 
-  /* harness picker (mobile-first, sticky) */
+  /* chip rows: harness picker + credential picker (mobile-first, sticky) */
   .hpick{position:sticky;top:0;z-index:20;background:var(--bg);margin:14px -20px 14px;padding:10px 20px;border-bottom:1px solid var(--line);display:flex;gap:8px;overflow-x:auto;-webkit-overflow-scrolling:touch;scrollbar-width:none}
   .hpick::-webkit-scrollbar{display:none}
   .hpick button{flex:none;appearance:none;border:1px solid var(--line);background:var(--surface);color:var(--muted);font-family:'IBM Plex Mono',monospace;font-size:12.5px;padding:9px 14px;min-height:40px;border-radius:3px;cursor:pointer}
   .hpick button[aria-pressed="true"]{background:var(--text);color:var(--bg);border-color:var(--text);font-weight:600}
   .hpick button:focus-visible{outline:2px solid var(--c-mcp);outline-offset:2px}
   .hpick .plabel{flex:none;align-self:center;font-family:'IBM Plex Mono',monospace;font-size:10.5px;letter-spacing:.12em;text-transform:uppercase;color:var(--faint);padding-right:2px}
+  /* credential chips are multi-select: outline accent instead of solid fill */
+  .hpick button.cred[aria-pressed="true"]{background:var(--surface);color:var(--text);border-color:var(--m-oauth);font-weight:600}
+  .hpick button.cred .dia{color:var(--m-oauth)}
+  .hpick button.cred[aria-pressed="false"] .dia{color:var(--faint)}
+  .hpick button.avail[aria-pressed="true"]{background:var(--surface);color:var(--text);border-color:var(--m-local);font-weight:600}
 
   /* single-harness filtering: matrix columns (order: concept, claude, codex, goose, hermes, osaurus, gemini, cursor, opencode, openclaw, copilot) */
-  body:not([data-hf="0"]) .matrix-shell table{min-width:0}
-  body[data-hf="1"] .matrix-shell th:not(:first-child):not(:nth-child(2)),body[data-hf="1"] .matrix-shell td:not(:first-child):not(:nth-child(2)){display:none}
-  body[data-hf="2"] .matrix-shell th:not(:first-child):not(:nth-child(3)),body[data-hf="2"] .matrix-shell td:not(:first-child):not(:nth-child(3)){display:none}
-  body[data-hf="3"] .matrix-shell th:not(:first-child):not(:nth-child(4)),body[data-hf="3"] .matrix-shell td:not(:first-child):not(:nth-child(4)){display:none}
-  body[data-hf="4"] .matrix-shell th:not(:first-child):not(:nth-child(5)),body[data-hf="4"] .matrix-shell td:not(:first-child):not(:nth-child(5)){display:none}
-  body[data-hf="5"] .matrix-shell th:not(:first-child):not(:nth-child(6)),body[data-hf="5"] .matrix-shell td:not(:first-child):not(:nth-child(6)){display:none}
-  body[data-hf="6"] .matrix-shell th:not(:first-child):not(:nth-child(7)),body[data-hf="6"] .matrix-shell td:not(:first-child):not(:nth-child(7)){display:none}
-  body[data-hf="7"] .matrix-shell th:not(:first-child):not(:nth-child(8)),body[data-hf="7"] .matrix-shell td:not(:first-child):not(:nth-child(8)){display:none}
-  body[data-hf="8"] .matrix-shell th:not(:first-child):not(:nth-child(9)),body[data-hf="8"] .matrix-shell td:not(:first-child):not(:nth-child(9)){display:none}
-  body[data-hf="9"] .matrix-shell th:not(:first-child):not(:nth-child(10)),body[data-hf="9"] .matrix-shell td:not(:first-child):not(:nth-child(10)){display:none}
-  body[data-hf="10"] .matrix-shell th:not(:first-child):not(:nth-child(11)),body[data-hf="10"] .matrix-shell td:not(:first-child):not(:nth-child(11)){display:none}
+  body:not([data-hf="0"]) #panel-harness .matrix-shell table{min-width:0}
+  body[data-hf="1"] #panel-harness .matrix-shell th:not(:first-child):not(:nth-child(2)),body[data-hf="1"] #panel-harness .matrix-shell td:not(:first-child):not(:nth-child(2)){display:none}
+  body[data-hf="2"] #panel-harness .matrix-shell th:not(:first-child):not(:nth-child(3)),body[data-hf="2"] #panel-harness .matrix-shell td:not(:first-child):not(:nth-child(3)){display:none}
+  body[data-hf="3"] #panel-harness .matrix-shell th:not(:first-child):not(:nth-child(4)),body[data-hf="3"] #panel-harness .matrix-shell td:not(:first-child):not(:nth-child(4)){display:none}
+  body[data-hf="4"] #panel-harness .matrix-shell th:not(:first-child):not(:nth-child(5)),body[data-hf="4"] #panel-harness .matrix-shell td:not(:first-child):not(:nth-child(5)){display:none}
+  body[data-hf="5"] #panel-harness .matrix-shell th:not(:first-child):not(:nth-child(6)),body[data-hf="5"] #panel-harness .matrix-shell td:not(:first-child):not(:nth-child(6)){display:none}
+  body[data-hf="6"] #panel-harness .matrix-shell th:not(:first-child):not(:nth-child(7)),body[data-hf="6"] #panel-harness .matrix-shell td:not(:first-child):not(:nth-child(7)){display:none}
+  body[data-hf="7"] #panel-harness .matrix-shell th:not(:first-child):not(:nth-child(8)),body[data-hf="7"] #panel-harness .matrix-shell td:not(:first-child):not(:nth-child(8)){display:none}
+  body[data-hf="8"] #panel-harness .matrix-shell th:not(:first-child):not(:nth-child(9)),body[data-hf="8"] #panel-harness .matrix-shell td:not(:first-child):not(:nth-child(9)){display:none}
+  body[data-hf="9"] #panel-harness .matrix-shell th:not(:first-child):not(:nth-child(10)),body[data-hf="9"] #panel-harness .matrix-shell td:not(:first-child):not(:nth-child(10)){display:none}
+  body[data-hf="10"] #panel-harness .matrix-shell th:not(:first-child):not(:nth-child(11)),body[data-hf="10"] #panel-harness .matrix-shell td:not(:first-child):not(:nth-child(11)){display:none}
   /* concept-card platform grids share the same order */
   body[data-hf="1"] .plat:not(:nth-child(1)),body[data-hf="2"] .plat:not(:nth-child(2)),body[data-hf="3"] .plat:not(:nth-child(3)),body[data-hf="4"] .plat:not(:nth-child(4)),body[data-hf="5"] .plat:not(:nth-child(5)),body[data-hf="6"] .plat:not(:nth-child(6)),body[data-hf="7"] .plat:not(:nth-child(7)),body[data-hf="8"] .plat:not(:nth-child(8)),body[data-hf="9"] .plat:not(:nth-child(9)),body[data-hf="10"] .plat:not(:nth-child(10)){display:none}
-  body:not([data-hf="0"]) .matrix-shell .hint .scrollnote{display:none}
+  body:not([data-hf="0"]) #panel-harness .matrix-shell .hint .scrollnote{display:none}
 
   /* matrix */
   .matrix-shell{border:1px solid var(--line);border-radius:4px;background:var(--surface);overflow:hidden}
@@ -134,15 +151,54 @@
   footer{margin-top:56px;color:var(--faint);font-size:12px;font-family:'IBM Plex Mono',monospace;border-top:1px solid var(--line);padding-top:14px;display:flex;justify-content:space-between;gap:12px;flex-wrap:wrap}
 
   .r-instr{--cc:var(--c-instr)} .r-skill{--cc:var(--c-skill)} .r-mcp{--cc:var(--c-mcp)} .r-bundle{--cc:var(--c-bundle)} .r-agent{--cc:var(--c-agent)}
+
+  /* ============ provider matrix tab ============ */
+  .pm-shell table{min-width:0}
+  .pm-shell th,.pm-shell td{min-width:108px}
+  .pm-shell th:first-child,.pm-shell td:first-child{min-width:150px}
+  .pm-shell thead th .chd{font-family:'Archivo',sans-serif;font-size:13px;font-weight:700;letter-spacing:0;text-transform:none;color:var(--text);display:block}
+  .pm-shell thead th .csub{display:block;font-weight:400;letter-spacing:.02em;text-transform:none;margin-top:2px;color:var(--muted)}
+  .pm-tool{position:sticky;left:0;background:var(--surface);border-right:1px solid var(--line);z-index:1}
+  .pm-shell th.pm-tool-h{position:sticky;left:0;background:var(--surface2);z-index:2;border-right:1px solid var(--line)}
+  .pm-tool .tname{font-family:'Archivo',sans-serif;font-weight:700;font-size:14.5px}
+  .pm-tool .tkind{font-family:'IBM Plex Mono',monospace;font-size:10.5px;letter-spacing:.06em;text-transform:uppercase;color:var(--faint);margin-top:3px}
+  tr.pm-band,tr.pm-band:hover{cursor:default}
+  tr.pm-band:hover td{background:var(--surface2)}
+  tr.pm-band td{background:var(--surface2);border-bottom:1px solid var(--line);padding:8px 16px;font-family:'IBM Plex Mono',monospace;font-size:11px;letter-spacing:.14em;text-transform:uppercase;color:var(--text)}
+  tr.pm-band td .cnt{color:var(--faint);margin-left:8px}
+  tr.pm-band td .bsub{color:var(--faint);letter-spacing:.02em;text-transform:none;font-style:italic;margin-left:10px}
+  tr.pm-band td .bwrap{position:sticky;left:16px;display:inline-block}
+  tr.pm-row.sel td{background:var(--surface2)}
+  tr.pm-row.sel td:first-child{box-shadow:inset 3px 0 0 var(--m-oauth)}
+  tr.pm-row:focus-visible{outline:2px solid var(--c-mcp);outline-offset:-2px}
+  .mech{font-family:'IBM Plex Mono',monospace;font-size:12px;font-weight:600;display:inline-flex;align-items:center;gap:7px;color:var(--mc);white-space:nowrap}
+  .mech i{width:8px;height:8px;border-radius:1px;background:var(--mc);transform:rotate(45deg);flex:none}
+  .mech.m-restricted{border-bottom:1px dashed var(--mc);padding-bottom:1px}
+  .m-apikey{--mc:var(--m-key)} .m-oauth{--mc:var(--m-oauth)} .m-local{--mc:var(--m-local)} .m-native{--mc:var(--m-native)} .m-restricted{--mc:var(--m-restr)}
+  .pm-empty{color:var(--muted);font-size:14px;font-style:italic;padding:16px}
+  .pm-detail{border:1px solid var(--line);border-radius:4px;background:var(--surface);padding:16px 18px;margin-top:16px}
+  .pm-detail .dname{font-family:'Archivo',sans-serif;font-size:17px;font-weight:700}
+  .pm-detail .dkind{font-family:'IBM Plex Mono',monospace;font-size:11px;color:var(--faint);margin-top:3px}
+  .pm-detail .dnote{color:var(--muted);font-size:14px;line-height:1.65;margin-top:10px}
+  .pm-detail a{display:inline-flex;align-items:center;gap:6px;margin-top:12px;font-family:'IBM Plex Mono',monospace;font-size:12.5px;color:var(--m-oauth);text-decoration:none;border-bottom:1px solid var(--m-oauth);padding-bottom:1px}
+  .pm-detail a:focus-visible{outline:2px solid var(--c-mcp);outline-offset:2px}
+  .pm-foot{margin-top:18px;color:var(--faint);font-size:12px;font-family:'IBM Plex Mono',monospace}
 </style>
 </head>
 <body>
 <div class="wrap">
 
 <div class="masthead">
-  <span>agent-harness-rosetta · v6</span>
+  <span>ai-tool-reference · v7</span>
   <button class="theme-btn" id="themeBtn" onclick="toggleTheme()" aria-label="Toggle color theme">dark / light</button>
 </div>
+
+<nav class="tabs" role="tablist" aria-label="Reference sections" onkeydown="tabsKey(event)">
+  <button id="tab-harness" role="tab" aria-selected="true" aria-controls="panel-harness" onclick="setTab('harness')">Harness layers</button>
+  <button id="tab-providers" role="tab" aria-selected="false" aria-controls="panel-providers" onclick="setTab('providers')">Provider matrix</button>
+</nav>
+
+<main id="panel-harness" role="tabpanel" aria-labelledby="tab-harness">
 
 <header class="title">
   <h1>Agent Harness<br><span class="dim">Rosetta Stone</span></h1>
@@ -396,28 +452,338 @@
   <span>terminology moves fast — verify against each project's docs before betting a workflow on it</span>
 </footer>
 
+</main>
+
+<main id="panel-providers" role="tabpanel" aria-labelledby="tab-providers">
+
+<header class="title">
+  <h1>Provider<br><span class="dim">Compatibility Matrix</span></h1>
+  <p class="lede">Each row is an AI developer tool; each column is a credential you might hold. Every cell records <strong>how that credential connects</strong> — an API key, a subscription sign-in, a local endpoint, a built-in first-party path, or not at all. Select the credentials you have, and tap any row for connection details and provider docs.</p>
+</header>
+
+<nav class="legend" aria-label="Connection type legend" id="pmLegend"></nav>
+
+<div class="hpick" role="group" aria-label="Credentials you have">
+  <span class="plabel">I have</span>
+  <span id="pmCreds" style="display:contents"></span>
+  <button class="avail" id="pmOnly" aria-pressed="false" onclick="pmToggleOnly()">only show available</button>
+</div>
+
+<div class="matrix-shell pm-shell">
+<div class="matrix-scroll">
+<div id="pmMatrix"></div>
+</div>
+<div class="hint"><span class="scrollnote">← scroll → on mobile · </span>tap a row for connection details · toggle credentials to filter columns</div>
+</div>
+
+<div class="pm-detail" id="pmDetail"></div>
+
+<p class="pm-foot">provider support changes frequently — this is a point-in-time snapshot; consult each tool's linked documentation before relying on it</p>
+
+</main>
+
 </div>
 <script>
+// ---------------------------------------------------------------------------
+// Provider matrix data. Each tool's `support` maps a credential id to a
+// connection type in MECH. Edit TOOLS/CREDENTIALS/MECH here; the UI renders
+// from these constants. CLOSED lists the tool ids grouped as closed source.
+// ---------------------------------------------------------------------------
+var MECH = {
+  apikey:     { label: "Key" },
+  oauth:      { label: "Sign-in" },
+  local:      { label: "Local" },
+  native:     { label: "Built in" },
+  restricted: { label: "Not allowed" },
+  no:         { label: "—" }
+};
+
+var CREDENTIALS = [
+  { id: "chatgpt",       label: "ChatGPT / OpenAI", sub: "Enterprise or API key" },
+  { id: "gemini",        label: "Gemini / Google", sub: "AI Studio or Workspace" },
+  { id: "grok",          label: "Grok / xAI",    sub: "SuperGrok or API key" },
+  { id: "claude_sub",    label: "Claude",        sub: "Pro / Max / Enterprise" },
+  { id: "copilot",       label: "GitHub Copilot", sub: "company seat" },
+  { id: "openrouter",    label: "OpenRouter",    sub: "key or sign-in" }
+];
+
+var TOOLS = [
+  {
+    id: "antigravity", name: "Antigravity", kind: "IDE + CLI",
+    support: { chatgpt: "no", gemini: "oauth", grok: "no", claude_sub: "no", copilot: "no", openrouter: "no" },
+    note: "Google's agent-first IDE (a VS Code fork, plus a CLI and SDK). Sign in with your Google account for Gemini; add an Anthropic API key to run Claude; GPT-OSS-120B open weights and a custom endpoint are available (custom models on Linux/Cloudtop only).",
+    url: "https://antigravity.google/docs/models"
+  },
+  {
+    id: "aider", name: "Aider", kind: "CLI",
+    support: { chatgpt: "apikey", gemini: "apikey", grok: "apikey", claude_sub: "no", copilot: "no", openrouter: "apikey" },
+    note: "Takes an API key for any provider (Anthropic, OpenAI, Gemini, DeepSeek, any OpenAI-compatible) and runs local models via Ollama. No subscription sign-in.",
+    url: "https://aider.chat/docs/llms.html"
+  },
+  {
+    id: "anythingllm", name: "AnythingLLM", kind: "Desktop app",
+    support: { chatgpt: "apikey", gemini: "apikey", grok: "apikey", claude_sub: "apikey", copilot: "no", openrouter: "apikey" },
+    note: "A local-first desktop RAG app (also Docker) from Mintplex Labs. Bring-your-own-key across 30+ cloud providers — OpenAI, Anthropic, Gemini, xAI, OpenRouter, and any OpenAI-compatible endpoint — plus local via Ollama / LM Studio / LocalAI. No subscription sign-in; Claude is API-key only.",
+    url: "https://docs.anythingllm.com/features/language-models"
+  },
+  {
+    id: "jan", name: "Jan", kind: "Desktop app",
+    support: { chatgpt: "apikey", gemini: "apikey", grok: "apikey", claude_sub: "apikey", copilot: "no", openrouter: "apikey" },
+    note: "An open-source (Apache 2.0) local-first ChatGPT-style app from Menlo Research, with an OpenAI-compatible local server. Bring-your-own-key for OpenAI, Anthropic, Gemini, xAI, OpenRouter, and custom endpoints; local via llama.cpp / MLX. No subscription sign-in. v0.7.9 dropped its OpenClaw integration over security concerns.",
+    url: "https://www.jan.ai/docs/desktop/remote-models/openrouter"
+  },
+  {
+    id: "chatgpt", name: "ChatGPT", kind: "Desktop + CLI",
+    support: { chatgpt: "native", gemini: "no", grok: "no", claude_sub: "no", copilot: "no", openrouter: "no" },
+    note: "As of July 2026 the old Codex desktop app became the new ChatGPT app — Chat, Work, and Codex now live in one shell (the prior app is now 'ChatGPT Classic'), subscription sign-in only. Codex CLI is the separate terminal tool: sign in with ChatGPT or an OpenAI key, plus Azure/Bedrock via a gateway and local models offline.",
+    url: "https://developers.openai.com/codex/local-config"
+  },
+  {
+    id: "claude", name: "Claude", kind: "Chat + CLI",
+    support: { chatgpt: "no", gemini: "no", grok: "no", claude_sub: "native", copilot: "no", openrouter: "no" },
+    note: "The app (web/desktop/mobile) is subscription-only — your Claude Enterprise seat lives there and doesn't hand out an API to other tools. Claude Code adds an API key, Bedrock/Vertex/Foundry, and local via Ollama + LiteLLM; its own subscription sign-in is limited to Anthropic's official clients (Feb 2026 policy).",
+    url: "https://docs.claude.com/en/docs/claude-code/model-config"
+  },
+  {
+    id: "cline", name: "Cline", kind: "IDE + CLI",
+    support: { chatgpt: "oauth", gemini: "apikey", grok: "apikey", claude_sub: "no", copilot: "no", openrouter: "apikey" },
+    note: "Bring-your-own-key across 30+ providers and any OpenAI-compatible endpoint; local via Ollama / LM Studio. Also offers a ChatGPT-subscription sign-in (Codex OAuth) for OpenAI models.",
+    url: "https://docs.cline.bot/provider-config/overview"
+  },
+  {
+    id: "copilot", name: "GitHub Copilot", kind: "Desktop + IDE + CLI",
+    support: { chatgpt: "apikey", gemini: "apikey", grok: "apikey", claude_sub: "no", copilot: "native", openrouter: "no" },
+    note: "Now a standalone desktop agent app, not just an IDE extension, with parallel sessions on git worktrees, plus VS Code/JetBrains extensions and Copilot CLI, all on one runtime. Bring-your-own-key covers chat/agents but not tab completion; local via Ollama.",
+    url: "https://docs.github.com/en/copilot/how-tos/use-ai-models/use-a-custom-model"
+  },
+  {
+    id: "cursor", name: "Cursor", kind: "IDE",
+    support: { chatgpt: "apikey", gemini: "apikey", grok: "no", claude_sub: "no", copilot: "no", openrouter: "no" },
+    note: "A bring-your-own-key powers chat and plan only — Composer, inline edit, and autocomplete stay on Cursor's own backend. No local-model path.",
+    url: "https://cursor.com/help/models-and-usage/api-keys"
+  },
+  {
+    id: "goose", name: "Goose", kind: "Desktop + CLI",
+    support: { chatgpt: "oauth", gemini: "apikey", grok: "apikey", claude_sub: "oauth", copilot: "oauth", openrouter: "apikey" },
+    note: "Keys for 25+ providers, a built-in GitHub Copilot provider via OAuth device-code sign-in, plus CLI / ACP pass-through that reuses your Claude Code, Codex, or Gemini CLI sign-in. Local via Ollama.",
+    url: "https://block.github.io/goose/docs/getting-started/providers"
+  },
+  {
+    id: "hermes", name: "Hermes Agent", kind: "Desktop + CLI",
+    support: { chatgpt: "oauth", gemini: "apikey", grok: "oauth", claude_sub: "oauth", copilot: "oauth", openrouter: "apikey" },
+    note: "The most open-handed tool on this shelf — around 20 providers. Codex, Copilot, MiniMax, SuperGrok, and Nous Portal sign-in (device-code works over SSH); other keys directly; Claude subscription via Claude Code credentials; local Ollama/vLLM; Bedrock/Azure too.",
+    url: "https://hermes-agent.nousresearch.com/docs"
+  },
+  {
+    id: "kilocode", name: "Kilo Code", kind: "IDE + CLI",
+    support: { chatgpt: "oauth", gemini: "apikey", grok: "apikey", claude_sub: "no", copilot: "no", openrouter: "apikey" },
+    note: "A Cline fork spanning VS Code, JetBrains, and CLI with 500+ models. Keys for Anthropic / OpenAI / Gemini / Bedrock / Vertex, local via Ollama or LM Studio, and a ChatGPT-subscription sign-in that skips the key entirely.",
+    url: "https://kilocode.ai/docs/providers"
+  },
+  {
+    id: "openclaw", name: "OpenClaw", kind: "Desktop + CLI",
+    support: { chatgpt: "oauth", gemini: "apikey", grok: "apikey", claude_sub: "oauth", copilot: "no", openrouter: "oauth" },
+    note: "An open-source personal-assistant framework, now OpenAI-affiliated. Codex/ChatGPT subscription via browser or device-code sign-in, Anthropic and Gemini keys, local models, and pass-through to Claude Code, Gemini CLI, OpenCode, or Cursor.",
+    url: "https://docs.openclaw.ai/providers"
+  },
+  {
+    id: "opencode", name: "OpenCode", kind: "Desktop + CLI",
+    support: { chatgpt: "oauth", gemini: "apikey", grok: "apikey", claude_sub: "restricted", copilot: "oauth", openrouter: "apikey" },
+    note: "ChatGPT, Copilot, and GitLab Duo subscriptions all work via sign-in. Anthropic's terms prohibit a Claude Pro/Max subscription here — bring your API key instead.",
+    url: "https://opencode.ai/docs/providers"
+  },
+  {
+    id: "pi", name: "Pi", kind: "CLI",
+    support: { chatgpt: "oauth", gemini: "apikey", grok: "apikey", claude_sub: "oauth", copilot: "oauth", openrouter: "apikey" },
+    note: "An open-source, provider-agnostic terminal agent (earendil-works, pi.dev) — not to be confused with Inflection AI's Pi companion app. Routes to 20+ providers by key, or sign in with Claude Pro/Max, ChatGPT Plus/Pro, or GitHub Copilot instead. Also reaches Bedrock, Azure, and Vertex, and runs local models via Ollama.",
+    url: "https://pi.dev/docs/latest/providers"
+  },
+  {
+    id: "osaurus", name: "Osaurus", kind: "Desktop + CLI",
+    support: { chatgpt: "oauth", gemini: "apikey", grok: "oauth", claude_sub: "apikey", copilot: "no", openrouter: "oauth" },
+    note: "A native Apple-Silicon MLX server that other tools point at as their local endpoint. Speaks OpenAI / Anthropic / Ollama APIs and is a full MCP server. Sign in with your ChatGPT, SuperGrok/X Premium+, or OpenRouter account; Anthropic, Google, and local (Ollama/LM Studio) connect by API key instead.",
+    url: "https://docs.osaurus.ai/models"
+  }
+];
+
+var CLOSED = { antigravity: 1, chatgpt: 1, claude: 1, cursor: 1, copilot: 1 };
+
+var STORAGE_KEY = "ai_tool_matrix_prefs";
+var pmState = { have: {}, onlyUsable: false, detail: TOOLS[2].id };
+
+function loadPrefs(){
+  try { return JSON.parse(localStorage.getItem(STORAGE_KEY) || "{}") || {}; }
+  catch(e){ return {}; }
+}
+function savePrefs(){
+  try {
+    localStorage.setItem(STORAGE_KEY, JSON.stringify({
+      have: pmState.have,
+      theme: document.documentElement.getAttribute("data-theme"),
+      tab: document.body.getAttribute("data-tab")
+    }));
+  } catch(e){ /* session-only fallback */ }
+}
+function esc(s){
+  return String(s).replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;").replace(/"/g,"&quot;");
+}
+
 (function(){
+  var saved = loadPrefs();
   var prefersDark = window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches;
-  document.documentElement.setAttribute('data-theme', prefersDark ? 'dark' : 'light');
+  var theme = (saved.theme === 'dark' || saved.theme === 'light') ? saved.theme : (prefersDark ? 'dark' : 'light');
+  document.documentElement.setAttribute('data-theme', theme);
   document.body.setAttribute('data-hf','0');
+  CREDENTIALS.forEach(function(c){
+    pmState.have[c.id] = (saved.have && typeof saved.have[c.id] === 'boolean') ? saved.have[c.id] : true;
+  });
+  var tab = location.hash === '#providers' ? 'providers'
+          : location.hash === '#harnesses' ? 'harness'
+          : (saved.tab === 'providers' ? 'providers' : 'harness');
+  applyTab(tab, false);
+  pmRenderAll();
 })();
+
+function applyTab(tab, updateHash){
+  document.body.setAttribute('data-tab', tab);
+  var h = document.getElementById('tab-harness'), p = document.getElementById('tab-providers');
+  h.setAttribute('aria-selected', tab === 'harness' ? 'true' : 'false');
+  p.setAttribute('aria-selected', tab === 'providers' ? 'true' : 'false');
+  if (updateHash && window.history && history.replaceState) {
+    history.replaceState(null, '', tab === 'providers' ? '#providers' : '#harnesses');
+  }
+}
+function setTab(tab){ applyTab(tab, true); savePrefs(); }
+function tabsKey(ev){
+  if (ev.key !== 'ArrowLeft' && ev.key !== 'ArrowRight' && ev.key !== 'Home' && ev.key !== 'End') return;
+  ev.preventDefault();
+  var cur = document.body.getAttribute('data-tab');
+  var next = ev.key === 'Home' ? 'harness' : ev.key === 'End' ? 'providers'
+           : (cur === 'harness' ? 'providers' : 'harness');
+  setTab(next);
+  document.getElementById(next === 'harness' ? 'tab-harness' : 'tab-providers').focus();
+}
+
 function setHarness(i, btn){
   document.body.setAttribute('data-hf', String(i));
-  var btns = document.querySelectorAll('.hpick button');
+  var btns = document.querySelectorAll('#panel-harness .hpick button');
   for(var k=0;k<btns.length;k++){ btns[k].setAttribute('aria-pressed', btns[k]===btn ? 'true' : 'false'); }
 }
 function toggleTheme(){
   var root = document.documentElement;
   var next = root.getAttribute('data-theme') === 'dark' ? 'light' : 'dark';
   root.setAttribute('data-theme', next);
+  savePrefs();
 }
 function jump(id){
   var el = document.getElementById(id);
   if(!el) return;
   el.open = true;
   el.scrollIntoView({behavior:'smooth', block:'start'});
+}
+
+/* ---- provider matrix rendering ---- */
+function pmVisibleCreds(){
+  return CREDENTIALS.filter(function(c){ return pmState.have[c.id]; });
+}
+function pmUsable(t, creds){
+  return creds.some(function(c){ return (t.support[c.id] || 'no') !== 'no'; });
+}
+function pmToggleCred(id){
+  pmState.have[id] = !pmState.have[id];
+  savePrefs();
+  pmRenderAll();
+  var chip = document.querySelector('#pmCreds button[data-cred="' + id + '"]');
+  if (chip) chip.focus({preventScroll:true});
+}
+function pmToggleOnly(){
+  pmState.onlyUsable = !pmState.onlyUsable;
+  pmRenderAll();
+}
+function pmSelect(id){
+  pmState.detail = id;
+  pmRenderMatrix();
+  pmRenderDetail();
+  var row = document.querySelector('#pmMatrix tr[data-tool="' + id + '"]');
+  if (row) row.focus({preventScroll:true});
+}
+function pmRowKey(ev, id){
+  if (ev.key === 'Enter' || ev.key === ' ') { ev.preventDefault(); pmSelect(id); }
+}
+
+function pmRenderAll(){
+  pmRenderLegend();
+  pmRenderCreds();
+  pmRenderMatrix();
+  pmRenderDetail();
+}
+function pmRenderLegend(){
+  var html = Object.keys(MECH).filter(function(k){ return k !== 'no'; }).map(function(k){
+    return '<span class="lg mech m-' + k + '"><i></i>' + esc(MECH[k].label) + '</span>';
+  }).join('');
+  document.getElementById('pmLegend').innerHTML = html;
+}
+function pmRenderCreds(){
+  var html = CREDENTIALS.map(function(c){
+    var on = pmState.have[c.id];
+    return '<button class="cred" data-cred="' + c.id + '" aria-pressed="' + on + '" onclick="pmToggleCred(\'' + c.id + '\')">' +
+      '<span class="dia">' + (on ? '◆' : '◇') + '</span> ' + esc(c.label) + '</button>';
+  }).join('');
+  document.getElementById('pmCreds').innerHTML = html;
+  var creds = pmVisibleCreds();
+  var shownCount = (pmState.onlyUsable ? TOOLS.filter(function(t){ return pmUsable(t, creds); }) : TOOLS).length;
+  var onlyBtn = document.getElementById('pmOnly');
+  onlyBtn.setAttribute('aria-pressed', String(pmState.onlyUsable));
+  onlyBtn.textContent = pmState.onlyUsable ? ('showing ' + shownCount + ' available') : 'only show available';
+}
+function pmMechCell(t, c){
+  var m = t.support[c.id] || 'no';
+  var meta = MECH[m];
+  var tip = esc(t.name + ' · ' + c.label + ': ' + meta.label);
+  if (m === 'no') return '<td title="' + tip + '"><span class="dash">—</span></td>';
+  return '<td title="' + tip + '"><span class="mech m-' + m + '"><i></i>' + esc(meta.label) + '</span></td>';
+}
+function pmToolRow(t, creds){
+  var sel = pmState.detail === t.id;
+  return '<tr class="pm-row' + (sel ? ' sel' : '') + '" data-tool="' + t.id + '"' + (sel ? ' aria-current="true"' : '') + ' tabindex="0" onclick="pmSelect(\'' + t.id + '\')" onkeydown="pmRowKey(event,\'' + t.id + '\')">' +
+    '<td class="pm-tool"><div class="tname">' + esc(t.name) + '</div><div class="tkind">' + esc(t.kind) + '</div></td>' +
+    creds.map(function(c){ return pmMechCell(t, c); }).join('') + '</tr>';
+}
+function pmBand(label, sub, count, cols){
+  return '<tr class="pm-band"><td colspan="' + cols + '"><span class="bwrap">' + esc(label) +
+    '<span class="cnt">' + count + '</span><span class="bsub">' + esc(sub) + '</span></span></td></tr>';
+}
+function pmRenderMatrix(){
+  var creds = pmVisibleCreds();
+  var host = document.getElementById('pmMatrix');
+  if (creds.length === 0){
+    host.innerHTML = '<p class="pm-empty">Select at least one credential above to display the matrix.</p>';
+    return;
+  }
+  var shown = pmState.onlyUsable ? TOOLS.filter(function(t){ return pmUsable(t, creds); }) : TOOLS;
+  var open = shown.filter(function(t){ return !CLOSED[t.id]; });
+  var closed = shown.filter(function(t){ return CLOSED[t.id]; });
+  var cols = creds.length + 1;
+  var html = '<table><thead><tr><th class="pm-tool-h">Tool</th>' +
+    creds.map(function(c){
+      return '<th><span class="chd">' + esc(c.label) + '</span><span class="csub">' + esc(c.sub) + '</span></th>';
+    }).join('') + '</tr></thead><tbody>';
+  if (open.length) html += pmBand('Open source', 'self-hostable', open.length, cols) + open.map(function(t){ return pmToolRow(t, creds); }).join('');
+  if (closed.length) html += pmBand('Closed source', 'vendor-hosted', closed.length, cols) + closed.map(function(t){ return pmToolRow(t, creds); }).join('');
+  if (!shown.length) html += '<tr class="pm-band"><td colspan="' + cols + '">no tools match the selected credentials</td></tr>';
+  html += '</tbody></table>';
+  host.innerHTML = html;
+}
+function pmRenderDetail(){
+  var t = null;
+  for (var i = 0; i < TOOLS.length; i++) if (TOOLS[i].id === pmState.detail) t = TOOLS[i];
+  var host = document.getElementById('pmDetail');
+  if (!t){ host.style.display = 'none'; return; }
+  host.style.display = '';
+  host.innerHTML = '<div class="dname">' + esc(t.name) + '</div>' +
+    '<div class="dkind">' + esc(t.kind) + '</div>' +
+    '<p class="dnote">' + esc(t.note) + '</p>' +
+    (t.url ? '<a href="' + esc(t.url) + '" target="_blank" rel="noopener noreferrer">' + esc(t.name) + ' provider docs <span aria-hidden="true">↗</span></a>' : '');
 }
 </script>
 </body>
