@@ -9,15 +9,15 @@
 <style>
   :root, html[data-theme="dark"]{
     --bg:#14161A; --surface:#1B1E23; --surface2:#22262C; --line:#2C3138; --line-soft:#24282E;
-    --text:#EAECEF; --muted:#9AA1AB; --faint:#697079;
+    --text:#EAECEF; --muted:#9AA1AB; --faint:#848C98;
     --c-instr:#DFA83E; --c-skill:#42C0A5; --c-mcp:#5EA9F2; --c-bundle:#A88EF5; --c-agent:#E4718F;
     --m-key:#F0AC5C; --m-oauth:#5FD1BE; --m-local:#9AD17A; --m-native:#C9BBA0; --m-restr:#EB8477;
   }
   html[data-theme="light"]{
     --bg:#FAFAF7; --surface:#FFFFFF; --surface2:#F1F1EC; --line:#DDDCD4; --line-soft:#E8E7E0;
-    --text:#1E2126; --muted:#5B616B; --faint:#8E939B;
+    --text:#1E2126; --muted:#5B616B; --faint:#6E747D;
     --c-instr:#9A6A08; --c-skill:#0C8168; --c-mcp:#1D6FD1; --c-bundle:#6748C9; --c-agent:#BC3A61;
-    --m-key:#A8672A; --m-oauth:#2B6E63; --m-local:#4C6B2F; --m-native:#6B5B45; --m-restr:#A23B2E;
+    --m-key:#9C5F22; --m-oauth:#2B6E63; --m-local:#4C6B2F; --m-native:#6B5B45; --m-restr:#A23B2E;
   }
   *{box-sizing:border-box;margin:0;padding:0}
   html{scroll-behavior:smooth}
@@ -68,20 +68,20 @@
   .hpick button.avail[aria-pressed="true"]{background:var(--surface);color:var(--text);border-color:var(--m-local);font-weight:600}
 
   /* single-harness filtering: matrix columns (order: concept, claude, codex, goose, hermes, osaurus, gemini, cursor, opencode, openclaw, copilot) */
-  body:not([data-hf="0"]) .matrix-shell table{min-width:0}
-  body[data-hf="1"] .matrix-shell th:not(:first-child):not(:nth-child(2)),body[data-hf="1"] .matrix-shell td:not(:first-child):not(:nth-child(2)){display:none}
-  body[data-hf="2"] .matrix-shell th:not(:first-child):not(:nth-child(3)),body[data-hf="2"] .matrix-shell td:not(:first-child):not(:nth-child(3)){display:none}
-  body[data-hf="3"] .matrix-shell th:not(:first-child):not(:nth-child(4)),body[data-hf="3"] .matrix-shell td:not(:first-child):not(:nth-child(4)){display:none}
-  body[data-hf="4"] .matrix-shell th:not(:first-child):not(:nth-child(5)),body[data-hf="4"] .matrix-shell td:not(:first-child):not(:nth-child(5)){display:none}
-  body[data-hf="5"] .matrix-shell th:not(:first-child):not(:nth-child(6)),body[data-hf="5"] .matrix-shell td:not(:first-child):not(:nth-child(6)){display:none}
-  body[data-hf="6"] .matrix-shell th:not(:first-child):not(:nth-child(7)),body[data-hf="6"] .matrix-shell td:not(:first-child):not(:nth-child(7)){display:none}
-  body[data-hf="7"] .matrix-shell th:not(:first-child):not(:nth-child(8)),body[data-hf="7"] .matrix-shell td:not(:first-child):not(:nth-child(8)){display:none}
-  body[data-hf="8"] .matrix-shell th:not(:first-child):not(:nth-child(9)),body[data-hf="8"] .matrix-shell td:not(:first-child):not(:nth-child(9)){display:none}
-  body[data-hf="9"] .matrix-shell th:not(:first-child):not(:nth-child(10)),body[data-hf="9"] .matrix-shell td:not(:first-child):not(:nth-child(10)){display:none}
-  body[data-hf="10"] .matrix-shell th:not(:first-child):not(:nth-child(11)),body[data-hf="10"] .matrix-shell td:not(:first-child):not(:nth-child(11)){display:none}
+  body:not([data-hf="0"]) #panel-harness .matrix-shell table{min-width:0}
+  body[data-hf="1"] #panel-harness .matrix-shell th:not(:first-child):not(:nth-child(2)),body[data-hf="1"] #panel-harness .matrix-shell td:not(:first-child):not(:nth-child(2)){display:none}
+  body[data-hf="2"] #panel-harness .matrix-shell th:not(:first-child):not(:nth-child(3)),body[data-hf="2"] #panel-harness .matrix-shell td:not(:first-child):not(:nth-child(3)){display:none}
+  body[data-hf="3"] #panel-harness .matrix-shell th:not(:first-child):not(:nth-child(4)),body[data-hf="3"] #panel-harness .matrix-shell td:not(:first-child):not(:nth-child(4)){display:none}
+  body[data-hf="4"] #panel-harness .matrix-shell th:not(:first-child):not(:nth-child(5)),body[data-hf="4"] #panel-harness .matrix-shell td:not(:first-child):not(:nth-child(5)){display:none}
+  body[data-hf="5"] #panel-harness .matrix-shell th:not(:first-child):not(:nth-child(6)),body[data-hf="5"] #panel-harness .matrix-shell td:not(:first-child):not(:nth-child(6)){display:none}
+  body[data-hf="6"] #panel-harness .matrix-shell th:not(:first-child):not(:nth-child(7)),body[data-hf="6"] #panel-harness .matrix-shell td:not(:first-child):not(:nth-child(7)){display:none}
+  body[data-hf="7"] #panel-harness .matrix-shell th:not(:first-child):not(:nth-child(8)),body[data-hf="7"] #panel-harness .matrix-shell td:not(:first-child):not(:nth-child(8)){display:none}
+  body[data-hf="8"] #panel-harness .matrix-shell th:not(:first-child):not(:nth-child(9)),body[data-hf="8"] #panel-harness .matrix-shell td:not(:first-child):not(:nth-child(9)){display:none}
+  body[data-hf="9"] #panel-harness .matrix-shell th:not(:first-child):not(:nth-child(10)),body[data-hf="9"] #panel-harness .matrix-shell td:not(:first-child):not(:nth-child(10)){display:none}
+  body[data-hf="10"] #panel-harness .matrix-shell th:not(:first-child):not(:nth-child(11)),body[data-hf="10"] #panel-harness .matrix-shell td:not(:first-child):not(:nth-child(11)){display:none}
   /* concept-card platform grids share the same order */
   body[data-hf="1"] .plat:not(:nth-child(1)),body[data-hf="2"] .plat:not(:nth-child(2)),body[data-hf="3"] .plat:not(:nth-child(3)),body[data-hf="4"] .plat:not(:nth-child(4)),body[data-hf="5"] .plat:not(:nth-child(5)),body[data-hf="6"] .plat:not(:nth-child(6)),body[data-hf="7"] .plat:not(:nth-child(7)),body[data-hf="8"] .plat:not(:nth-child(8)),body[data-hf="9"] .plat:not(:nth-child(9)),body[data-hf="10"] .plat:not(:nth-child(10)){display:none}
-  body:not([data-hf="0"]) .matrix-shell .hint .scrollnote{display:none}
+  body:not([data-hf="0"]) #panel-harness .matrix-shell .hint .scrollnote{display:none}
 
   /* matrix */
   .matrix-shell{border:1px solid var(--line);border-radius:4px;background:var(--surface);overflow:hidden}
@@ -157,7 +157,7 @@
   .pm-shell th,.pm-shell td{min-width:108px}
   .pm-shell th:first-child,.pm-shell td:first-child{min-width:150px}
   .pm-shell thead th .chd{font-family:'Archivo',sans-serif;font-size:13px;font-weight:700;letter-spacing:0;text-transform:none;color:var(--text);display:block}
-  .pm-shell thead th .csub{display:block;font-weight:400;letter-spacing:.02em;text-transform:none;margin-top:2px}
+  .pm-shell thead th .csub{display:block;font-weight:400;letter-spacing:.02em;text-transform:none;margin-top:2px;color:var(--muted)}
   .pm-tool{position:sticky;left:0;background:var(--surface);border-right:1px solid var(--line);z-index:1}
   .pm-shell th.pm-tool-h{position:sticky;left:0;background:var(--surface2);z-index:2;border-right:1px solid var(--line)}
   .pm-tool .tname{font-family:'Archivo',sans-serif;font-weight:700;font-size:14.5px}
@@ -167,7 +167,9 @@
   tr.pm-band td{background:var(--surface2);border-bottom:1px solid var(--line);padding:8px 16px;font-family:'IBM Plex Mono',monospace;font-size:11px;letter-spacing:.14em;text-transform:uppercase;color:var(--text)}
   tr.pm-band td .cnt{color:var(--faint);margin-left:8px}
   tr.pm-band td .bsub{color:var(--faint);letter-spacing:.02em;text-transform:none;font-style:italic;margin-left:10px}
+  tr.pm-band td .bwrap{position:sticky;left:16px;display:inline-block}
   tr.pm-row.sel td{background:var(--surface2)}
+  tr.pm-row.sel td:first-child{box-shadow:inset 3px 0 0 var(--m-oauth)}
   tr.pm-row:focus-visible{outline:2px solid var(--c-mcp);outline-offset:-2px}
   .mech{font-family:'IBM Plex Mono',monospace;font-size:12px;font-weight:600;display:inline-flex;align-items:center;gap:7px;color:var(--mc);white-space:nowrap}
   .mech i{width:8px;height:8px;border-radius:1px;background:var(--mc);transform:rotate(45deg);flex:none}
@@ -191,7 +193,7 @@
   <button class="theme-btn" id="themeBtn" onclick="toggleTheme()" aria-label="Toggle color theme">dark / light</button>
 </div>
 
-<nav class="tabs" role="tablist" aria-label="Reference sections">
+<nav class="tabs" role="tablist" aria-label="Reference sections" onkeydown="tabsKey(event)">
   <button id="tab-harness" role="tab" aria-selected="true" aria-controls="panel-harness" onclick="setTab('harness')">Harness layers</button>
   <button id="tab-providers" role="tab" aria-selected="false" aria-controls="panel-providers" onclick="setTab('providers')">Provider matrix</button>
 </nav>
@@ -652,6 +654,15 @@ function applyTab(tab, updateHash){
   }
 }
 function setTab(tab){ applyTab(tab, true); savePrefs(); }
+function tabsKey(ev){
+  if (ev.key !== 'ArrowLeft' && ev.key !== 'ArrowRight' && ev.key !== 'Home' && ev.key !== 'End') return;
+  ev.preventDefault();
+  var cur = document.body.getAttribute('data-tab');
+  var next = ev.key === 'Home' ? 'harness' : ev.key === 'End' ? 'providers'
+           : (cur === 'harness' ? 'providers' : 'harness');
+  setTab(next);
+  document.getElementById(next === 'harness' ? 'tab-harness' : 'tab-providers').focus();
+}
 
 function setHarness(i, btn){
   document.body.setAttribute('data-hf', String(i));
@@ -682,6 +693,8 @@ function pmToggleCred(id){
   pmState.have[id] = !pmState.have[id];
   savePrefs();
   pmRenderAll();
+  var chip = document.querySelector('#pmCreds button[data-cred="' + id + '"]');
+  if (chip) chip.focus({preventScroll:true});
 }
 function pmToggleOnly(){
   pmState.onlyUsable = !pmState.onlyUsable;
@@ -691,6 +704,8 @@ function pmSelect(id){
   pmState.detail = id;
   pmRenderMatrix();
   pmRenderDetail();
+  var row = document.querySelector('#pmMatrix tr[data-tool="' + id + '"]');
+  if (row) row.focus({preventScroll:true});
 }
 function pmRowKey(ev, id){
   if (ev.key === 'Enter' || ev.key === ' ') { ev.preventDefault(); pmSelect(id); }
@@ -711,7 +726,7 @@ function pmRenderLegend(){
 function pmRenderCreds(){
   var html = CREDENTIALS.map(function(c){
     var on = pmState.have[c.id];
-    return '<button class="cred" aria-pressed="' + on + '" onclick="pmToggleCred(\'' + c.id + '\')">' +
+    return '<button class="cred" data-cred="' + c.id + '" aria-pressed="' + on + '" onclick="pmToggleCred(\'' + c.id + '\')">' +
       '<span class="dia">' + (on ? '◆' : '◇') + '</span> ' + esc(c.label) + '</button>';
   }).join('');
   document.getElementById('pmCreds').innerHTML = html;
@@ -719,7 +734,7 @@ function pmRenderCreds(){
   var shownCount = (pmState.onlyUsable ? TOOLS.filter(function(t){ return pmUsable(t, creds); }) : TOOLS).length;
   var onlyBtn = document.getElementById('pmOnly');
   onlyBtn.setAttribute('aria-pressed', String(pmState.onlyUsable));
-  onlyBtn.textContent = pmState.onlyUsable ? ('showing ' + shownCount + ' of ' + TOOLS.length) : 'only show available';
+  onlyBtn.textContent = pmState.onlyUsable ? ('showing ' + shownCount + ' available') : 'only show available';
 }
 function pmMechCell(t, c){
   var m = t.support[c.id] || 'no';
@@ -730,13 +745,13 @@ function pmMechCell(t, c){
 }
 function pmToolRow(t, creds){
   var sel = pmState.detail === t.id;
-  return '<tr class="pm-row' + (sel ? ' sel' : '') + '" tabindex="0" onclick="pmSelect(\'' + t.id + '\')" onkeydown="pmRowKey(event,\'' + t.id + '\')">' +
+  return '<tr class="pm-row' + (sel ? ' sel' : '') + '" data-tool="' + t.id + '"' + (sel ? ' aria-current="true"' : '') + ' tabindex="0" onclick="pmSelect(\'' + t.id + '\')" onkeydown="pmRowKey(event,\'' + t.id + '\')">' +
     '<td class="pm-tool"><div class="tname">' + esc(t.name) + '</div><div class="tkind">' + esc(t.kind) + '</div></td>' +
     creds.map(function(c){ return pmMechCell(t, c); }).join('') + '</tr>';
 }
 function pmBand(label, sub, count, cols){
-  return '<tr class="pm-band"><td colspan="' + cols + '">' + esc(label) +
-    '<span class="cnt">' + count + '</span><span class="bsub">' + esc(sub) + '</span></td></tr>';
+  return '<tr class="pm-band"><td colspan="' + cols + '"><span class="bwrap">' + esc(label) +
+    '<span class="cnt">' + count + '</span><span class="bsub">' + esc(sub) + '</span></span></td></tr>';
 }
 function pmRenderMatrix(){
   var creds = pmVisibleCreds();
@@ -758,7 +773,6 @@ function pmRenderMatrix(){
   if (!shown.length) html += '<tr class="pm-band"><td colspan="' + cols + '">no tools match the selected credentials</td></tr>';
   html += '</tbody></table>';
   host.innerHTML = html;
-  pmRenderCreds();
 }
 function pmRenderDetail(){
   var t = null;

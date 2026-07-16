@@ -42,9 +42,10 @@ Everything lives in `index.html`.
 - The provider matrix renders from plain JS constants near the top of the
   `<script>` block:
   - **`CREDENTIALS`** — the columns. Each has an `id`, a `label`, and a small `sub` caption.
-  - **`TOOLS`** — the rows. Each tool has a `name`, a `kind` (e.g. `"IDE + CLI"`),
-    a `note`, a `url` to its provider docs, and a `support` map from credential
-    `id` to a connection type.
+  - **`TOOLS`** — the rows. Each tool has a unique `id` (used for selection and
+    the `CLOSED` grouping), a `name`, a `kind` (e.g. `"IDE + CLI"`), a `note`,
+    a `url` to its provider docs, and a `support` map from credential `id` to
+    a connection type.
   - **`MECH`** — the connection types: `apikey` (works with a provider API key),
     `oauth` (subscription/account sign-in), `local` (local endpoint),
     `native` (first-party app only), `restricted` (explicitly disallowed),
