@@ -157,7 +157,6 @@
   .pm-shell th,.pm-shell td{min-width:108px}
   .pm-shell th:first-child,.pm-shell td:first-child{min-width:150px}
   .pm-shell thead th .chd{font-family:'Archivo',sans-serif;font-size:13px;font-weight:700;letter-spacing:0;text-transform:none;color:var(--text);display:block}
-  .pm-shell thead th .csub{display:block;font-weight:400;letter-spacing:.02em;text-transform:none;margin-top:2px;color:var(--muted)}
   .pm-tool{position:sticky;left:0;background:var(--surface);border-right:1px solid var(--line);z-index:1}
   .pm-shell th.pm-tool-h{position:sticky;left:0;background:var(--surface2);z-index:2;border-right:1px solid var(--line)}
   .pm-tool .tname{font-family:'Archivo',sans-serif;font-weight:700;font-size:14.5px}
@@ -497,12 +496,12 @@ var MECH = {
 };
 
 var CREDENTIALS = [
-  { id: "chatgpt",       label: "ChatGPT",       sub: "Enterprise or API key" },
-  { id: "claude_sub",    label: "Claude",        sub: "Pro / Max / Enterprise" },
-  { id: "gemini",        label: "Gemini",        sub: "AI Studio or Workspace" },
-  { id: "copilot",       label: "GitHub Copilot", sub: "company seat" },
-  { id: "grok",          label: "Grok",          sub: "SuperGrok or API key" },
-  { id: "openrouter",    label: "OpenRouter",    sub: "key or sign-in" }
+  { id: "chatgpt",       label: "ChatGPT" },
+  { id: "claude_sub",    label: "Claude" },
+  { id: "gemini",        label: "Gemini" },
+  { id: "copilot",       label: "GitHub Copilot" },
+  { id: "grok",          label: "Grok" },
+  { id: "openrouter",    label: "OpenRouter" }
 ];
 
 var TOOLS = [
@@ -758,7 +757,7 @@ function pmRenderMatrix(){
   var cols = creds.length + 1;
   var html = '<table><thead><tr><th class="pm-tool-h">Tool</th>' +
     creds.map(function(c){
-      return '<th><span class="chd">' + esc(c.label) + '</span><span class="csub">' + esc(c.sub) + '</span></th>';
+      return '<th><span class="chd">' + esc(c.label) + '</span></th>';
     }).join('') + '</tr></thead><tbody>';
   if (open.length) html += pmBand('Open source', open.length, cols) + open.map(function(t){ return pmToolRow(t, creds); }).join('');
   if (closed.length) html += pmBand('Closed source', closed.length, cols) + closed.map(function(t){ return pmToolRow(t, creds); }).join('');

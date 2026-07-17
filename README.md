@@ -41,7 +41,7 @@ Everything lives in `index.html`.
   platform grid in that order when editing).
 - The provider matrix renders from plain JS constants near the top of the
   `<script>` block:
-  - **`CREDENTIALS`** — the columns. Each has an `id`, a `label`, and a small `sub` caption.
+  - **`CREDENTIALS`** — the columns. Each has an `id` and a `label`.
   - **`TOOLS`** — the rows. Each tool has a unique `id` (used for selection and
     the `CLOSED` grouping), a `name`, a `kind` (e.g. `"IDE + CLI"`), a `note`,
     a `url` to its provider docs, and a `support` map from credential `id` to
