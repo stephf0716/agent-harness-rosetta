@@ -65,7 +65,9 @@
   .hpick button.cred[aria-pressed="true"]{background:var(--surface);color:var(--text);border-color:var(--m-oauth);font-weight:600}
   .hpick button.cred .dia{color:var(--m-oauth)}
   .hpick button.cred[aria-pressed="false"] .dia{color:var(--faint)}
-  .hpick button.avail[aria-pressed="true"]{background:var(--surface);color:var(--text);border-color:var(--m-local);font-weight:600}
+  .hpick.pm-filter{position:static;margin-top:-6px}
+  .hpick button[aria-checked="true"]{background:var(--surface);color:var(--text);border-color:var(--m-local);font-weight:600}
+  .hpick button.bulk{color:var(--faint)}
 
   /* single-harness filtering: matrix columns (order: concept, claude, codex, goose, hermes, osaurus, gemini, cursor, opencode, openclaw, copilot) */
   body:not([data-hf="0"]) #panel-harness .matrix-shell table{min-width:0}
@@ -463,8 +465,13 @@
 
 <div class="hpick" role="group" aria-label="Credentials you have">
   <span class="plabel">I have</span>
+  <button class="bulk" onclick="pmCredsAll(true)">all</button>
+  <button class="bulk" onclick="pmCredsAll(false)">none</button>
   <span id="pmCreds" style="display:contents"></span>
-  <button class="avail" id="pmOnly" aria-pressed="false" onclick="pmToggleOnly()">only show available</button>
+</div>
+<div class="hpick pm-filter" role="radiogroup" aria-label="Row filter" id="pmFilter">
+  <span class="plabel">Show</span>
+  <span id="pmFilterBtns" style="display:contents"></span>
 </div>
 
 <div class="matrix-shell pm-shell">
@@ -594,13 +601,19 @@ var TOOLS = [
     support: { chatgpt: "oauth", gemini: "apikey", grok: "oauth", claude_sub: "apikey", copilot: "no", openrouter: "oauth" },
     note: "A native Apple-Silicon MLX server that other tools point at as their local endpoint. Speaks OpenAI / Anthropic / Ollama APIs and is a full MCP server. Sign in with your ChatGPT, SuperGrok/X Premium+, or OpenRouter account; Anthropic, Google, and local (Ollama/LM Studio) connect by API key instead.",
     url: "https://docs.osaurus.ai/models"
+  },
+  {
+    id: "zed", name: "Zed", kind: "IDE",
+    support: { chatgpt: "oauth", gemini: "oauth", grok: "apikey", claude_sub: "oauth", copilot: "oauth", openrouter: "apikey" },
+    note: "A Rust-based multi-provider editor with 15+ LLM providers behind one Agent Panel. Sign in with ChatGPT Plus/Pro, Google (Gemini), or a Copilot Pro/Business/Enterprise subscription; Claude Pro/Max works via an embedded Claude Code Terminal Thread's own /login, not the Agent Panel's provider list directly. xAI and OpenRouter are API-key only. Local models via Ollama.",
+    url: "https://zed.dev/docs/ai/overview"
   }
 ];
 
 var CLOSED = { antigravity: 1, chatgpt: 1, claude: 1, cursor: 1, copilot: 1 };
 
 var STORAGE_KEY = "ai_tool_matrix_prefs";
-var pmState = { have: {}, onlyUsable: false, detail: "anythingllm" };
+var pmState = { have: {}, filter: "all", detail: "anythingllm" };
 
 function loadPrefs(){
   try { return JSON.parse(localStorage.getItem(STORAGE_KEY) || "{}") || {}; }
@@ -610,6 +623,7 @@ function savePrefs(){
   try {
     localStorage.setItem(STORAGE_KEY, JSON.stringify({
       have: pmState.have,
+      filter: pmState.filter,
       theme: document.documentElement.getAttribute("data-theme"),
       tab: document.body.getAttribute("data-tab")
     }));
@@ -628,6 +642,7 @@ function esc(s){
   CREDENTIALS.forEach(function(c){
     pmState.have[c.id] = (saved.have && typeof saved.have[c.id] === 'boolean') ? saved.have[c.id] : true;
   });
+  pmState.filter = (saved.filter === 'usable' || saved.filter === 'sub') ? saved.filter : 'all';
   var tab = location.hash === '#providers' ? 'providers'
           : location.hash === '#harnesses' ? 'harness'
           : (saved.tab === 'providers' ? 'providers' : 'harness');
@@ -677,8 +692,13 @@ function jump(id){
 function pmVisibleCreds(){
   return CREDENTIALS.filter(function(c){ return pmState.have[c.id]; });
 }
-function pmUsable(t, creds){
-  return creds.some(function(c){ return (t.support[c.id] || 'no') !== 'no'; });
+function pmUsable(t, creds, mode){
+  if (mode === 'sub') return creds.some(function(c){ var m = t.support[c.id] || 'no'; return m === 'oauth' || m === 'native'; });
+  return creds.some(function(c){ var m = t.support[c.id] || 'no'; return m !== 'no' && m !== 'restricted'; });
+}
+function pmShownTools(creds){
+  if (pmState.filter === 'all') return TOOLS;
+  return TOOLS.filter(function(t){ return pmUsable(t, creds, pmState.filter); });
 }
 function pmToggleCred(id){
   pmState.have[id] = !pmState.have[id];
@@ -687,9 +707,10 @@ function pmToggleCred(id){
   var chip = document.querySelector('#pmCreds button[data-cred="' + id + '"]');
   if (chip) chip.focus({preventScroll:true});
 }
-function pmToggleOnly(){
-  pmState.onlyUsable = !pmState.onlyUsable;
-  pmRenderAll();
+function pmSetFilter(mode){ pmState.filter = mode; savePrefs(); pmRenderAll(); }
+function pmCredsAll(on){
+  CREDENTIALS.forEach(function(c){ pmState.have[c.id] = on; });
+  savePrefs(); pmRenderAll();
 }
 function pmSelect(id){
   pmState.detail = id;
@@ -705,6 +726,7 @@ function pmRowKey(ev, id){
 function pmRenderAll(){
   pmRenderLegend();
   pmRenderCreds();
+  pmRenderFilter();
   pmRenderMatrix();
   pmRenderDetail();
 }
@@ -721,11 +743,20 @@ function pmRenderCreds(){
       '<span class="dia">' + (on ? '◆' : '◇') + '</span> ' + esc(c.label) + '</button>';
   }).join('');
   document.getElementById('pmCreds').innerHTML = html;
+}
+function pmRenderFilter(){
   var creds = pmVisibleCreds();
-  var shownCount = (pmState.onlyUsable ? TOOLS.filter(function(t){ return pmUsable(t, creds); }) : TOOLS).length;
-  var onlyBtn = document.getElementById('pmOnly');
-  onlyBtn.setAttribute('aria-pressed', String(pmState.onlyUsable));
-  onlyBtn.textContent = pmState.onlyUsable ? ('showing ' + shownCount + ' available') : 'only show available';
+  var n = pmShownTools(creds).length;
+  var opts = [
+    { id: 'all',    label: 'all tools' },
+    { id: 'usable', label: 'selected providers' },
+    { id: 'sub',    label: 'subscription sign-in only' }
+  ];
+  document.getElementById('pmFilterBtns').innerHTML = opts.map(function(o){
+    var on = pmState.filter === o.id;
+    var txt = on ? (o.label + ' · ' + n) : o.label;
+    return '<button role="radio" aria-checked="' + on + '" onclick="pmSetFilter(\'' + o.id + '\')">' + esc(txt) + '</button>';
+  }).join('');
 }
 function pmMechCell(t, c){
   var m = t.support[c.id] || 'no';
@@ -751,7 +782,7 @@ function pmRenderMatrix(){
     host.innerHTML = '<p class="pm-empty">Select at least one credential above to display the matrix.</p>';
     return;
   }
-  var shown = pmState.onlyUsable ? TOOLS.filter(function(t){ return pmUsable(t, creds); }) : TOOLS;
+  var shown = pmShownTools(creds);
   var open = shown.filter(function(t){ return !CLOSED[t.id]; });
   var closed = shown.filter(function(t){ return CLOSED[t.id]; });
   var cols = creds.length + 1;
@@ -761,7 +792,7 @@ function pmRenderMatrix(){
     }).join('') + '</tr></thead><tbody>';
   if (open.length) html += pmBand('Open source', open.length, cols) + open.map(function(t){ return pmToolRow(t, creds); }).join('');
   if (closed.length) html += pmBand('Closed source', closed.length, cols) + closed.map(function(t){ return pmToolRow(t, creds); }).join('');
-  if (!shown.length) html += '<tr class="pm-band"><td colspan="' + cols + '">no tools match the selected credentials</td></tr>';
+  if (!shown.length) html += '<tr class="pm-band"><td colspan="' + cols + '">no tools match the current filter</td></tr>';
   html += '</tbody></table>';
   host.innerHTML = html;
 }
