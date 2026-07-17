@@ -166,7 +166,6 @@
   tr.pm-band:hover td{background:var(--surface2)}
   tr.pm-band td{background:var(--surface2);border-bottom:1px solid var(--line);padding:8px 16px;font-family:'IBM Plex Mono',monospace;font-size:11px;letter-spacing:.14em;text-transform:uppercase;color:var(--text)}
   tr.pm-band td .cnt{color:var(--faint);margin-left:8px}
-  tr.pm-band td .bsub{color:var(--faint);letter-spacing:.02em;text-transform:none;font-style:italic;margin-left:10px}
   tr.pm-band td .bwrap{position:sticky;left:16px;display:inline-block}
   tr.pm-row.sel td{background:var(--surface2)}
   tr.pm-row.sel td:first-child{box-shadow:inset 3px 0 0 var(--m-oauth)}
@@ -174,7 +173,7 @@
   .mech{font-family:'IBM Plex Mono',monospace;font-size:12px;font-weight:600;display:inline-flex;align-items:center;gap:7px;color:var(--mc);white-space:nowrap}
   .mech i{width:8px;height:8px;border-radius:1px;background:var(--mc);transform:rotate(45deg);flex:none}
   .mech.m-restricted{border-bottom:1px dashed var(--mc);padding-bottom:1px}
-  .m-apikey{--mc:var(--m-key)} .m-oauth{--mc:var(--m-oauth)} .m-local{--mc:var(--m-local)} .m-native{--mc:var(--m-native)} .m-restricted{--mc:var(--m-restr)}
+  .m-apikey{--mc:var(--m-key)} .m-oauth{--mc:var(--m-oauth)} .m-native{--mc:var(--m-native)} .m-restricted{--mc:var(--m-restr)}
   .pm-empty{color:var(--muted);font-size:14px;font-style:italic;padding:16px}
   .pm-detail{border:1px solid var(--line);border-radius:4px;background:var(--surface);padding:16px 18px;margin-top:16px}
   .pm-detail .dname{font-family:'Archivo',sans-serif;font-size:17px;font-weight:700}
@@ -490,9 +489,8 @@
 // from these constants. CLOSED lists the tool ids grouped as closed source.
 // ---------------------------------------------------------------------------
 var MECH = {
-  apikey:     { label: "Key" },
+  apikey:     { label: "API Key" },
   oauth:      { label: "Sign-in" },
-  local:      { label: "Local" },
   native:     { label: "Built in" },
   restricted: { label: "Not allowed" },
   no:         { label: "—" }
@@ -500,10 +498,10 @@ var MECH = {
 
 var CREDENTIALS = [
   { id: "chatgpt",       label: "ChatGPT / OpenAI", sub: "Enterprise or API key" },
-  { id: "gemini",        label: "Gemini / Google", sub: "AI Studio or Workspace" },
-  { id: "grok",          label: "Grok / xAI",    sub: "SuperGrok or API key" },
   { id: "claude_sub",    label: "Claude",        sub: "Pro / Max / Enterprise" },
+  { id: "gemini",        label: "Gemini / Google", sub: "AI Studio or Workspace" },
   { id: "copilot",       label: "GitHub Copilot", sub: "company seat" },
+  { id: "grok",          label: "Grok / xAI",    sub: "SuperGrok or API key" },
   { id: "openrouter",    label: "OpenRouter",    sub: "key or sign-in" }
 ];
 
@@ -749,9 +747,9 @@ function pmToolRow(t, creds){
     '<td class="pm-tool"><div class="tname">' + esc(t.name) + '</div><div class="tkind">' + esc(t.kind) + '</div></td>' +
     creds.map(function(c){ return pmMechCell(t, c); }).join('') + '</tr>';
 }
-function pmBand(label, sub, count, cols){
+function pmBand(label, count, cols){
   return '<tr class="pm-band"><td colspan="' + cols + '"><span class="bwrap">' + esc(label) +
-    '<span class="cnt">' + count + '</span><span class="bsub">' + esc(sub) + '</span></span></td></tr>';
+    '<span class="cnt">' + count + '</span></span></td></tr>';
 }
 function pmRenderMatrix(){
   var creds = pmVisibleCreds();
@@ -768,8 +766,8 @@ function pmRenderMatrix(){
     creds.map(function(c){
       return '<th><span class="chd">' + esc(c.label) + '</span><span class="csub">' + esc(c.sub) + '</span></th>';
     }).join('') + '</tr></thead><tbody>';
-  if (open.length) html += pmBand('Open source', 'self-hostable', open.length, cols) + open.map(function(t){ return pmToolRow(t, creds); }).join('');
-  if (closed.length) html += pmBand('Closed source', 'vendor-hosted', closed.length, cols) + closed.map(function(t){ return pmToolRow(t, creds); }).join('');
+  if (open.length) html += pmBand('Open source', open.length, cols) + open.map(function(t){ return pmToolRow(t, creds); }).join('');
+  if (closed.length) html += pmBand('Closed source', closed.length, cols) + closed.map(function(t){ return pmToolRow(t, creds); }).join('');
   if (!shown.length) html += '<tr class="pm-band"><td colspan="' + cols + '">no tools match the selected credentials</td></tr>';
   html += '</tbody></table>';
   host.innerHTML = html;

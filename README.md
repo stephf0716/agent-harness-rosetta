@@ -47,9 +47,8 @@ Everything lives in `index.html`.
     a `url` to its provider docs, and a `support` map from credential `id` to
     a connection type.
   - **`MECH`** — the connection types: `apikey` (works with a provider API key),
-    `oauth` (subscription/account sign-in), `local` (local endpoint),
-    `native` (first-party app only), `restricted` (explicitly disallowed),
-    `no` (unsupported).
+    `oauth` (subscription/account sign-in), `native` (first-party app only),
+    `restricted` (explicitly disallowed), `no` (unsupported).
   - **`CLOSED`** — the tool ids grouped under "Closed source" instead of "Open source".
 
 ## A note on accuracy
