@@ -157,7 +157,6 @@
   .pm-shell th,.pm-shell td{min-width:108px}
   .pm-shell th:first-child,.pm-shell td:first-child{min-width:150px}
   .pm-shell thead th .chd{font-family:'Archivo',sans-serif;font-size:13px;font-weight:700;letter-spacing:0;text-transform:none;color:var(--text);display:block}
-  .pm-shell thead th .csub{display:block;font-weight:400;letter-spacing:.02em;text-transform:none;margin-top:2px;color:var(--muted)}
   .pm-tool{position:sticky;left:0;background:var(--surface);border-right:1px solid var(--line);z-index:1}
   .pm-shell th.pm-tool-h{position:sticky;left:0;background:var(--surface2);z-index:2;border-right:1px solid var(--line)}
   .pm-tool .tname{font-family:'Archivo',sans-serif;font-weight:700;font-size:14.5px}
@@ -166,7 +165,6 @@
   tr.pm-band:hover td{background:var(--surface2)}
   tr.pm-band td{background:var(--surface2);border-bottom:1px solid var(--line);padding:8px 16px;font-family:'IBM Plex Mono',monospace;font-size:11px;letter-spacing:.14em;text-transform:uppercase;color:var(--text)}
   tr.pm-band td .cnt{color:var(--faint);margin-left:8px}
-  tr.pm-band td .bsub{color:var(--faint);letter-spacing:.02em;text-transform:none;font-style:italic;margin-left:10px}
   tr.pm-band td .bwrap{position:sticky;left:16px;display:inline-block}
   tr.pm-row.sel td{background:var(--surface2)}
   tr.pm-row.sel td:first-child{box-shadow:inset 3px 0 0 var(--m-oauth)}
@@ -174,7 +172,7 @@
   .mech{font-family:'IBM Plex Mono',monospace;font-size:12px;font-weight:600;display:inline-flex;align-items:center;gap:7px;color:var(--mc);white-space:nowrap}
   .mech i{width:8px;height:8px;border-radius:1px;background:var(--mc);transform:rotate(45deg);flex:none}
   .mech.m-restricted{border-bottom:1px dashed var(--mc);padding-bottom:1px}
-  .m-apikey{--mc:var(--m-key)} .m-oauth{--mc:var(--m-oauth)} .m-local{--mc:var(--m-local)} .m-native{--mc:var(--m-native)} .m-restricted{--mc:var(--m-restr)}
+  .m-apikey{--mc:var(--m-key)} .m-oauth{--mc:var(--m-oauth)} .m-native{--mc:var(--m-native)} .m-restricted{--mc:var(--m-restr)}
   .pm-empty{color:var(--muted);font-size:14px;font-style:italic;padding:16px}
   .pm-detail{border:1px solid var(--line);border-radius:4px;background:var(--surface);padding:16px 18px;margin-top:16px}
   .pm-detail .dname{font-family:'Archivo',sans-serif;font-size:17px;font-weight:700}
@@ -490,21 +488,20 @@
 // from these constants. CLOSED lists the tool ids grouped as closed source.
 // ---------------------------------------------------------------------------
 var MECH = {
-  apikey:     { label: "Key" },
+  apikey:     { label: "API Key" },
   oauth:      { label: "Sign-in" },
-  local:      { label: "Local" },
   native:     { label: "Built in" },
   restricted: { label: "Not allowed" },
   no:         { label: "—" }
 };
 
 var CREDENTIALS = [
-  { id: "chatgpt",       label: "ChatGPT / OpenAI", sub: "Enterprise or API key" },
-  { id: "gemini",        label: "Gemini / Google", sub: "AI Studio or Workspace" },
-  { id: "grok",          label: "Grok / xAI",    sub: "SuperGrok or API key" },
-  { id: "claude_sub",    label: "Claude",        sub: "Pro / Max / Enterprise" },
-  { id: "copilot",       label: "GitHub Copilot", sub: "company seat" },
-  { id: "openrouter",    label: "OpenRouter",    sub: "key or sign-in" }
+  { id: "chatgpt",       label: "ChatGPT" },
+  { id: "claude_sub",    label: "Claude" },
+  { id: "gemini",        label: "Gemini" },
+  { id: "copilot",       label: "GitHub Copilot" },
+  { id: "grok",          label: "Grok" },
+  { id: "openrouter",    label: "OpenRouter" }
 ];
 
 var TOOLS = [
@@ -513,12 +510,6 @@ var TOOLS = [
     support: { chatgpt: "no", gemini: "oauth", grok: "no", claude_sub: "no", copilot: "no", openrouter: "no" },
     note: "Google's agent-first IDE (a VS Code fork, plus a CLI and SDK). Sign in with your Google account for Gemini; add an Anthropic API key to run Claude; GPT-OSS-120B open weights and a custom endpoint are available (custom models on Linux/Cloudtop only).",
     url: "https://antigravity.google/docs/models"
-  },
-  {
-    id: "aider", name: "Aider", kind: "CLI",
-    support: { chatgpt: "apikey", gemini: "apikey", grok: "apikey", claude_sub: "no", copilot: "no", openrouter: "apikey" },
-    note: "Takes an API key for any provider (Anthropic, OpenAI, Gemini, DeepSeek, any OpenAI-compatible) and runs local models via Ollama. No subscription sign-in.",
-    url: "https://aider.chat/docs/llms.html"
   },
   {
     id: "anythingllm", name: "AnythingLLM", kind: "Desktop app",
@@ -609,7 +600,7 @@ var TOOLS = [
 var CLOSED = { antigravity: 1, chatgpt: 1, claude: 1, cursor: 1, copilot: 1 };
 
 var STORAGE_KEY = "ai_tool_matrix_prefs";
-var pmState = { have: {}, onlyUsable: false, detail: TOOLS[2].id };
+var pmState = { have: {}, onlyUsable: false, detail: "anythingllm" };
 
 function loadPrefs(){
   try { return JSON.parse(localStorage.getItem(STORAGE_KEY) || "{}") || {}; }
@@ -749,9 +740,9 @@ function pmToolRow(t, creds){
     '<td class="pm-tool"><div class="tname">' + esc(t.name) + '</div><div class="tkind">' + esc(t.kind) + '</div></td>' +
     creds.map(function(c){ return pmMechCell(t, c); }).join('') + '</tr>';
 }
-function pmBand(label, sub, count, cols){
+function pmBand(label, count, cols){
   return '<tr class="pm-band"><td colspan="' + cols + '"><span class="bwrap">' + esc(label) +
-    '<span class="cnt">' + count + '</span><span class="bsub">' + esc(sub) + '</span></span></td></tr>';
+    '<span class="cnt">' + count + '</span></span></td></tr>';
 }
 function pmRenderMatrix(){
   var creds = pmVisibleCreds();
@@ -766,10 +757,10 @@ function pmRenderMatrix(){
   var cols = creds.length + 1;
   var html = '<table><thead><tr><th class="pm-tool-h">Tool</th>' +
     creds.map(function(c){
-      return '<th><span class="chd">' + esc(c.label) + '</span><span class="csub">' + esc(c.sub) + '</span></th>';
+      return '<th><span class="chd">' + esc(c.label) + '</span></th>';
     }).join('') + '</tr></thead><tbody>';
-  if (open.length) html += pmBand('Open source', 'self-hostable', open.length, cols) + open.map(function(t){ return pmToolRow(t, creds); }).join('');
-  if (closed.length) html += pmBand('Closed source', 'vendor-hosted', closed.length, cols) + closed.map(function(t){ return pmToolRow(t, creds); }).join('');
+  if (open.length) html += pmBand('Open source', open.length, cols) + open.map(function(t){ return pmToolRow(t, creds); }).join('');
+  if (closed.length) html += pmBand('Closed source', closed.length, cols) + closed.map(function(t){ return pmToolRow(t, creds); }).join('');
   if (!shown.length) html += '<tr class="pm-band"><td colspan="' + cols + '">no tools match the selected credentials</td></tr>';
   html += '</tbody></table>';
   host.innerHTML = html;

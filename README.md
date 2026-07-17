@@ -7,10 +7,10 @@ A single-file interactive reference for AI developer tools, in two tabs:
   delegation) across Claude, Codex/ChatGPT, Goose, Hermes Agent, Osaurus,
   Gemini CLI, Cursor, OpenCode, OpenClaw, and GitHub Copilot in one matrix.
 - **Provider matrix** — a compatibility matrix of AI developer tools and the
-  credentials each one supports. Each row is a tool (Aider, Cline, Cursor,
-  Goose, Claude, ChatGPT, and more); each column is a credential you might hold.
+  credentials each one supports. Each row is a tool (Cline, Cursor, Goose,
+  Claude, ChatGPT, and more); each column is a credential you might hold.
   Every cell records *how* that credential connects — an API key, a subscription
-  sign-in, a local endpoint, a built-in first-party path, or not at all.
+  sign-in, a built-in first-party path, or not at all.
 
 ## Usage
 
@@ -41,15 +41,14 @@ Everything lives in `index.html`.
   platform grid in that order when editing).
 - The provider matrix renders from plain JS constants near the top of the
   `<script>` block:
-  - **`CREDENTIALS`** — the columns. Each has an `id`, a `label`, and a small `sub` caption.
+  - **`CREDENTIALS`** — the columns. Each has an `id` and a `label`.
   - **`TOOLS`** — the rows. Each tool has a unique `id` (used for selection and
     the `CLOSED` grouping), a `name`, a `kind` (e.g. `"IDE + CLI"`), a `note`,
     a `url` to its provider docs, and a `support` map from credential `id` to
     a connection type.
   - **`MECH`** — the connection types: `apikey` (works with a provider API key),
-    `oauth` (subscription/account sign-in), `local` (local endpoint),
-    `native` (first-party app only), `restricted` (explicitly disallowed),
-    `no` (unsupported).
+    `oauth` (subscription/account sign-in), `native` (first-party app only),
+    `restricted` (explicitly disallowed), `no` (unsupported).
   - **`CLOSED`** — the tool ids grouped under "Closed source" instead of "Open source".
 
 ## A note on accuracy
