@@ -7,10 +7,10 @@ A single-file interactive reference for AI developer tools, in two tabs:
   delegation) across Claude, Codex/ChatGPT, Goose, Hermes Agent, Osaurus,
   Gemini CLI, Cursor, OpenCode, OpenClaw, and GitHub Copilot in one matrix.
 - **Provider matrix** — a compatibility matrix of AI developer tools and the
-  credentials each one supports. Each row is a tool (Aider, Cline, Cursor,
-  Goose, Claude, ChatGPT, and more); each column is a credential you might hold.
+  credentials each one supports. Each row is a tool (Cline, Cursor, Goose,
+  Claude, ChatGPT, and more); each column is a credential you might hold.
   Every cell records *how* that credential connects — an API key, a subscription
-  sign-in, a local endpoint, a built-in first-party path, or not at all.
+  sign-in, a built-in first-party path, or not at all.
 
 ## Usage
 

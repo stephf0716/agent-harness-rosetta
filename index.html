@@ -497,11 +497,11 @@ var MECH = {
 };
 
 var CREDENTIALS = [
-  { id: "chatgpt",       label: "ChatGPT / OpenAI", sub: "Enterprise or API key" },
+  { id: "chatgpt",       label: "ChatGPT",       sub: "Enterprise or API key" },
   { id: "claude_sub",    label: "Claude",        sub: "Pro / Max / Enterprise" },
-  { id: "gemini",        label: "Gemini / Google", sub: "AI Studio or Workspace" },
+  { id: "gemini",        label: "Gemini",        sub: "AI Studio or Workspace" },
   { id: "copilot",       label: "GitHub Copilot", sub: "company seat" },
-  { id: "grok",          label: "Grok / xAI",    sub: "SuperGrok or API key" },
+  { id: "grok",          label: "Grok",          sub: "SuperGrok or API key" },
   { id: "openrouter",    label: "OpenRouter",    sub: "key or sign-in" }
 ];
 
@@ -511,12 +511,6 @@ var TOOLS = [
     support: { chatgpt: "no", gemini: "oauth", grok: "no", claude_sub: "no", copilot: "no", openrouter: "no" },
     note: "Google's agent-first IDE (a VS Code fork, plus a CLI and SDK). Sign in with your Google account for Gemini; add an Anthropic API key to run Claude; GPT-OSS-120B open weights and a custom endpoint are available (custom models on Linux/Cloudtop only).",
     url: "https://antigravity.google/docs/models"
-  },
-  {
-    id: "aider", name: "Aider", kind: "CLI",
-    support: { chatgpt: "apikey", gemini: "apikey", grok: "apikey", claude_sub: "no", copilot: "no", openrouter: "apikey" },
-    note: "Takes an API key for any provider (Anthropic, OpenAI, Gemini, DeepSeek, any OpenAI-compatible) and runs local models via Ollama. No subscription sign-in.",
-    url: "https://aider.chat/docs/llms.html"
   },
   {
     id: "anythingllm", name: "AnythingLLM", kind: "Desktop app",
@@ -607,7 +601,7 @@ var TOOLS = [
 var CLOSED = { antigravity: 1, chatgpt: 1, claude: 1, cursor: 1, copilot: 1 };
 
 var STORAGE_KEY = "ai_tool_matrix_prefs";
-var pmState = { have: {}, onlyUsable: false, detail: TOOLS[2].id };
+var pmState = { have: {}, onlyUsable: false, detail: "anythingllm" };
 
 function loadPrefs(){
   try { return JSON.parse(localStorage.getItem(STORAGE_KEY) || "{}") || {}; }
