@@ -25,9 +25,11 @@ Features:
 - Provider tab: toggle the credentials you have to filter columns, "only show
   available" to hide tools you can't use, tap any row for connection details
   and provider docs
+- Individual layer cards are deep-linkable too (`#c-instr`, `#c-skill`,
+  `#c-mcp`, `#c-bundle`, `#c-agent`) — the link opens the card and scrolls to it
 
-Theme, credential selections, and the active tab are remembered via
-`localStorage` when available.
+Theme, credential selections, the harness filter, and the active tab are
+remembered via `localStorage` when available.
 
 ## Structure
 
@@ -35,6 +37,8 @@ Everything lives in `index.html`.
 
 - CSS custom properties drive the two themes, the five per-concept hues, and
   the five connection-type hues.
+- **`BUILD`** (top of the `<script>` block) holds the version and dates; the
+  masthead and footer both render from it, so bump it in one place.
 - Harness-tab filtering is CSS-only via a `data-hf` attribute on `<body>`
   (column order: concept, Claude, Codex, Goose, Hermes, Osaurus, Gemini,
   Cursor, OpenCode, OpenClaw, Copilot — keep the matrix columns and each card's
@@ -53,10 +57,16 @@ Everything lives in `index.html`.
 
 ## A note on accuracy
 
-Compiled July 2026. Terminology and provider support in this space move fast —
-tools add subscription sign-in, vendors change their terms, projects get renamed
-or merged. Both tabs are point-in-time snapshots; verify against each project's
+Compiled July 2026; both tabs last fact-checked against provider docs on
+25 July 2026. Terminology and provider support in this space move fast — tools
+add subscription sign-in, vendors change their terms, projects get renamed or
+merged. Both tabs are point-in-time snapshots; verify against each project's
 linked docs before relying on any single cell.
+
+One nuance the matrix can't yet express: since Anthropic's February 2026 terms
+change and its April 2026 enforcement, several third-party harnesses still offer
+a Claude sign-in, but it bills as metered extra usage rather than drawing on
+plan limits. Those cells read "Sign-in"; the row's note carries the caveat.
 
 ## License
 

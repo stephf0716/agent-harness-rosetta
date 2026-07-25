@@ -4,6 +4,12 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>AI Tool Reference</title>
+<meta name="description" content="Two interactive references for AI developer tools: the Agent Harness Rosetta Stone, mapping the five extension layers across eleven harnesses, and a provider compatibility matrix of which credentials each tool accepts.">
+<meta property="og:type" content="website">
+<meta property="og:title" content="AI Tool Reference">
+<meta property="og:description" content="The five extension layers of AI agent harnesses, mapped across eleven platforms — plus which credentials each AI developer tool accepts.">
+<meta name="twitter:card" content="summary">
+<link rel="icon" href="data:image/svg+xml,%3Csvg%20xmlns='http://www.w3.org/2000/svg'%20viewBox='0%200%2032%2032'%3E%3Crect%20width='32'%20height='32'%20rx='6'%20fill='%2314161A'/%3E%3Cg%3E%3Crect%20x='6'%20y='5'%20width='20'%20height='3'%20rx='1.5'%20fill='%23DFA83E'/%3E%3Crect%20x='6'%20y='10'%20width='20'%20height='3'%20rx='1.5'%20fill='%2342C0A5'/%3E%3Crect%20x='6'%20y='15'%20width='20'%20height='3'%20rx='1.5'%20fill='%235EA9F2'/%3E%3Crect%20x='6'%20y='20'%20width='20'%20height='3'%20rx='1.5'%20fill='%23A88EF5'/%3E%3Crect%20x='6'%20y='25'%20width='20'%20height='3'%20rx='1.5'%20fill='%23E4718F'/%3E%3C/g%3E%3C/svg%3E">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Archivo:wght@500;600;700;800&family=IBM+Plex+Sans:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet">
 <style>
@@ -189,7 +195,7 @@
 <div class="wrap">
 
 <div class="masthead">
-  <span>ai-tool-reference · v7</span>
+  <span id="buildTag">ai-tool-reference</span>
   <button class="theme-btn" id="themeBtn" onclick="toggleTheme()" aria-label="Toggle color theme">dark / light</button>
 </div>
 
@@ -215,17 +221,17 @@
 
 <div class="hpick" role="group" aria-label="Filter by harness">
   <span class="plabel">show</span>
-  <button aria-pressed="true" onclick="setHarness(0,this)">All</button>
-  <button aria-pressed="false" onclick="setHarness(1,this)">Claude</button>
-  <button aria-pressed="false" onclick="setHarness(2,this)">Codex</button>
-  <button aria-pressed="false" onclick="setHarness(10,this)">Copilot</button>
-  <button aria-pressed="false" onclick="setHarness(7,this)">Cursor</button>
-  <button aria-pressed="false" onclick="setHarness(6,this)">Gemini</button>
-  <button aria-pressed="false" onclick="setHarness(3,this)">Goose</button>
-  <button aria-pressed="false" onclick="setHarness(4,this)">Hermes</button>
-  <button aria-pressed="false" onclick="setHarness(9,this)">OpenClaw</button>
-  <button aria-pressed="false" onclick="setHarness(8,this)">OpenCode</button>
-  <button aria-pressed="false" onclick="setHarness(5,this)">Osaurus</button>
+  <button data-hf="0" aria-pressed="true" onclick="setHarness(0)">All</button>
+  <button data-hf="1" aria-pressed="false" onclick="setHarness(1)">Claude</button>
+  <button data-hf="2" aria-pressed="false" onclick="setHarness(2)">Codex</button>
+  <button data-hf="10" aria-pressed="false" onclick="setHarness(10)">Copilot</button>
+  <button data-hf="7" aria-pressed="false" onclick="setHarness(7)">Cursor</button>
+  <button data-hf="6" aria-pressed="false" onclick="setHarness(6)">Gemini</button>
+  <button data-hf="3" aria-pressed="false" onclick="setHarness(3)">Goose</button>
+  <button data-hf="4" aria-pressed="false" onclick="setHarness(4)">Hermes</button>
+  <button data-hf="9" aria-pressed="false" onclick="setHarness(9)">OpenClaw</button>
+  <button data-hf="8" aria-pressed="false" onclick="setHarness(8)">OpenCode</button>
+  <button data-hf="5" aria-pressed="false" onclick="setHarness(5)">Osaurus</button>
 </div>
 
 <div class="matrix-shell">
@@ -252,26 +258,26 @@
       <td><span class="term">CLAUDE.md</span><span class="loc">repo root · ~/.claude · Project instructions in claude.ai</span></td>
       <td><span class="term">AGENTS.md</span><span class="loc">repo root · ~/ · open standard</span></td>
       <td><span class="term">.goosehints</span><span class="loc">+ recipe instructions: block</span></td>
-      <td><span class="term">SOUL.md</span><span class="loc">identity file · also auto-reads AGENTS.md, CLAUDE.md, .hermes.md, .cursorrules</span></td>
+      <td><span class="term">SOUL.md</span><span class="loc">identity file · plus one project file: .hermes.md → AGENTS.md → CLAUDE.md → .cursorrules</span><span class="note">first match wins; SOUL.md always loads</span></td>
       <td><span class="term">Agent prompts</span><span class="loc">per-agent system prompt + identity layer of the memory system</span></td>
       <td><span class="term">GEMINI.md</span><span class="loc">repo root · ~/.gemini · also reads AGENTS.md</span></td>
-      <td><span class="term">Rules</span><span class="loc">.cursor/rules/ · was .cursorrules</span><span class="note">path-scoped or always-on</span></td>
+      <td><span class="term">Rules</span><span class="loc">.cursor/rules/ · was .cursorrules · also reads AGENTS.md</span><span class="note">path-scoped or always-on</span></td>
       <td><span class="term">AGENTS.md</span><span class="loc">repo root + global · open standard</span></td>
-      <td><span class="term">AGENTS.md + SOUL.md</span><span class="loc">workspace files · Hermes's lineage</span></td>
-      <td><span class="term">copilot-instructions.md</span><span class="loc">.github/ · path-scoped *.instructions.md variants</span></td>
+      <td><span class="term">AGENTS.md + SOUL.md</span><span class="loc">workspace files · SOUL.md originated here</span></td>
+      <td><span class="term">copilot-instructions.md</span><span class="loc">.github/ · path-scoped *.instructions.md · also reads AGENTS.md</span></td>
     </tr>
     <tr class="r-skill" onclick="jump('c-skill')">
       <td class="concept"><span class="lnum">L2</span><div class="cname">Skills</div><div class="cq">reusable know-how</div></td>
       <td><span class="term">Skills</span><span class="loc">SKILL.md folder · .claude/skills/</span></td>
       <td><span class="term">Skills</span><span class="loc">SKILL.md · ~/.agents/skills/ · $skill-name</span></td>
-      <td><span class="term">Skills</span><span class="loc">instruction sets · skills marketplace</span></td>
+      <td><span class="term">Skills</span><span class="loc">instruction sets · community marketplace</span></td>
       <td><span class="term">Skills</span><span class="loc">SKILL.md · ~/.hermes/skills/ · Skills Hub</span><span class="note">also self-generated from experience; Curator prunes stale ones</span></td>
       <td><span class="term">Skills</span><span class="loc">SKILL.md shipped inside plugins</span><span class="note">auto-selected via RAG search, not description match</span></td>
       <td><span class="term">Skills</span><span class="loc">same SKILL.md standard</span></td>
       <td><span class="term">Skills</span><span class="loc">SKILL.md format supported</span><span class="note">alongside Cursor's own Rules</span></td>
       <td><span class="term">Skills</span><span class="loc">same SKILL.md standard</span></td>
-      <td><span class="term">Skills</span><span class="loc">npm packages · ClawHub registry</span><span class="note">same SKILL.md inside</span></td>
-      <td><span class="dash">—</span><span class="note">path-scoped custom instructions cover some of this</span></td>
+      <td><span class="term">Skills</span><span class="loc">versioned SKILL.md bundles · ClawHub registry</span></td>
+      <td><span class="term">Skills</span><span class="loc">.github/skills/ · also reads .claude/skills, .agents/skills</span><span class="note">since Dec 2025 — CLI, coding agent, IDEs</span></td>
     </tr>
     <tr class="r-mcp" onclick="jump('c-mcp')">
       <td class="concept"><span class="lnum">L3</span><div class="cname">Tool access</div><div class="cq">external systems</div></td>
@@ -296,8 +302,8 @@
       <td><span class="term">Extensions</span><span class="loc">MCP + context files + commands</span><span class="note warn">⚠ "extension" here = bundle, not MCP server (Goose's usage)</span></td>
       <td><span class="dash">—</span><span class="note">share rules + skills via the repo</span></td>
       <td><span class="dash">—</span><span class="note warn">⚠ "plugins" exist but are JS/TS code extensions, not bundles</span></td>
-      <td><span class="dash">—</span><span class="note warn">⚠ "plugins" = code extensions · skills travel as npm packages instead</span></td>
-      <td><span class="term">Extensions</span><span class="loc">marketplace GitHub Apps</span></td>
+      <td><span class="dash">—</span><span class="note warn">⚠ "plugins" = code extensions · skills travel as ClawHub bundles instead</span></td>
+      <td><span class="dash">—</span><span class="note">Copilot Extensions (GitHub Apps) sunset Nov 2025 — MCP servers replaced them</span></td>
     </tr>
     <tr class="r-agent" onclick="jump('c-agent')">
       <td class="concept"><span class="lnum">L5</span><div class="cname">Delegation</div><div class="cq">parallel workers</div></td>
@@ -306,10 +312,10 @@
       <td><span class="term">Subagents</span><span class="loc">+ sub-recipes (isolated sessions)</span></td>
       <td><span class="term">Subagents</span><span class="loc">delegate_task · isolated context + terminal · + cron for scheduled runs</span></td>
       <td><span class="term">Agents / dispatch</span><span class="loc">background task dispatch · self-scheduling agents · parallel jobs</span></td>
-      <td><span class="dash">—</span><span class="note">no first-class equivalent</span></td>
-      <td><span class="term">Background agents</span><span class="loc">async cloud runs alongside the editor</span></td>
+      <td><span class="term">Subagents</span><span class="loc">.gemini/agents/ · parallel execution</span><span class="note">added Apr 2026</span></td>
+      <td><span class="term">Subagents + background agents</span><span class="loc">own context/config · plus async cloud runs</span></td>
       <td><span class="term">Agents / modes</span><span class="loc">primary agents + subagents they invoke</span></td>
-      <td><span class="term">Subagents</span><span class="loc">isolated sessions · Hermes-style</span></td>
+      <td><span class="term">Subagents</span><span class="loc">isolated sessions for parallel or contained work</span></td>
       <td><span class="term">Coding agent</span><span class="loc">async task delegation on GitHub · returns a PR</span></td>
     </tr>
   </tbody>
@@ -331,13 +337,13 @@
       <div class="plat"><div class="pname">Claude</div><div class="pterm">CLAUDE.md</div><div class="pdesc">Hierarchy: home dir → repo root → subdirectory. Custom instructions / Project instructions play this role in claude.ai.</div></div>
       <div class="plat"><div class="pname">Codex</div><div class="pterm">AGENTS.md</div><div class="pdesc">Same hierarchy idea; concatenated with more specific files winning. AGENTS.md is an open standard many other tools now read.</div></div>
       <div class="plat"><div class="pname">Goose</div><div class="pterm">.goosehints</div><div class="pdesc">Plus the <code>instructions:</code> block inside a recipe, which acts as a per-workflow system prompt.</div></div>
-      <div class="plat"><div class="pname">Hermes</div><div class="pterm">SOUL.md</div><div class="pdesc">The agent's identity file — first thing in the system prompt (role, tone, boundaries). Hermes also auto-discovers project context files: <code>.hermes.md</code>, <code>AGENTS.md</code>, <code>CLAUDE.md</code>, <code>.cursorrules</code>.</div></div>
+      <div class="plat"><div class="pname">Hermes</div><div class="pterm">SOUL.md</div><div class="pdesc">The agent's identity file — first thing in the system prompt (role, tone, boundaries), a convention it adopted from OpenClaw. SOUL.md always loads; on top of it Hermes picks the <em>first</em> project context file it finds, in order: <code>.hermes.md</code>, <code>AGENTS.md</code>, <code>CLAUDE.md</code>, <code>.cursorrules</code>.</div></div>
       <div class="plat"><div class="pname">Osaurus</div><div class="pterm">Agent prompts</div><div class="pdesc">Configured per agent in-app rather than as a repo file — each agent carries its own system prompt, and the memory system's identity layer plays the persistent-personality role.</div></div>
       <div class="plat"><div class="pname">Gemini CLI</div><div class="pterm">GEMINI.md</div><div class="pdesc">Same pattern as CLAUDE.md, hierarchical from home dir to subdirectory — and it reads AGENTS.md too, so one file can serve both harnesses.</div></div>
-      <div class="plat"><div class="pname">Cursor</div><div class="pterm">Rules</div><div class="pdesc">A <code>.cursor/rules/</code> directory of rule files (successor to the single .cursorrules) — each rule can be always-on, path-scoped, or attached on demand.</div></div>
+      <div class="plat"><div class="pname">Cursor</div><div class="pterm">Rules</div><div class="pdesc">A <code>.cursor/rules/</code> directory of rule files (successor to the single .cursorrules) — each rule can be always-on, path-scoped, or attached on demand. Cursor also reads root and nested <code>AGENTS.md</code>.</div></div>
       <div class="plat"><div class="pname">OpenCode</div><div class="pterm">AGENTS.md</div><div class="pdesc">Uses the open standard directly: repo root for project rules plus a global file for personal ones.</div></div>
-      <div class="plat"><div class="pname">OpenClaw</div><div class="pterm">AGENTS.md + SOUL.md</div><div class="pdesc">Workspace instruction files, inheriting the SOUL.md identity-file idea from its Hermes lineage.</div></div>
-      <div class="plat"><div class="pname">Copilot</div><div class="pterm">copilot-instructions.md</div><div class="pdesc">Lives in <code>.github/</code>; path-scoped <code>*.instructions.md</code> variants target parts of the repo. The content transfers almost verbatim between all of these files.</div></div>
+      <div class="plat"><div class="pname">OpenClaw</div><div class="pterm">AGENTS.md + SOUL.md</div><div class="pdesc">Workspace instruction files. SOUL.md is OpenClaw's own convention, dating to its Clawdbot era — Hermes later adopted it, and even ships a migration command that imports an OpenClaw SOUL.md.</div></div>
+      <div class="plat"><div class="pname">Copilot</div><div class="pterm">copilot-instructions.md</div><div class="pdesc">Lives in <code>.github/</code>; path-scoped <code>*.instructions.md</code> variants target parts of the repo, and both the coding agent and VS Code also read <code>AGENTS.md</code>. The content transfers almost verbatim between all of these files.</div></div>
     </div>
   </div>
 </details>
@@ -346,18 +352,18 @@
   <summary><span class="ln">L2</span><span class="t">Skills</span><span class="oneliner">Reusable know-how, loaded only when relevant</span><span class="chev">▶</span></summary>
   <div class="body">
     <p>A folder containing a <code>SKILL.md</code> file (instructions + YAML frontmatter) plus optional scripts, references, and templates. The key trick is <strong>progressive disclosure</strong>: the agent sees only each skill's name and description up front, and loads the full instructions only when the task matches. That's why fifty installed skills don't blow up your context window. Skills teach <em>how</em> to do something — a review checklist, a document format, a deployment procedure. They make no network calls and need no credentials.</p>
-    <p>This is the layer where the ecosystem has genuinely converged: the same SKILL.md format is an open standard (Agent Skills / agentskills.io) shared across vendors, with large cross-harness registries.</p>
+    <p>This is the layer where the ecosystem has genuinely converged: the same SKILL.md format is an open standard (Agent Skills / agentskills.io) shared across vendors, with large cross-harness registries — and as of late 2025 every harness on this page supports it. Several now read each other's directories outright, so one skills folder can serve multiple tools.</p>
     <div class="plat-grid">
       <div class="plat"><div class="pname">Claude</div><div class="pterm">Skills</div><div class="pdesc">.claude/skills/ in Claude Code; also in claude.ai, Cowork, and the API. Triggered implicitly by description match.</div></div>
       <div class="plat"><div class="pname">Codex</div><div class="pterm">Skills</div><div class="pdesc">Same SKILL.md standard. ~/.agents/skills/ (personal) or .agents/skills/ (repo). Invoke with $skill-name or implicitly; $skill-installer pulls from registries.</div></div>
-      <div class="plat"><div class="pname">Goose</div><div class="pterm">Skills</div><div class="pdesc">Reusable instruction sets attached to sessions; browsable via a skills marketplace, or write your own.</div></div>
+      <div class="plat"><div class="pname">Goose</div><div class="pterm">Skills</div><div class="pdesc">Reusable instruction sets attached to sessions, via a built-in Agent Skills extension; browsable through a community-run marketplace, or write your own.</div></div>
       <div class="plat"><div class="pname">Hermes</div><div class="pterm">Skills</div><div class="pdesc">Same format, plus Hermes's signature move: it <em>writes its own skills from experience</em> ("procedural memory") and a background Curator archives stale ones. Huge public Skills Hub; install via <code>hermes skills install</code>.</div></div>
       <div class="plat"><div class="pname">Osaurus</div><div class="pterm">Skills</div><div class="pdesc">A plugin can ship a SKILL.md alongside its tool, so the know-how travels with the capability. Selection is different: skills and tools are picked by RAG search over the task, not by description matching.</div></div>
       <div class="plat"><div class="pname">Gemini CLI</div><div class="pterm">Skills</div><div class="pdesc">Same SKILL.md standard — skills written for Claude or Codex usually run here with little or no change.</div></div>
       <div class="plat"><div class="pname">Cursor</div><div class="pterm">Skills</div><div class="pdesc">Supports the SKILL.md format alongside its own Rules; rules cover the always-on layer, skills the on-demand one.</div></div>
       <div class="plat"><div class="pname">OpenCode</div><div class="pterm">Skills</div><div class="pdesc">Same SKILL.md standard, discovered from project and global skill directories.</div></div>
-      <div class="plat"><div class="pname">OpenClaw</div><div class="pterm">Skills</div><div class="pdesc">Same format inside, but distributed as npm packages through the ClawHub registry — install and version them like dependencies.</div></div>
-      <div class="plat"><div class="pname">Copilot</div><div class="pterm">—</div><div class="pdesc">No first-class skills layer yet; path-scoped custom instructions cover some of the territory.</div></div>
+      <div class="plat"><div class="pname">OpenClaw</div><div class="pterm">Skills</div><div class="pdesc">Same format, distributed as versioned SKILL.md bundles through the ClawHub registry — install and pin them like dependencies. (The <code>clawhub</code> CLI itself installs from npm; the skills it fetches are not npm packages.)</div></div>
+      <div class="plat"><div class="pname">Copilot</div><div class="pterm">Skills</div><div class="pdesc">Agent Skills landed in Dec 2025: <code>.github/skills/</code> for repo skills, and Copilot also reads <code>.claude/skills</code> and <code>.agents/skills</code>. Available in Copilot CLI, the coding agent, code review, and agent mode in VS Code, JetBrains, and Visual Studio.</div></div>
     </div>
   </div>
 </details>
@@ -395,8 +401,8 @@
       <div class="plat"><div class="pname">Gemini CLI</div><div class="pterm">Extensions</div><div class="pdesc">Bundle MCP servers, context files, and commands into one install. Note the trap: "extension" means <em>bundle</em> here, not MCP server as in Goose.</div></div>
       <div class="plat"><div class="pname">Cursor</div><div class="pterm">—</div><div class="pdesc">No bundle layer; teams share rules and skills by committing them to the repo.</div></div>
       <div class="plat"><div class="pname">OpenCode</div><div class="pterm">—</div><div class="pdesc">Its "plugins" are JS/TS code extensions that hook the runtime, not distribution bundles.</div></div>
-      <div class="plat"><div class="pname">OpenClaw</div><div class="pterm">—</div><div class="pdesc">Same story: plugins are code extensions. Distribution happens at the skill layer, via npm packages.</div></div>
-      <div class="plat"><div class="pname">Copilot</div><div class="pterm">Extensions</div><div class="pdesc">Marketplace GitHub Apps that extend Copilot — closer to installable integrations than to a skills-plus-MCP bundle.</div></div>
+      <div class="plat"><div class="pname">OpenClaw</div><div class="pterm">—</div><div class="pdesc">Same story: plugins are code extensions. Distribution happens at the skill layer, through ClawHub.</div></div>
+      <div class="plat"><div class="pname">Copilot</div><div class="pterm">—</div><div class="pdesc">Copilot Extensions — marketplace GitHub Apps — were sunset in Nov 2025, with MCP servers named as the replacement. Copilot now distributes capability at the skills and MCP layers instead of as bundles.</div></div>
     </div>
   </div>
 </details>
@@ -411,10 +417,10 @@
       <div class="plat"><div class="pname">Goose</div><div class="pterm">Subagents / sub-recipes</div><div class="pdesc">Each sub-recipe runs as its own agent in an isolated session with its own extensions and model — sequential or parallel.</div></div>
       <div class="plat"><div class="pname">Hermes</div><div class="pterm">Subagents</div><div class="pdesc">The <code>delegate_task</code> tool spawns children with isolated context, restricted toolsets, and their own terminal sessions; background subagents can fan out in parallel. Built-in cron covers the scheduled/unattended case.</div></div>
       <div class="plat"><div class="pname">Osaurus</div><div class="pterm">Agents / dispatch</div><div class="pdesc">Named agents are first-class (each with its own prompt, memory, and tools), plugins can dispatch background agent tasks with full tool access, and agents can self-schedule their next run — cron-like autonomy without a separate scheduler.</div></div>
-      <div class="plat"><div class="pname">Gemini CLI</div><div class="pterm">—</div><div class="pdesc">No first-class subagents; parallel work means scripting multiple CLI invocations yourself.</div></div>
-      <div class="plat"><div class="pname">Cursor</div><div class="pterm">Background agents</div><div class="pdesc">Async cloud agents run tasks in parallel with your editor session and hand back diffs.</div></div>
+      <div class="plat"><div class="pname">Gemini CLI</div><div class="pterm">Subagents</div><div class="pdesc">Markdown definitions in <code>.gemini/agents/</code>, delegated to and run in parallel. Added April 2026 — before that, parallel work meant scripting multiple CLI invocations yourself.</div></div>
+      <div class="plat"><div class="pname">Cursor</div><div class="pterm">Subagents + background agents</div><div class="pdesc">Two mechanisms: subagents (since 2.4, Jan 2026) run in parallel with their own context and config, while background agents run async in the cloud alongside your editor session and hand back diffs.</div></div>
       <div class="plat"><div class="pname">OpenCode</div><div class="pterm">Agents / modes</div><div class="pdesc">Primary agents you switch between, plus subagents they can invoke for isolated work.</div></div>
-      <div class="plat"><div class="pname">OpenClaw</div><div class="pterm">Subagents</div><div class="pdesc">Spawns isolated sessions Hermes-style for parallel or contained tasks.</div></div>
+      <div class="plat"><div class="pname">OpenClaw</div><div class="pterm">Subagents</div><div class="pdesc">Spawns isolated sessions for parallel or contained tasks.</div></div>
       <div class="plat"><div class="pname">Copilot</div><div class="pterm">Coding agent</div><div class="pdesc">Assign it an issue or task; it works asynchronously on GitHub's infrastructure and returns a pull request.</div></div>
     </div>
   </div>
@@ -424,8 +430,8 @@
   <div class="rule-h hue"><h2>Terminology traps</h2></div>
   <ul>
     <li><strong>"Plugin" is the most overloaded word in the ecosystem.</strong> In Claude and Codex, a plugin is a distribution bundle (skills + MCP + commands). In Hermes, OpenClaw, and OpenCode, a plugin is a code extension — a Python or JS file that adds tools and hooks to the runtime. Osaurus splits the difference: its plugin is a native code extension <em>packaged as</em> a bundle (binary + SKILL.md + UI in one zip). Same word, three different meanings.</li>
-    <li><strong>"Extension" flips meaning too.</strong> In Goose, an extension is an MCP server (tool access). In Gemini CLI and Copilot, an extension is a bundle. Check which layer before assuming.</li>
-    <li><strong>"Skills" is the safest word.</strong> Nearly everyone means the same SKILL.md open standard. The one wrinkle: Hermes skills can be written by the agent itself, and OpenClaw distributes them as npm packages.</li>
+    <li><strong>"Extension" flips meaning too.</strong> In Goose, an extension is an MCP server (tool access). In Gemini CLI, an extension is a bundle. Copilot used the word for its marketplace GitHub Apps until they were sunset in Nov 2025 — so older Copilot writing means something that no longer exists. Check which layer, and which year, before assuming.</li>
+    <li><strong>"Skills" is the safest word.</strong> Everyone means the same SKILL.md open standard, and every harness here now supports it. The wrinkles are in distribution and authorship, not format: Hermes skills can be written by the agent itself, and OpenClaw ships them as versioned ClawHub bundles.</li>
     <li><strong>"Connector" is mostly Claude-speak</strong> for a packaged remote MCP server — though the word shows up generically elsewhere to mean any MCP integration.</li>
   </ul>
 </section>
@@ -448,7 +454,7 @@
 </div>
 
 <footer>
-  <span>compiled july 2026</span>
+  <span id="buildFoot"></span>
   <span>terminology moves fast — verify against each project's docs before betting a workflow on it</span>
 </footer>
 
@@ -494,6 +500,9 @@
 // connection type in MECH. Edit TOOLS/CREDENTIALS/MECH here; the UI renders
 // from these constants. CLOSED lists the tool ids grouped as closed source.
 // ---------------------------------------------------------------------------
+// Edit the build stamp here only — the masthead and footer both render from it.
+var BUILD = { version: "v8", compiled: "july 2026", updated: "25 jul 2026" };
+
 var MECH = {
   apikey:     { label: "API Key" },
   oauth:      { label: "Sign-in" },
@@ -533,13 +542,13 @@ var TOOLS = [
   {
     id: "chatgpt", name: "ChatGPT", kind: "Desktop + CLI",
     support: { chatgpt: "native", gemini: "no", grok: "no", claude_sub: "no", copilot: "no", openrouter: "no" },
-    note: "As of July 2026 the old Codex desktop app became the new ChatGPT app — Chat, Work, and Codex now live in one shell (the prior app is now 'ChatGPT Classic'), subscription sign-in only. Codex CLI is the separate terminal tool: sign in with ChatGPT or an OpenAI key, plus Azure/Bedrock via a gateway and local models offline.",
+    note: "In July 2026 the old Codex desktop app became the new ChatGPT app — Chat, Work, and Codex now live in one shell (the prior app is now 'ChatGPT Classic'). It's account sign-in only, no API key, but that includes every plan down to Free. Codex CLI is the separate terminal tool: sign in with ChatGPT or an OpenAI key, plus Azure/Bedrock via a gateway and local models offline.",
     url: "https://developers.openai.com/codex/local-config"
   },
   {
     id: "claude", name: "Claude", kind: "Chat + CLI",
     support: { chatgpt: "no", gemini: "no", grok: "no", claude_sub: "native", copilot: "no", openrouter: "no" },
-    note: "The app (web/desktop/mobile) is subscription-only — your Claude Enterprise seat lives there and doesn't hand out an API to other tools. Claude Code adds an API key, Bedrock/Vertex/Foundry, and local via Ollama + LiteLLM; its own subscription sign-in is limited to Anthropic's official clients (Feb 2026 policy).",
+    note: "The app (web/desktop/mobile) is subscription-only — your Claude Enterprise seat lives there and doesn't hand out an API to other tools. Claude Code adds an API key, Bedrock/Vertex/Foundry, and local via Ollama + LiteLLM. Subscription sign-in is limited to Anthropic's official clients: the Feb 2026 terms banned subscription OAuth in third-party tools and enforcement landed on 4 April 2026. Third-party harnesses that still offer a Claude sign-in now bill it as metered extra usage on a Max plan rather than drawing on plan limits.",
     url: "https://docs.claude.com/en/docs/claude-code/model-config"
   },
   {
@@ -550,50 +559,50 @@ var TOOLS = [
   },
   {
     id: "copilot", name: "GitHub Copilot", kind: "Desktop + IDE + CLI",
-    support: { chatgpt: "apikey", gemini: "apikey", grok: "apikey", claude_sub: "no", copilot: "native", openrouter: "no" },
-    note: "Now a standalone desktop agent app, not just an IDE extension, with parallel sessions on git worktrees, plus VS Code/JetBrains extensions and Copilot CLI, all on one runtime. Bring-your-own-key covers chat/agents but not tab completion; local via Ollama.",
+    support: { chatgpt: "apikey", gemini: "apikey", grok: "apikey", claude_sub: "apikey", copilot: "native", openrouter: "apikey" },
+    note: "A standalone desktop agent app since June 2026 — not just an IDE extension — with parallel sessions on git worktrees, alongside VS Code/JetBrains extensions and Copilot CLI on one runtime. Bring-your-own-key went GA in 2026 and is broad: Anthropic, OpenAI, Google, xAI, Azure/Foundry, Bedrock, OpenRouter, and any OpenAI-compatible endpoint, plus local via Ollama / LM Studio. It covers chat and agents but never tab completion. There is no Claude-subscription sign-in — Anthropic access is by API key.",
     url: "https://docs.github.com/en/copilot/how-tos/use-ai-models/use-a-custom-model"
   },
   {
     id: "cursor", name: "Cursor", kind: "IDE",
-    support: { chatgpt: "apikey", gemini: "apikey", grok: "no", claude_sub: "no", copilot: "no", openrouter: "no" },
-    note: "A bring-your-own-key powers chat and plan only — Composer, inline edit, and autocomplete stay on Cursor's own backend. No local-model path.",
+    support: { chatgpt: "apikey", gemini: "apikey", grok: "no", claude_sub: "apikey", copilot: "no", openrouter: "apikey" },
+    note: "Bring-your-own-key covers OpenAI, Anthropic, Google, Azure, and AWS Bedrock, and the OpenAI base-URL override officially reaches OpenRouter (and so any OpenAI-compatible endpoint). No native xAI provider. Keys power chat and plan only — Composer, inline edit, and autocomplete stay on Cursor's own backend — and there's no Claude-subscription sign-in.",
     url: "https://cursor.com/help/models-and-usage/api-keys"
   },
   {
     id: "goose", name: "Goose", kind: "Desktop + CLI",
-    support: { chatgpt: "oauth", gemini: "apikey", grok: "apikey", claude_sub: "oauth", copilot: "oauth", openrouter: "apikey" },
-    note: "Keys for 25+ providers, a built-in GitHub Copilot provider via OAuth device-code sign-in, plus CLI / ACP pass-through that reuses your Claude Code, Codex, or Gemini CLI sign-in. Local via Ollama.",
+    support: { chatgpt: "oauth", gemini: "apikey", grok: "apikey", claude_sub: "apikey", copilot: "oauth", openrouter: "apikey" },
+    note: "Now stewarded by the Linux Foundation's Agentic AI Foundation rather than Block alone. Keys for ~38 providers, a built-in GitHub Copilot provider via OAuth device-code sign-in, and a ChatGPT Codex provider for subscription sign-in. Anthropic is API-key only here — a Claude subscription is reachable only indirectly through the Claude Code ACP pass-through, and Anthropic's terms constrain that. The older claude-code / codex / gemini-cli CLI providers are deprecated in favour of Cursor Agent CLI plus Claude and Codex ACP. Local via Ollama.",
     url: "https://block.github.io/goose/docs/getting-started/providers"
   },
   {
     id: "hermes", name: "Hermes Agent", kind: "Desktop + CLI",
     support: { chatgpt: "oauth", gemini: "apikey", grok: "oauth", claude_sub: "oauth", copilot: "oauth", openrouter: "apikey" },
-    note: "The most open-handed tool on this shelf — around 20 providers. Codex, Copilot, MiniMax, SuperGrok, and Nous Portal sign-in (device-code works over SSH); other keys directly; Claude subscription via Claude Code credentials; local Ollama/vLLM; Bedrock/Azure too.",
+    note: "The most open-handed tool on this shelf — around 38 providers. Codex, Copilot, MiniMax, SuperGrok, and Nous Portal sign-in (device-code works over SSH); other keys directly; local Ollama/vLLM; Bedrock/Azure too. The Claude path reuses Claude Code credentials but now requires Claude Max plus purchased extra-usage credits — it bills per token instead of drawing on your plan allowance, and Pro can't use it at all.",
     url: "https://hermes-agent.nousresearch.com/docs"
   },
   {
     id: "kilocode", name: "Kilo Code", kind: "IDE + CLI",
     support: { chatgpt: "oauth", gemini: "apikey", grok: "apikey", claude_sub: "no", copilot: "no", openrouter: "apikey" },
-    note: "A Cline fork spanning VS Code, JetBrains, and CLI with 500+ models. Keys for Anthropic / OpenAI / Gemini / Bedrock / Vertex, local via Ollama or LM Studio, and a ChatGPT-subscription sign-in that skips the key entirely.",
+    note: "Spans VS Code, JetBrains, and CLI with 500+ models. Lineage is layered: the extension descends from Roo Code, itself a Cline fork, while the CLI is a fork of OpenCode. Keys for Anthropic / OpenAI / Gemini / Bedrock / Vertex, local via Ollama or LM Studio, and a ChatGPT-subscription sign-in that skips the key entirely.",
     url: "https://kilocode.ai/docs/providers"
   },
   {
     id: "openclaw", name: "OpenClaw", kind: "Desktop + CLI",
-    support: { chatgpt: "oauth", gemini: "apikey", grok: "apikey", claude_sub: "oauth", copilot: "no", openrouter: "oauth" },
-    note: "An open-source personal-assistant framework, now OpenAI-affiliated. Codex/ChatGPT subscription via browser or device-code sign-in, Anthropic and Gemini keys, local models, and pass-through to Claude Code, Gemini CLI, OpenCode, or Cursor.",
+    support: { chatgpt: "oauth", gemini: "apikey", grok: "apikey", claude_sub: "restricted", copilot: "oauth", openrouter: "oauth" },
+    note: "An open-source personal-assistant framework. OpenAI hired its creator in Feb 2026 and funds the non-profit foundation that now holds it, but it was not acquired and remains independent. Codex/ChatGPT subscription via browser or device-code sign-in, a GitHub Copilot provider via device login, OpenRouter OAuth, Anthropic and Gemini keys, and local models. Claude Pro/Max plan quota is off the table since Anthropic's Feb 2026 terms change and April 2026 cutoff — the sanctioned path is an API key or reusing the Claude CLI. Pass-through covers the Claude and Gemini CLIs; the bundled Codex CLI backend was replaced by the native Codex app-server route.",
     url: "https://docs.openclaw.ai/providers"
   },
   {
     id: "opencode", name: "OpenCode", kind: "Desktop + CLI",
     support: { chatgpt: "oauth", gemini: "apikey", grok: "apikey", claude_sub: "restricted", copilot: "oauth", openrouter: "apikey" },
-    note: "ChatGPT, Copilot, and GitLab Duo subscriptions all work via sign-in. Anthropic's terms prohibit a Claude Pro/Max subscription here — bring your API key instead.",
+    note: "ChatGPT, Copilot, and GitLab Duo subscriptions all work via sign-in (GitLab Duo is experimental and needs Premium/Ultimate). Anthropic's terms prohibit a Claude Pro/Max subscription here — the bundled OAuth plugin was removed in v1.3.0 after a legal request in March 2026, so bring your API key instead.",
     url: "https://opencode.ai/docs/providers"
   },
   {
     id: "pi", name: "Pi", kind: "CLI",
-    support: { chatgpt: "oauth", gemini: "apikey", grok: "apikey", claude_sub: "oauth", copilot: "oauth", openrouter: "apikey" },
-    note: "An open-source, provider-agnostic terminal agent (earendil-works, pi.dev) — not to be confused with Inflection AI's Pi companion app. Routes to 20+ providers by key, or sign in with Claude Pro/Max, ChatGPT Plus/Pro, or GitHub Copilot instead. Also reaches Bedrock, Azure, and Vertex, and runs local models via Ollama.",
+    support: { chatgpt: "oauth", gemini: "apikey", grok: "oauth", claude_sub: "oauth", copilot: "oauth", openrouter: "oauth" },
+    note: "An open-source, provider-agnostic terminal agent (earendil-works, pi.dev) — not to be confused with Inflection AI's Pi companion app. Routes to 30+ providers by key, or signs in with ChatGPT Plus/Pro, GitHub Copilot, Grok/X, OpenRouter (PKCE), or Claude Pro/Max. Note the asterisk on that last one: per Pi's own docs, third-party harness usage draws on metered extra usage billed per token, not against your Claude plan limits. Also reaches Bedrock, Azure, and Vertex, and runs local models via Ollama.",
     url: "https://pi.dev/docs/latest/providers"
   },
   {
@@ -605,7 +614,7 @@ var TOOLS = [
   {
     id: "zed", name: "Zed", kind: "IDE",
     support: { chatgpt: "oauth", gemini: "oauth", grok: "apikey", claude_sub: "oauth", copilot: "oauth", openrouter: "apikey" },
-    note: "A Rust-based multi-provider editor with 15+ LLM providers behind one Agent Panel. Sign in with ChatGPT Plus/Pro, Google (Gemini), or a Copilot Pro/Business/Enterprise subscription; Claude Pro/Max works via an embedded Claude Code Terminal Thread's own /login, not the Agent Panel's provider list directly. xAI and OpenRouter are API-key only. Local models via Ollama.",
+    note: "A Rust-based multi-provider editor with 15+ LLM providers behind one Agent Panel. Sign in with ChatGPT Plus/Pro, Google (Gemini), or a Copilot Pro/Business/Enterprise subscription. Claude Pro/Max never appears in the Agent Panel's provider list — where Anthropic is API-key — and is instead reached by running /login inside a Claude agent (ACP) thread, or a terminal thread running Claude Code. xAI and OpenRouter are API-key only. Local models via Ollama.",
     url: "https://zed.dev/docs/ai/overview"
   }
 ];
@@ -613,7 +622,8 @@ var TOOLS = [
 var CLOSED = { antigravity: 1, chatgpt: 1, claude: 1, cursor: 1, copilot: 1 };
 
 var STORAGE_KEY = "ai_tool_matrix_prefs";
-var pmState = { have: {}, filter: "all", detail: "anythingllm" };
+var pmState = { have: {}, filter: "all", detail: null };
+var CARD_IDS = ["c-instr", "c-skill", "c-mcp", "c-bundle", "c-agent"];
 
 function loadPrefs(){
   try { return JSON.parse(localStorage.getItem(STORAGE_KEY) || "{}") || {}; }
@@ -625,7 +635,8 @@ function savePrefs(){
       have: pmState.have,
       filter: pmState.filter,
       theme: document.documentElement.getAttribute("data-theme"),
-      tab: document.body.getAttribute("data-tab")
+      tab: document.body.getAttribute("data-tab"),
+      hf: document.body.getAttribute("data-hf")
     }));
   } catch(e){ /* session-only fallback */ }
 }
@@ -638,16 +649,31 @@ function esc(s){
   var prefersDark = window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches;
   var theme = (saved.theme === 'dark' || saved.theme === 'light') ? saved.theme : (prefersDark ? 'dark' : 'light');
   document.documentElement.setAttribute('data-theme', theme);
-  document.body.setAttribute('data-hf','0');
+  applyHarness(saved.hf);
   CREDENTIALS.forEach(function(c){
     pmState.have[c.id] = (saved.have && typeof saved.have[c.id] === 'boolean') ? saved.have[c.id] : true;
   });
   pmState.filter = (saved.filter === 'usable' || saved.filter === 'sub') ? saved.filter : 'all';
-  var tab = location.hash === '#providers' ? 'providers'
-          : location.hash === '#harnesses' ? 'harness'
+
+  document.getElementById('buildTag').textContent = 'ai-tool-reference · ' + BUILD.version;
+  document.getElementById('buildFoot').textContent = 'compiled ' + BUILD.compiled + ' · updated ' + BUILD.updated;
+
+  // The hash addresses either a tab (#harnesses / #providers) or a layer card (#c-skill).
+  var target = location.hash.replace('#', '');
+  var isCard = CARD_IDS.indexOf(target) !== -1;
+  var tab = (target === 'providers') ? 'providers'
+          : (target === 'harnesses' || isCard) ? 'harness'
           : (saved.tab === 'providers' ? 'providers' : 'harness');
   applyTab(tab, false);
   pmRenderAll();
+  if (isCard) openCard(target, false);
+  window.addEventListener('hashchange', function(){
+    var id = location.hash.replace('#', '');
+    if (CARD_IDS.indexOf(id) !== -1){
+      if (document.body.getAttribute('data-tab') !== 'harness') applyTab('harness', false);
+      openCard(id, false);
+    }
+  });
 })();
 
 function applyTab(tab, updateHash){
@@ -659,7 +685,14 @@ function applyTab(tab, updateHash){
     history.replaceState(null, '', tab === 'providers' ? '#providers' : '#harnesses');
   }
 }
-function setTab(tab){ applyTab(tab, true); savePrefs(); }
+function setTab(tab){
+  // Jump, don't glide: html{scroll-behavior:smooth} would otherwise animate the reset.
+  if (document.body.getAttribute('data-tab') !== tab) {
+    try { window.scrollTo({ top: 0, behavior: 'instant' }); } catch(e) { window.scrollTo(0, 0); }
+  }
+  applyTab(tab, true);
+  savePrefs();
+}
 function tabsKey(ev){
   if (ev.key !== 'ArrowLeft' && ev.key !== 'ArrowRight' && ev.key !== 'Home' && ev.key !== 'End') return;
   ev.preventDefault();
@@ -670,23 +703,32 @@ function tabsKey(ev){
   document.getElementById(next === 'harness' ? 'tab-harness' : 'tab-providers').focus();
 }
 
-function setHarness(i, btn){
-  document.body.setAttribute('data-hf', String(i));
+function applyHarness(i){
+  var hf = String(i == null ? 0 : i);
   var btns = document.querySelectorAll('#panel-harness .hpick button');
-  for(var k=0;k<btns.length;k++){ btns[k].setAttribute('aria-pressed', btns[k]===btn ? 'true' : 'false'); }
+  var known = false;
+  for(var k=0;k<btns.length;k++){ if (btns[k].getAttribute('data-hf') === hf) known = true; }
+  if (!known) hf = '0';
+  document.body.setAttribute('data-hf', hf);
+  for(var j=0;j<btns.length;j++){
+    btns[j].setAttribute('aria-pressed', btns[j].getAttribute('data-hf') === hf ? 'true' : 'false');
+  }
 }
+function setHarness(i){ applyHarness(i); savePrefs(); }
 function toggleTheme(){
   var root = document.documentElement;
   var next = root.getAttribute('data-theme') === 'dark' ? 'light' : 'dark';
   root.setAttribute('data-theme', next);
   savePrefs();
 }
-function jump(id){
+function openCard(id, updateHash){
   var el = document.getElementById(id);
   if(!el) return;
   el.open = true;
   el.scrollIntoView({behavior:'smooth', block:'start'});
+  if (updateHash && window.history && history.replaceState) history.replaceState(null, '', '#' + id);
 }
+function jump(id){ openCard(id, true); }
 
 /* ---- provider matrix rendering ---- */
 function pmVisibleCreds(){
