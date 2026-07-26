@@ -54,6 +54,11 @@ Everything lives in `index.html`.
   the five connection-type hues.
 - **`BUILD`** (top of the `<script>` block) holds the version and dates; the
   masthead and footer both render from it, so bump it in one place.
+The harness tab is the exception: its facts are hand-written into both the
+matrix and the layer cards, so each one is stored twice. Moving it to the same
+data-driven shape as the provider tab is specced in
+[`docs/harness-tab-refactor.md`](./docs/harness-tab-refactor.md).
+
 - Harness-tab filtering is CSS-only via a `data-hf` attribute on `<body>`
   (column order: concept, Claude, Codex, Goose, Hermes, Osaurus, Gemini,
   Cursor, OpenCode, OpenClaw, Copilot — keep the matrix columns and each card's
