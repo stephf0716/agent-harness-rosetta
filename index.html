@@ -179,7 +179,7 @@
   .mech.m-restricted{border-bottom:1px dashed var(--mc);padding-bottom:1px}
   .m-apikey{--mc:var(--m-key)} .m-oauth{--mc:var(--m-oauth)} .m-native{--mc:var(--m-native)} .m-restricted{--mc:var(--m-restr)}
   /* portability + autonomy badges reuse the same diamond, different hues */
-  .m-own{--mc:var(--m-oauth)} .m-reads{--mc:var(--m-local)}
+  .m-own{--mc:var(--m-native)} .m-reads{--mc:var(--c-mcp)}
   .m-gated{--mc:var(--m-oauth)} .m-mixed{--mc:var(--m-key)} .m-open{--mc:var(--m-restr)}
   .pm-shell td .loc{margin-top:5px}
   .pm-detail .dgrid{display:grid;grid-template-columns:repeat(auto-fit,minmax(210px,1fr));gap:1px;background:var(--line);border:1px solid var(--line);border-radius:3px;overflow:hidden;margin-top:14px}
@@ -363,7 +363,7 @@
 // from these constants. CLOSED lists the tool ids grouped as closed source.
 // ---------------------------------------------------------------------------
 // Edit the build stamp here only — the masthead and footer both render from it.
-var BUILD = { version: "v9", compiled: "july 2026", updated: "26 jul 2026" };
+var BUILD = { version: "v10", compiled: "july 2026", updated: "26 jul 2026" };
 
 // The tab bar renders from this: one entry per reference, in display order.
 // `hash` is the public deep link (#harnesses, #providers, …) — don't rename
@@ -1437,8 +1437,15 @@ function harnessName(id){
   for (var i = 0; i < HARNESSES.length; i++){ if (HARNESSES[i].id === id) return HARNESSES[i].label; }
   return id;
 }
-function byHarnessOrder(rows){
-  return HARNESSES.map(function(h){
+// Portability and permissions read tool-by-tool rather than column-by-column,
+// so they sort alphabetically by short name (same order as the harness
+// picker chips) instead of matching the matrix's column order. Filtering
+// through HARNESSES first means an unknown id is just dropped, not shown.
+function alphaHarnessOrder(rows){
+  var order = HARNESSES.slice().sort(function(a, b){
+    return a.short < b.short ? -1 : a.short > b.short ? 1 : 0;
+  });
+  return order.map(function(h){
     for (var i = 0; i < rows.length; i++){ if (rows[i].id === h.id) return rows[i]; }
     return null;
   }).filter(Boolean);
@@ -1488,7 +1495,7 @@ function renderPortability(){
   legendFrom(PORT_MECH, 'portLegend');
   var host = document.getElementById('portMatrix');
   if (!host) return;
-  var rows = byHarnessOrder(PORTABILITY);
+  var rows = alphaHarnessOrder(PORTABILITY);
   if (!rows.length){ host.innerHTML = '<p class="pm-empty">No portability data yet.</p>'; return; }
   host.innerHTML = '<table><thead><tr><th class="pm-tool-h">Tool</th>' +
     PORT_COLS.map(function(c){ return '<th><span class="chd">' + esc(c.label) + '</span></th>'; }).join('') +
@@ -1518,7 +1525,7 @@ function renderPermissions(){
   legendFrom(AUTO, 'permLegend');
   var host = document.getElementById('permMatrix');
   if (!host) return;
-  var rows = byHarnessOrder(PERMISSIONS);
+  var rows = alphaHarnessOrder(PERMISSIONS);
   if (!rows.length){ host.innerHTML = '<p class="pm-empty">No permissions data yet.</p>'; return; }
   host.innerHTML = '<table><thead><tr><th class="pm-tool-h">Tool</th><th><span class="chd">Out of the box</span></th>' +
     PERM_COLS.map(function(c){ return '<th><span class="chd">' + esc(c.label) + '</span></th>'; }).join('') +
