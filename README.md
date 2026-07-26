@@ -14,7 +14,9 @@ A single-file interactive reference for AI developer tools, in two tabs:
 
 ## Usage
 
-Open `index.html` in a browser. No build step, no dependencies beyond Google Fonts.
+Open `index.html` in a browser. No build step, no dependencies beyond Google
+Fonts. Both tabs render from data with JavaScript, so the page needs it enabled
+(a `<noscript>` note says so).
 
 Features:
 - Tab bar to switch between the two references (deep-linkable via `#harnesses` / `#providers`)
@@ -60,15 +62,19 @@ Everything lives in `index.html`.
   the five connection-type hues.
 - **`BUILD`** (top of the `<script>` block) holds the version and dates; the
   masthead and footer both render from it, so bump it in one place.
-The harness tab is the exception: its facts are hand-written into both the
-matrix and the layer cards, so each one is stored twice. Moving it to the same
-data-driven shape as the provider tab is specced in
-[`docs/harness-tab-refactor.md`](./docs/harness-tab-refactor.md).
-
-- Harness-tab filtering is CSS-only via a `data-hf` attribute on `<body>`
-  (column order: concept, Claude, Codex, Goose, Hermes, Osaurus, Gemini,
-  Cursor, OpenCode, OpenClaw, Copilot — keep the matrix columns and each card's
-  platform grid in that order when editing).
+- The harness tab renders from plain JS constants (the refactor that got it
+  there is specced in
+  [`docs/harness-tab-refactor.md`](./docs/harness-tab-refactor.md)):
+  - **`HARNESSES`** — the columns, in matrix/card-grid order. Each has an `id`,
+    a `label` (matrix header), a `short` (picker chip — the picker sorts these
+    alphabetically), and optionally a `tile` when the card-grid heading differs.
+  - **`LAYERS`** — one entry per layer: matrix row, explainer card, and a
+    `cells` map from harness `id` to that harness's cell (`term`, matrix-only
+    `loc`/`note`/`warn`, card-tile `desc`, and `pterm` when the tile term
+    differs). Adding a harness means one `HARNESSES` object plus one `cells`
+    entry per layer — no markup or CSS changes.
+  - Filtering tags every rendered cell and tile with `data-h="<harness id>"`
+    and toggles the `hidden` attribute, so it never depends on column order.
 - The provider matrix renders from plain JS constants near the top of the
   `<script>` block:
   - **`CREDENTIALS`** — the columns. Each has an `id` and a `label`.

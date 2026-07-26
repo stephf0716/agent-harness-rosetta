@@ -1,5 +1,10 @@
 # Handoff: make the harness tab data-driven
 
+> **Status: implemented.** The harness tab now renders from the `HARNESSES` and
+> `LAYERS` constants, filtering is `data-h` + `hidden` (order-independent), and
+> the stored harness pref is the id string. Kept for the design rationale and
+> the verification recipe.
+
 A task spec for a fresh session. Everything you need should be here; read
 `README.md` first for what the app is, then this.
 
