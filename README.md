@@ -1,6 +1,6 @@
 # AI Tool Reference
 
-A single-file interactive reference for AI developer tools, in two tabs:
+A single-file interactive reference for AI developer tools, in four tabs:
 
 - **Harness layers** — the Agent Harness Rosetta Stone: maps the five extension
   layers of AI agent harnesses (instructions, skills, tool access/MCP, bundles,
@@ -11,6 +11,13 @@ A single-file interactive reference for AI developer tools, in two tabs:
   Claude, ChatGPT, and more); each column is a credential you might hold.
   Every cell records *how* that credential connects — an API key, a subscription
   sign-in, a built-in first-party path, or not at all.
+- **Portability** — what config survives if you add or switch harnesses. Three
+  things travel as open standards (AGENTS.md, SKILL.md skills, MCP servers), and
+  several tools read each other's directories outright; the last column is what
+  has no equivalent anywhere else.
+- **Permissions** — what each harness does without asking, and how to constrain
+  it: default autonomy, approval granularity, sandboxing, where permissions are
+  declared, and what happens unattended.
 
 ## Usage
 
@@ -62,6 +69,18 @@ Everything lives in `index.html`.
   the five connection-type hues.
 - **`BUILD`** (top of the `<script>` block) holds the version and dates; the
   masthead and footer both render from it, so bump it in one place.
+- **`TABS`** — one entry per reference, in display order, with the public deep
+  link in `hash`. The tab bar, panel visibility, arrow-key cycling and hash
+  routing all read from it; a new reference is one entry plus a
+  `<main id="panel-<id>">`. Panels are hidden via the `hidden` attribute rather
+  than a CSS rule per pair.
+- The portability and permissions tabs render from **`PORTABILITY`** and
+  **`PERMISSIONS`**, both keyed by harness `id` and both ordered by `HARNESSES`
+  at render time, so they can't drift out of step with the harness tab.
+  `PORT_MECH` and `AUTO` are their badge vocabularies; `AUTO` is our own
+  summary of a researched default, not a vendor's own label. Rows carry a
+  `status` of `verified`, `partial` or `unverified`, and anything short of
+  verified shows a caveat in the detail panel.
 - The harness tab renders from plain JS constants (the refactor that got it
   there is specced in
   [`docs/harness-tab-refactor.md`](./docs/harness-tab-refactor.md)):
@@ -89,8 +108,11 @@ Everything lives in `index.html`.
 
 ## A note on accuracy
 
-Compiled July 2026; both tabs last fact-checked against provider docs on
-25 July 2026. Terminology and provider support in this space move fast — tools
+Compiled July 2026; all four tabs last fact-checked against provider docs on
+26 July 2026. Where a vendor's docs site blocked automated access, claims were
+verified against the same docs in the project's public repo, or against the
+shipping source behind them; the two Cursor rows rest on secondary sources that
+agree with each other and are marked `partial` for that reason. Terminology and provider support in this space move fast — tools
 add subscription sign-in, vendors change their terms, projects get renamed or
 merged. Both tabs are point-in-time snapshots; verify against each project's
 linked docs before relying on any single cell.

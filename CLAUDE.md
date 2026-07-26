@@ -1,8 +1,8 @@
 # AI Tool Reference
 
-A single-file static site: two interactive reference tables for AI developer
+A single-file static site: four interactive reference tables for AI developer
 tools. Everything is `index.html` — markup, styles, data, and behaviour.
-`README.md` explains what the two tabs are and how the data constants work.
+`README.md` explains what the tabs are and how the data constants work.
 
 Deployed on Vercel from `main`; `vercel.json` holds the config.
 
@@ -13,9 +13,12 @@ Deployed on Vercel from `main`; `vercel.json` holds the config.
   changes Vercel's zero-config inference for this static site. Put throwaway
   scripts in a scratch directory outside the repo.
 - **Data lives in JS constants** near the top of the `<script>` block. Prefer
-  editing those over touching markup. Both tabs render from them: the provider
+  editing those over touching markup. Every tab renders from them: the provider
   tab from `CREDENTIALS`/`TOOLS`/`MECH`/`CLOSED`, the harness tab from
-  `HARNESSES`/`LAYERS` (see `docs/harness-tab-refactor.md` for the design).
+  `HARNESSES`/`LAYERS` (see `docs/harness-tab-refactor.md` for the design), and
+  the portability and permissions tabs from `PORTABILITY`/`PERMISSIONS`. The
+  tab bar itself comes from `TABS`, so a new reference is one entry plus a
+  `<main id="panel-…">`.
 - **Both themes matter.** Colors come from the CSS custom properties at the top
   of the stylesheet; check light and dark before calling a visual change done.
 - **Keep the accessibility scaffolding**: tab roles with arrow-key handling,
@@ -27,11 +30,22 @@ Deployed on Vercel from `main`; `vercel.json` holds the config.
 
 ## Accuracy
 
-Both tables are point-in-time snapshots of a fast-moving ecosystem, and stale
+Every table is a point-in-time snapshot of a fast-moving ecosystem, and stale
 cells are the main defect this project has. Don't add or change a factual claim
 from memory — check the vendor's current docs, and treat anything you can't
 verify as unverified rather than guessing. Every tool row carries a `url` to its
 provider docs; that's the place to start.
+
+Two things learned the hard way while compiling the newer tabs:
+
+- **Vendor docs sites block automated fetches** (403) more often than not. The
+  workaround that consistently works is reading the same markdown from the
+  project's public repo via `raw.githubusercontent.com`, or cloning it. Where
+  docs and shipping source disagree, the source wins — say so in the row.
+- **One-time import is not portability.** Several tools ingest a rival's config
+  once during migration (`/init`, `openclaw migrate`, plugin importers). That
+  is not the same as reading it at runtime, and conflating the two would make
+  the portability tab wrong in the most useful column it has.
 
 ## Verifying a change
 

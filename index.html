@@ -556,8 +556,8 @@ var LAYERS = [
       },
       gemini: {
         term: "GEMINI.md",
-        loc: "repo root · ~/.gemini · also reads AGENTS.md",
-        desc: "Same pattern as CLAUDE.md, hierarchical from home dir to subdirectory — and it reads AGENTS.md too, so one file can serve both harnesses."
+        loc: "repo root · ~/.gemini · AGENTS.md only if you opt in",
+        desc: "Same pattern as CLAUDE.md, hierarchical from home dir to subdirectory. It can read <code>AGENTS.md</code> instead, but not by default — you have to point <code>context.fileName</code> at it, so one file serves both harnesses only after you say so."
       },
       cursor: {
         term: "Rules",
@@ -844,8 +844,8 @@ var LAYERS = [
 // serve several tools. `stranded` is what has no equivalent elsewhere.
 // ---------------------------------------------------------------------------
 var PORT_MECH = {
-  own:   { label: "Its own" },
-  reads: { label: "Also reads" },
+  own:   { label: "Native" },
+  reads: { label: "Reads others'" },
   no:    { label: "—" }
 };
 
@@ -855,17 +855,160 @@ var PORT_COLS = [
   { id: "mcp",    label: "MCP servers" }
 ];
 
-var PORTABILITY = [];
+var PORTABILITY = [
+  {
+    id: "claude",
+    cells: { agents: { m: "no", loc: "CLAUDE.md instead" },
+             skills: { m: "own", loc: ".claude/skills/ · ~/.claude/skills/" },
+             mcp:    { m: "own", loc: ".mcp.json" } },
+    instr: ["CLAUDE.md", "CLAUDE.local.md", "~/.claude/CLAUDE.md", ".claude/rules/**/*.md"],
+    skills: [".claude/skills/<name>/SKILL.md", "~/.claude/skills/<name>/SKILL.md"],
+    foreign: [],
+    mcp: ".mcp.json (project) · ~/.claude.json (user)",
+    stranded: "hooks, subagents, output styles, plugin manifests",
+    note: "The holdout. It originated the SKILL.md format and four other harnesses now read .claude/skills, but Claude Code reads nobody else's directory — sharing with it is strictly one-directional. Its /init imports rival rule files once at migration time, which is not the same as reading them at runtime.",
+    url: "https://code.claude.com/docs/en/skills",
+    status: "verified"
+  },
+  {
+    id: "codex",
+    cells: { agents: { m: "own", loc: "AGENTS.md · AGENTS.override.md" },
+             skills: { m: "reads", loc: ".agents/skills · ~/.agents/skills" },
+             mcp:    { m: "own", loc: "~/.codex/config.toml" } },
+    instr: ["AGENTS.md", "AGENTS.override.md", "~/.codex/AGENTS.md"],
+    skills: [".agents/skills", "~/.agents/skills", ".codex/skills"],
+    foreign: [".agents/skills", "~/.agents/skills"],
+    mcp: "~/.codex/config.toml ([mcp_servers])",
+    stranded: "profiles, sandbox modes, trust levels",
+    note: "Joined via the neutral .agents/ path rather than by reading rivals directly — it does not scan .claude/skills. Its own ~/.codex/skills is now deprecated in favour of .agents/skills, which is a vendor deprecating its namespace for the shared one.",
+    url: "https://developers.openai.com/codex/skills",
+    status: "verified"
+  },
+  {
+    id: "goose",
+    cells: { agents: { m: "own", loc: "AGENTS.md + .goosehints, concatenated" },
+             skills: { m: "reads", loc: ".agents/skills · .claude/skills · .goose/skills" },
+             mcp:    { m: "own", loc: "~/.config/goose/config.yaml" } },
+    instr: ["AGENTS.md", ".goosehints", "~/.config/goose/AGENTS.md", "~/.config/goose/.goosehints"],
+    skills: [".agents/skills", ".goose/skills", ".claude/skills", "~/.agents/skills", "~/.claude/skills"],
+    foreign: [".claude/skills", "~/.claude/skills", ".agents/skills", "~/.agents/skills"],
+    mcp: "~/.config/goose/config.yaml (extensions:)",
+    stranded: "recipes, the extension YAML schema, permission.yaml",
+    note: "Reads AGENTS.md by default and concatenates rather than picking a winner, so AGENTS.md and .goosehints both apply. It does not read CLAUDE.md or .cursorrules unless you set CONTEXT_FILE_NAMES. Subagents cross over too: it scans .claude/agents.",
+    url: "https://goose-docs.ai/docs/guides/context-engineering/using-skills",
+    status: "verified"
+  },
+  {
+    id: "hermes",
+    cells: { agents: { m: "reads", loc: "after .hermes.md · first match wins" },
+             skills: { m: "own", loc: "~/.hermes/skills/ · external_dirs opt-in" },
+             mcp:    { m: "own", loc: "~/.hermes/config.yaml" } },
+    instr: [".hermes.md", "HERMES.md", "AGENTS.md", "CLAUDE.md", ".cursorrules"],
+    skills: ["~/.hermes/skills/", "skills.external_dirs (opt-in)"],
+    foreign: [],
+    mcp: "~/.hermes/config.yaml (mcp_servers:)",
+    stranded: "SOUL.md, profiles, skill bundles, gateway adapters",
+    note: "Reads four rivals' instruction files but only one loads — first match wins, and AGENTS.md/CLAUDE.md are checked in the working directory only. Skills are the opposite: nothing foreign is scanned unless you list it under skills.external_dirs yourself.",
+    url: "https://hermes-agent.nousresearch.com/docs/user-guide/features/context-files",
+    status: "verified"
+  },
+  {
+    id: "osaurus",
+    cells: { agents: { m: "reads", loc: "after .hermes.md / HERMES.md" },
+             skills: { m: "own", loc: "~/.osaurus/skills/" },
+             mcp:    { m: "own", loc: "~/.osaurus/providers/mcp.json" } },
+    instr: [".hermes.md", "HERMES.md", "AGENTS.md", "CLAUDE.md", ".cursorrules"],
+    skills: ["~/.osaurus/skills/<name>/SKILL.md"],
+    foreign: [],
+    mcp: "~/.osaurus/providers/mcp.json",
+    stranded: "macOS app config, Claude-plugin imports, local model store",
+    note: "The oddest row here: it reads .hermes.md and HERMES.md at top priority — a competitor's native instruction file, ahead of AGENTS.md — and neither project mentions the other. Flat lookup in the mounted folder only, no upward walk. Skills stay in one global library.",
+    url: "https://github.com/osaurus-ai/osaurus/blob/main/docs/SKILLS.md",
+    status: "verified"
+  },
+  {
+    id: "gemini",
+    cells: { agents: { m: "no", loc: "opt-in via context.fileName" },
+             skills: { m: "reads", loc: "~/.agents/skills · .agents/skills" },
+             mcp:    { m: "own", loc: ".gemini/settings.json" } },
+    instr: ["GEMINI.md", "~/.gemini/GEMINI.md"],
+    skills: ["~/.gemini/skills/", ".gemini/skills/", "~/.agents/skills/", ".agents/skills/"],
+    foreign: ["~/.agents/skills/", ".agents/skills/"],
+    mcp: "~/.gemini/settings.json · .gemini/settings.json",
+    stranded: "TOML custom commands, extensions, checkpointing",
+    note: "Easy one to get backwards: Gemini CLI does not read AGENTS.md by default — GEMINI.md is the default and AGENTS.md only applies if you set context.fileName. Skills are the generous half: .agents/skills works as a documented alias for its own directories.",
+    url: "https://github.com/google-gemini/gemini-cli/blob/main/docs/cli/using-agent-skills.md",
+    status: "verified"
+  },
+  {
+    id: "cursor",
+    cells: { agents: { m: "reads", loc: "root + nested, with .cursor/rules/" },
+             skills: { m: "reads", loc: ".claude/skills · .codex/skills · .agents/skills" },
+             mcp:    { m: "own", loc: ".cursor/mcp.json" } },
+    instr: [".cursor/rules/**/*.mdc", "AGENTS.md", "CLAUDE.md", ".cursorrules"],
+    skills: [".cursor/skills/", ".claude/skills/", ".codex/skills/", ".agents/skills/"],
+    foreign: [".claude/skills/", ".codex/skills/", ".agents/skills/"],
+    mcp: ".cursor/mcp.json · ~/.cursor/mcp.json",
+    stranded: "Rules .mdc frontmatter, Team Rules, hooks.json",
+    note: "The most omnivorous reader: Claude's, Codex's and the shared .agents directories all load. Enough so that users have asked for a way to switch it off. Cursor is the one vendor with no public docs repo, so this row rests on secondary sources that agree rather than on primary source.",
+    url: "https://cursor.com/docs/skills",
+    status: "partial"
+  },
+  {
+    id: "opencode",
+    cells: { agents: { m: "own", loc: "AGENTS.md · CLAUDE.md as fallback" },
+             skills: { m: "reads", loc: ".claude/skills · .agents/skills" },
+             mcp:    { m: "own", loc: "opencode.json" } },
+    instr: ["AGENTS.md", "CLAUDE.md", "~/.config/opencode/AGENTS.md"],
+    skills: [".opencode/skills/", "~/.config/opencode/skills/", ".claude/skills/", ".agents/skills/"],
+    foreign: [".claude/skills/", "~/.claude/skills/", ".agents/skills/", "~/.agents/skills/"],
+    mcp: "opencode.json / opencode.jsonc (mcp key)",
+    stranded: "opencode.json provider, agent, permission and plugin blocks",
+    note: "Falls back to CLAUDE.md when no AGENTS.md is present, and labels its skill roots by origin — \"Project Claude-compatible\", \"Global agent-compatible\". The Claude-directory reading can be switched off with OPENCODE_DISABLE_CLAUDE_CODE_SKILLS=1.",
+    url: "https://opencode.ai/docs/skills/",
+    status: "verified"
+  },
+  {
+    id: "openclaw",
+    cells: { agents: { m: "own", loc: "AGENTS.md + SOUL.md" },
+             skills: { m: "reads", loc: "workspace/skills · .agents/skills" },
+             mcp:    { m: "own", loc: "~/.openclaw/openclaw.json" } },
+    instr: ["AGENTS.md", "SOUL.md", "USER.md", "IDENTITY.md"],
+    skills: ["<workspace>/skills", "<workspace>/.agents/skills", "~/.agents/skills", "~/.openclaw/skills"],
+    foreign: ["<workspace>/.agents/skills", "~/.agents/skills"],
+    mcp: "~/.openclaw/openclaw.json (mcp.servers)",
+    stranded: "gateway and channels, SOUL/IDENTITY bootstrap files, ClawHub",
+    note: "Takes the shared .agents path but is the only project whose docs name a rival directory in order to reject it: Codex's $CODEX_HOME/skills is explicitly not an OpenClaw skill root.",
+    url: "https://docs.openclaw.ai/tools/skills",
+    status: "verified"
+  },
+  {
+    id: "copilot",
+    cells: { agents: { m: "reads", loc: "nearest in tree wins" },
+             skills: { m: "reads", loc: ".claude/skills · .agents/skills" },
+             mcp:    { m: "own", loc: ".vscode/mcp.json" } },
+    instr: [".github/copilot-instructions.md", ".github/instructions/**/*.instructions.md", "AGENTS.md", "CLAUDE.md"],
+    skills: [".github/skills", ".claude/skills", ".agents/skills", "~/.copilot/skills", "~/.agents/skills"],
+    foreign: [".claude/skills", ".agents/skills", "~/.agents/skills"],
+    mcp: ".vscode/mcp.json (VS Code) · repo settings (cloud agent)",
+    stranded: "copilot-setup-steps.yml, agent firewall, org instruction settings",
+    note: "Five skill roots across three vendors' namespaces, and it reads AGENTS.md, CLAUDE.md and GEMINI.md as well. One caveat that is easy to miss: for code review the directory name itself matters, so a skill folder needs a review-ish name to be picked up.",
+    url: "https://docs.github.com/en/copilot/concepts/agents/about-agent-skills",
+    status: "verified"
+  }
+];
 
 // ---------------------------------------------------------------------------
 // Permissions: what each harness does without asking, and how to constrain it.
-// `auto` is our own summary of the researched default, not a vendor claim:
-//   gated = asks before acting · mixed = reads freely, gates writes/exec
-//   open  = acts without prompting by default
+// `auto` is our own one-word summary of the researched default, not a vendor
+// claim. Reading is free everywhere; the question is what it takes to change
+// something:
+//   gated = asks before writes and shell · mixed = only some changes prompt
+//   open  = changes the disk and runs shell with no prompt at all
 // ---------------------------------------------------------------------------
 var AUTO = {
-  gated: { label: "Asks first" },
-  mixed: { label: "Gates writes" },
+  gated: { label: "Gates changes" },
+  mixed: { label: "Partial gate" },
   open:  { label: "Acts freely" }
 };
 
@@ -877,6 +1020,61 @@ var PERM_COLS = [
 ];
 
 var PERMISSIONS = [
+  {
+    id: "claude", auto: "gated",
+    dflt: "Reads freely; asks before edits, writes and most shell",
+    approval: "Per call · \"don't ask again\" saves a Bash prefix rule · 6 modes",
+    sandbox: "Opt-in: macOS Seatbelt, Linux/WSL2 bubblewrap + seccomp",
+    config: ".claude/settings.json permissions.allow / ask / deny · --permission-mode",
+    headless: "claude -p --allowedTools · --permission-mode dontAsk denies the rest",
+    note: "Read-only tools run free; edits and shell prompt. A Bash \"don't ask again\" persists a prefix rule to settings.local.json, while edit approvals last only the session. The opt-in sandbox and the newer classifier-based auto mode are different things and compose — neither is on by default.",
+    url: "https://code.claude.com/docs/en/permissions",
+    status: "verified"
+  },
+  {
+    id: "codex", auto: "gated",
+    dflt: "Reads, edits and runs inside the workspace; asks to leave it",
+    approval: "Per call + session prefix allow · -a on-request / never / untrusted",
+    sandbox: "On by default — Seatbelt, Linux bubblewrap + seccomp, Windows sbx",
+    config: "~/.codex/config.toml · named profiles · -s/--sandbox, -a",
+    headless: "codex exec forces -a never — blocked operations fail rather than prompt",
+    note: "What it does by default genuinely depends on folder trust: the workspace-write preset applies only to projects with a recorded trust decision, and everything else starts read-only. Linux sandboxing moved from Landlock to bubblewrap + seccomp, with Landlock now a legacy fallback.",
+    url: "https://developers.openai.com/codex/security",
+    status: "verified"
+  },
+  {
+    id: "gemini", auto: "gated",
+    dflt: "Reads and globs auto-allowed; write_file and run_shell_command ask",
+    approval: "--approval-mode default / auto_edit / yolo / plan · TOML policy rules",
+    sandbox: "Off by default · -s for Docker, Podman or macOS sandbox-exec",
+    config: "~/.gemini/settings.json · ~/.gemini/policies/*.toml",
+    headless: "gemini -p turns an ask into a deny — needs yolo or allow rules",
+    note: "The most configurable of the five: a TOML policy engine sets allow, deny or ask per tool name and command prefix with priorities, and a deny also hides the tool from the model entirely. Note that yolo cannot be set as the default from settings, only per invocation.",
+    url: "https://github.com/google-gemini/gemini-cli/blob/main/docs/reference/policy-engine.md",
+    status: "verified"
+  },
+  {
+    id: "cursor", auto: "gated",
+    dflt: "Reads and edits workspace files freely; terminal commands ask",
+    approval: "Run modes: Auto-review (default), Allowlist, Run Everything",
+    sandbox: "On by default on macOS · cloud agents in isolated VMs",
+    config: ".cursor/permissions.json · sandbox.json · hooks.json",
+    headless: "cursor-agent -p · --force applies file changes without confirming",
+    note: "Auto-review became the default in 2026: allowlisted calls run, sandboxable calls run sandboxed, and everything else goes to a classifier. Cursor's own docs are unusually frank that run modes and allowlists are best-effort guardrails rather than a hard security boundary.",
+    url: "https://cursor.com/docs/agent/security/run-modes",
+    status: "partial"
+  },
+  {
+    id: "copilot", auto: "gated",
+    dflt: "CLI reads free, asks for destructive shell, edits and URLs",
+    approval: "Per action: once, session or repo · --allow-tool 'shell(git:*)' · deny wins",
+    sandbox: "Opt-in /sandbox · the cloud agent runs in an ephemeral Actions VM",
+    config: "~/.copilot/settings.json · permissions-config.json",
+    headless: "copilot -p --allow-tool / --allow-all-tools · cloud agent never prompts",
+    note: "Two very different postures under one name. The CLI prompts; the cloud agent never does, gating instead on a draft PR and an explicit approve-and-run click behind an egress firewall. An admin setting can disable bypass mode outright, which is rare among these tools.",
+    url: "https://docs.github.com/en/copilot/how-tos/copilot-cli/use-copilot-cli/allowing-tools",
+    status: "verified"
+  },
   {
     id: "goose", auto: "open",
     dflt: "Edits, deletes and runs shell with no prompt",
