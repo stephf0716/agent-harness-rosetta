@@ -42,6 +42,12 @@ step — Vercel serves the repo root as-is — so the file only sets `cleanUrls`
 plus a couple of response headers. Anything the dashboard can configure belongs
 here instead, so the settings travel with the code.
 
+`.vercelignore` is an allowlist: everything at the repo root is excluded and
+only `index.html` and `vercel.json` are added back, so the deployment carries
+the site and nothing else. Docs, notes, and tooling config stay out by default —
+including anything added later, which is the point of allowlisting rather than
+naming files to exclude.
+
 Working on it locally needs nothing but a browser. If you do want the Vercel
 CLI, `vercel link` connects the directory and writes `.vercel/`, which is
 git-ignored because it holds machine-specific project and org ids.

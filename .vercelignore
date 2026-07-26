@@ -1,0 +1,9 @@
+# Allowlist: deploy only what the site actually serves.
+#
+# Ignore everything at the repo root, then add back the two files the
+# deployment needs. Anything added later — notes, docs, scratch files — is
+# excluded by default rather than quietly published, so this stays correct
+# without maintenance.
+/*
+!index.html
+!vercel.json
