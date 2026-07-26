@@ -31,6 +31,21 @@ Features:
 Theme, credential selections, the harness filter, and the active tab are
 remembered via `localStorage` when available.
 
+## Deployment
+
+Deployed on Vercel as a static site, connected to this repo through the Git
+integration: pushes to `main` publish to production, and any other branch gets
+its own preview URL.
+
+`vercel.json` holds the whole configuration. There is no framework and no build
+step — Vercel serves the repo root as-is — so the file only sets `cleanUrls`
+plus a couple of response headers. Anything the dashboard can configure belongs
+here instead, so the settings travel with the code.
+
+Working on it locally needs nothing but a browser. If you do want the Vercel
+CLI, `vercel link` connects the directory and writes `.vercel/`, which is
+git-ignored because it holds machine-specific project and org ids.
+
 ## Structure
 
 Everything lives in `index.html`.

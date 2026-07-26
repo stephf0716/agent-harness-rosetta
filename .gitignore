@@ -1,1 +1,4 @@
 .DS_Store
+
+# Local Vercel link (project + org ids) — created by `vercel link`, machine-specific
+.vercel
