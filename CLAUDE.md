@@ -16,9 +16,11 @@ Deployed on Vercel from `main`; `vercel.json` holds the config.
   editing those over touching markup. Every tab renders from them: the provider
   tab from `CREDENTIALS`/`TOOLS`/`MECH`/`CLOSED`, the harness tab from
   `HARNESSES`/`LAYERS` (see `docs/harness-tab-refactor.md` for the design), and
-  the portability and permissions tabs from `PORTABILITY`/`PERMISSIONS`. The
-  tab bar itself comes from `TABS`, so a new reference is one entry plus a
-  `<main id="panel-…">`.
+  the portability and permissions tabs from `PORTABILITY`/`PERMISSIONS`, and
+  the infrastructure tab from `INFRA`. The tab bar itself comes from `TABS`, so
+  a new reference is one entry plus a `<main id="panel-…">`. Declare any new
+  render state near the other `*State` variables — the init IIFE runs before
+  `var` assignments further down the file.
 - **Both themes matter.** Colors come from the CSS custom properties at the top
   of the stylesheet; check light and dark before calling a visual change done.
 - **Keep the accessibility scaffolding**: tab roles with arrow-key handling,

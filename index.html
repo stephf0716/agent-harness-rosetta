@@ -183,6 +183,7 @@
   .m-gated{--mc:var(--m-oauth)} .m-mixed{--mc:var(--m-key)} .m-open{--mc:var(--m-restr)}
   .m-official{--mc:var(--c-mcp)} .m-community{--mc:var(--m-native)}
   .m-read{--mc:var(--m-oauth)} .m-deploy{--mc:var(--m-key)} .m-full{--mc:var(--m-restr)}
+  .m-readonly{--mc:var(--m-oauth)} .m-scoped{--mc:var(--m-key)} .m-none{--mc:var(--m-restr)}
   .pm-shell td .loc{margin-top:5px}
   .pm-detail .dgrid{display:grid;grid-template-columns:repeat(auto-fit,minmax(210px,1fr));gap:1px;background:var(--line);border:1px solid var(--line);border-radius:3px;overflow:hidden;margin-top:14px}
   .pm-detail .dg{background:var(--surface);padding:11px 13px}
@@ -387,7 +388,7 @@
 // from these constants. CLOSED lists the tool ids grouped as closed source.
 // ---------------------------------------------------------------------------
 // Edit the build stamp here only — the masthead and footer both render from it.
-var BUILD = { version: "v10", compiled: "july 2026", updated: "26 jul 2026" };
+var BUILD = { version: "v11", compiled: "july 2026", updated: "26 jul 2026" };
 
 // The tab bar renders from this: one entry per reference, in display order.
 // `hash` is the public deep link (#harnesses, #providers, …) — don't rename
@@ -1177,13 +1178,160 @@ var REACH = {
   full:   { label: "Full control" }
 };
 
-var INFRA = [];
+// Nearly every official integration has full reach, so reach alone doesn't
+// discriminate — what varies is whether you can put a brake on it:
+//   readonly = an enforced read-only or non-prod-by-default mode exists
+//   scoped   = credentials can be narrowed, but nothing stops a full token
+//   none     = neither; the tool surface is the only limit
+var LOCK = {
+  readonly: { label: "Read-only mode" },
+  scoped:   { label: "Scopable token" },
+  none:     { label: "No brake" }
+};
+
+var INFRA = [
+  {
+    id: "vercel", name: "Vercel", kind: "Hosting / edge",
+    mcp: "official", mcpDetail: "remote mcp.vercel.com · OAuth · ~25 tools",
+    cli: "vercel · token + --yes runs headless · vercel buy spends money",
+    reach: "full", reachDetail: "buy_pro, buy_domain, buy_credits, buy_addon, deploy_to_vercel",
+    isolation: "Preview deployments per branch · no first-party database to corrupt",
+    lock: "none",
+    guardrails: "OAuth per-team consent · purchases need a billing role · no read-only mode",
+    note: "The only platform here whose MCP server can charge a credit card. buy_pro, buy_credits, buy_addon and buy_domain hit the team's payment method immediately and are non-refundable. A quote step precedes them, but confirming is just a second tool call the agent makes itself — and vercel buy --yes skips the prompt entirely.",
+    url: "https://vercel.com/docs/agent-resources/vercel-mcp/tools",
+    status: "verified"
+  },
+  {
+    id: "neon", name: "Neon", kind: "Serverless Postgres",
+    mcp: "official", mcpDetail: "remote mcp.neon.tech · OAuth or API key · 33 tools",
+    cli: "neonctl · --output json · fully non-interactive",
+    reach: "full", reachDetail: "delete_project, delete_branch, run_sql (arbitrary DDL/DML)",
+    isolation: "Instant database branching — a branch per task, reset_from_parent to undo",
+    lock: "readonly",
+    guardrails: "?readonly=true or an OAuth read scope · ?projectId= and ?category= narrowing",
+    note: "The best guardrails of any database here: read-only mode also forces run_sql down to read-only queries, and project and category scoping are URL parameters needing no re-auth. The catch is that the default full-access grant still includes delete_project, so the safe configuration is one you have to choose.",
+    url: "https://neon.com/docs/ai/neon-mcp-server",
+    status: "verified"
+  },
+  {
+    id: "render", name: "Render", kind: "Hosting + Postgres",
+    mcp: "official", mcpDetail: "remote or local · API key · 25 tools, none of them delete",
+    cli: "render · --output json · --confirm · fully headless",
+    reach: "deploy", reachDetail: "create_web_service / create_postgres on paid plans · no delete tools",
+    isolation: "Preview Environments and Service Previews, destroyed when the PR closes",
+    lock: "none",
+    guardrails: "API keys reach every workspace the account can · no read-only mode",
+    note: "The most conservative tool surface in the table and the only one not marked full control: no delete tool of any kind, read-only SQL, and update calls that refuse and hand back a dashboard link instead. Its weak spot is credentials rather than tools — one API key reaches every workspace the account belongs to.",
+    url: "https://render.com/docs/mcp-server",
+    status: "verified"
+  },
+  {
+    id: "supabase", name: "Supabase", kind: "Postgres + backend",
+    mcp: "official", mcpDetail: "remote mcp.supabase.com · OAuth, or npx --read-only · ~29 tools",
+    cli: "supabase · access token via env · CI-friendly",
+    reach: "full", reachDetail: "execute_sql (raw SQL), apply_migration, merge_branch, pause_project",
+    isolation: "Preview Branches — create_branch clones the schema, merge_branch promotes it",
+    lock: "readonly",
+    guardrails: "read_only=true downgrades to a read-only role · project_ref and feature scoping",
+    note: "execute_sql runs raw SQL against production unless you opt into read-only mode, which also drops the connection to a read-only Postgres role. Supabase recommends both that and project scoping by default. Creating projects and branches is billable but gated behind a cost-then-confirm handshake, and project deletion is not exposed.",
+    url: "https://supabase.com/docs/guides/ai-tools/mcp",
+    status: "verified"
+  },
+  {
+    id: "railway", name: "Railway", kind: "App / infra hosting",
+    mcp: "official", mcpDetail: "bundled in the CLI (railway mcp) · stdio or hosted · 47 tools",
+    cli: "railway · --json · token-based headless deploys",
+    reach: "full", reachDetail: "remove_service, remove_volume, remove_bucket, delete_domain",
+    isolation: "PR Environments, ephemeral per pull request · create_environment",
+    lock: "scoped",
+    guardrails: "Project tokens bind to a single environment — the strongest scoping here",
+    note: "Worth correcting a widely repeated claim: Railway's launch messaging said destructive tools were deliberately excluded, and that is no longer true. The server moved into the CLI and now ships 47 tools including remove_service, remove_volume and remove_bucket — and remove_volume destroys persistent data.",
+    url: "https://docs.railway.com/cli/mcp",
+    status: "verified"
+  },
+  {
+    id: "netlify", name: "Netlify", kind: "Hosting / edge",
+    mcp: "official", mcpDetail: "local npx @netlify/mcp · stdio · CLI auth or a token",
+    cli: "netlify · --json, --force · sites:delete --force runs headless",
+    reach: "full", reachDetail: "no MCP delete, but the CLI it bridges to deletes sites",
+    isolation: "Deploy Previews · branch-deploy and deploy-preview operations",
+    lock: "none",
+    guardrails: "Tokens are account-wide · no read-only mode",
+    note: "A good illustration that the MCP tool list is not the whole blast radius. The server exposes no site deletion, but it is explicitly a bridge to the Netlify CLI, and netlify sites:delete --force deletes non-interactively. It also exposes visitor access controls, which change who can view a site.",
+    url: "https://docs.netlify.com/welcome/build-with-ai/netlify-mcp-server/",
+    status: "partial"
+  },
+  {
+    id: "fly", name: "Fly.io", kind: "Containers / VMs",
+    mcp: "official", mcpDetail: "flyctl mcp server · local stdio · access token · ~55 tools",
+    cli: "flyctl · headless with --json / --now · the MCP server wraps the CLI",
+    reach: "full", reachDetail: "apps-destroy, machine-exec, machine-run, volumes-destroy",
+    isolation: "Separate staging apps or orgs · PR review apps",
+    lock: "scoped",
+    guardrails: "fly tokens create readonly / deploy, app-scoped — but the MCP server has no read-only mode",
+    note: "The widest blast radius here. Its MCP server is flyctl itself: tools are registered by iterating the command list with no read-only filter, no allowlist and no confirmation gate. fly-machine-exec is arbitrary shell in a running production container. Fly marks it experimental and tells you to require confirmation yourself — nothing in the code does.",
+    url: "https://fly.io/docs/mcp/flyctl-server/",
+    status: "verified"
+  },
+  {
+    id: "cloudflare", name: "Cloudflare", kind: "Edge / Workers",
+    mcp: "official", mcpDetail: "14 remote servers, split by blast radius · OAuth",
+    cli: "wrangler · API token, non-interactive, JSON output",
+    reach: "full", reachDetail: "d1_database_delete, r2_bucket_delete, d1_database_query (raw SQL)",
+    isolation: "wrangler dev on local workerd · versions · deploy --temporary",
+    lock: "readonly",
+    guardrails: "Connect only the read-only servers · scoped API tokens · throwaway preview account",
+    note: "The model everyone else should copy: observability, logpush, GraphQL and audit-log servers are read-only endpoints, while a separate bindings server holds everything destructive. Because they are distinct URLs, \"don't connect the dangerous one\" is an enforceable control rather than a request. Its deploy --temporary provisions a throwaway account so an agent can ship with no credentials at all.",
+    url: "https://github.com/cloudflare/mcp-server-cloudflare",
+    status: "verified"
+  },
+  {
+    id: "convex", name: "Convex", kind: "Reactive DB / backend",
+    mcp: "official", mcpDetail: "npx convex mcp start · stdio · 12 tools · CLI login",
+    cli: "npx convex · agent mode · auto-provisions a local backend",
+    reach: "full", reachDetail: "run any deployed mutation, envSet — but prod is locked by default",
+    isolation: "A dev deployment per agent · local backend · preview deploys",
+    lock: "readonly",
+    guardrails: "Production blocked unless you pass --dangerously-enable-production-deployments",
+    note: "The only one of these that treats \"agent pointed at production\" as the default threat. Prod blocks PII reads, env vars and writes out of the box, and unlocking it requires a flag named --dangerously-enable-production-deployments. It also documents giving each agent its own isolated dev deployment.",
+    url: "https://docs.convex.dev/ai/convex-mcp-server",
+    status: "verified"
+  },
+  {
+    id: "upstash", name: "Upstash", kind: "Serverless Redis",
+    mcp: "official", mcpDetail: "@upstash/mcp-server · stdio · email + API key",
+    cli: "@upstash/cli · non-interactive, JSON on stdout",
+    reach: "full", reachDetail: "database_delete, create_new (billable), arbitrary Redis commands",
+    isolation: "No branching or preview · only a community local emulator",
+    lock: "readonly",
+    guardrails: "A read-only API key disables every mutating tool at startup",
+    note: "Its read-only API key is the strongest single switch in this table: enforced when the server starts rather than by prompting, disabling every state-modifying tool. The catch is the other column — no first-party non-prod environment exists at all, so there is nowhere safe to point an agent.",
+    url: "https://upstash.com/docs/agent-resources/mcp",
+    status: "partial"
+  },
+  {
+    id: "planetscale", name: "PlanetScale", kind: "MySQL / Postgres",
+    mcp: "official", mcpDetail: "hosted mcp.pscale.dev · OAuth scopes · insights-only variant",
+    cli: "pscale · non-interactive sql · the local mcp command is deprecated",
+    reach: "full", reachDetail: "execute_write_query (arbitrary DML/DDL) · list_invoices",
+    isolation: "Database branches + deploy requests · branch-scoped OAuth",
+    lock: "readonly",
+    guardrails: "OAuth grants none / read-only / full, per organisation or per database",
+    note: "Hosted and properly scoped: consent is per database and you pick none, read-only or full, with a separate insights-only endpoint that strips both query tools. Write access runs arbitrary DML and DDL, though a no-WHERE UPDATE or DELETE and TRUNCATE are refused. Note that list_invoices hands billing data to the agent.",
+    url: "https://planetscale.com/docs/connect/mcp",
+    status: "verified"
+  }
+];
 
 var STORAGE_KEY = "ai_tool_matrix_prefs";
 // Selected-row state for the three row-detail tables. These must be assigned
 // before the init IIFE runs — `var` hoists the declaration but not the value.
 var pmState = { have: {}, filter: "all", detail: null };
-var portState = { detail: null }, permState = { detail: null };
+// Declared up here, not beside their render functions: the init IIFE below
+// calls those renderers, and a `var` assignment further down the file has not
+// run yet at that point.
+var portState = { detail: null }, permState = { detail: null }, infraState = { detail: null };
 var CARD_IDS = LAYERS.map(function(L){ return L.id; });
 
 function loadPrefs(){
@@ -1596,10 +1744,16 @@ function renderPermissions(){
 }
 
 /* ---- infrastructure tab ---- */
-var infraState = { detail: null };
 function infraSelect(id){ infraState.detail = id; renderInfra(); }
 function renderInfra(){
-  legendFrom(REACH, 'infraLegend');
+  // Two vocabularies on this tab: how far it reaches, and whether you can stop it.
+  document.getElementById('infraLegend').innerHTML =
+    Object.keys(REACH).map(function(k){
+      return '<span class="lg mech m-' + esc(k) + '"><i></i>' + esc(REACH[k].label) + '</span>';
+    }).join('') +
+    Object.keys(LOCK).map(function(k){
+      return '<span class="lg mech m-' + esc(k) + '"><i></i>' + esc(LOCK[k].label) + '</span>';
+    }).join('');
   var host = document.getElementById('infraMatrix');
   if (!host) return;
   var rows = INFRA.slice().sort(function(a, b){
@@ -1619,7 +1773,8 @@ function renderInfra(){
           (r.reachDetail ? '<span class="loc">' + esc(r.reachDetail) + '</span>' : '') + '</td>' +
         '<td><span class="note">' + esc(r.cli || '—') + '</span></td>' +
         '<td><span class="note">' + esc(r.isolation || '—') + '</span></td>' +
-        '<td><span class="note">' + esc(r.guardrails || '—') + '</span></td>';
+        '<td>' + badge(r.lock, LOCK[r.lock].label) +
+          (r.guardrails ? '<span class="loc">' + esc(r.guardrails) + '</span>' : '') + '</td>';
       return '<tr class="pm-row' + (sel ? ' sel' : '') + '" data-tool="' + esc(r.id) + '"' + (sel ? ' aria-current="true"' : '') +
         ' tabindex="0" onclick="infraSelect(\'' + esc(r.id) + '\')"' +
         ' onkeydown="if(event.key===\'Enter\'||event.key===\' \'){event.preventDefault();infraSelect(\'' + esc(r.id) + '\')}">' +
@@ -1640,7 +1795,7 @@ function renderInfra(){
       ['Riskiest operations', esc(sel.reachDetail)],
       ['CLI', esc(sel.cli)],
       ['Non-prod target', esc(sel.isolation)],
-      ['Scoping', esc(sel.guardrails)]
+      ['Brake', esc(LOCK[sel.lock].label) + ' — ' + esc(sel.guardrails)]
     ]) +
     (sel.status && sel.status !== 'verified'
       ? '<div class="unver">' + esc(sel.status === 'partial' ? 'partly unverified — see docs' : 'unverified — see docs') + '</div>' : '') +
