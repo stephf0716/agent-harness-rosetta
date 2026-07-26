@@ -371,7 +371,7 @@ var BUILD = { version: "v9", compiled: "july 2026", updated: "26 jul 2026" };
 var TABS = [
   { id: "harness",     hash: "harnesses",   label: "Harness layers" },
   { id: "providers",   hash: "providers",   label: "Provider matrix" },
-  { id: "portability", hash: "portability", label: "What carries over" },
+  { id: "portability", hash: "portability", label: "Portability" },
   { id: "permissions", hash: "permissions", label: "Permissions" }
 ];
 
@@ -445,7 +445,7 @@ var TOOLS = [
     id: "goose", name: "Goose", kind: "Desktop + CLI",
     support: { chatgpt: "oauth", gemini: "apikey", grok: "apikey", claude_sub: "apikey", copilot: "oauth", openrouter: "apikey" },
     note: "Now stewarded by the Linux Foundation's Agentic AI Foundation rather than Block alone. Keys for ~38 providers, a built-in GitHub Copilot provider via OAuth device-code sign-in, and a ChatGPT Codex provider for subscription sign-in. Anthropic is API-key only here — a Claude subscription is reachable only indirectly through the Claude Code ACP pass-through, and Anthropic's terms constrain that. The older claude-code / codex / gemini-cli CLI providers are deprecated in favour of Cursor Agent CLI plus Claude and Codex ACP. Local via Ollama.",
-    url: "https://block.github.io/goose/docs/getting-started/providers"
+    url: "https://goose-docs.ai/docs/getting-started/providers"
   },
   {
     id: "hermes", name: "Hermes Agent", kind: "Desktop + CLI",
@@ -876,10 +876,69 @@ var PERM_COLS = [
   { id: "headless", label: "Headless / CI" }
 ];
 
-var PERMISSIONS = [];
+var PERMISSIONS = [
+  {
+    id: "goose", auto: "open",
+    dflt: "Edits, deletes and runs shell with no prompt",
+    approval: "4 modes: auto / approve / smart_approve / chat · per-tool allow, ask, never",
+    sandbox: "None built in · opt-in Docker via --container",
+    config: "~/.config/goose/config.yaml (GOOSE_MODE) · permission.yaml · /mode",
+    headless: "goose run · the asking modes hard-error, so unattended is auto-only",
+    note: "Ships wide open: GOOSE_MODE=auto is the default and nothing sandboxes Goose itself. The safer modes need a terminal, so a CI run or a `goose schedule` cron job is full-autonomy or nothing — the tool refuses the middle ground rather than silently downgrading.",
+    url: "https://goose-docs.ai/docs/guides/managing-tools/goose-permissions",
+    status: "partial"
+  },
+  {
+    id: "hermes", auto: "mixed",
+    dflt: "Shell is gated by LLM triage; writes, web and MCP never ask",
+    approval: "smart / manual / off · once, session or always · allowlist + deny globs",
+    sandbox: "None by default · terminal.backend docker, ssh or modal",
+    config: "~/.hermes/config.yaml (approvals.*, command_allowlist) · --yolo, -z",
+    headless: "-z forces yolo mode · scheduled runs use approvals.cron_mode (deny)",
+    note: "Approvals cover shell and nothing else — file writes, web, browser and MCP calls never prompt, and blocked writes just error with no override. Enabling a container backend switches prompting off entirely, on the theory that the container is the boundary.",
+    url: "https://hermes-agent.nousresearch.com/docs/user-guide/security",
+    status: "verified"
+  },
+  {
+    id: "osaurus", auto: "mixed",
+    dflt: "Most tools run automatically; shell, git commit and MCP ask",
+    approval: "Per tool name: auto / ask / deny · Allow, Deny or Always Allow",
+    sandbox: "Opt-in per agent: Linux VM (Containerization) or seatbelt fallback",
+    config: "~/.osaurus/config/tools.json + per-agent JSON · GUI only, no flags",
+    headless: "The HTTP/MCP surface auto-denies anything marked ask · no yolo flag",
+    note: "Agents can call schedule_next_run to wake themselves later. Those wakes run unattended, and every auto tool — including sandbox exec, writes and installs — never prompts; hit an ask tool at 3am and the run blocks on a panel nobody clicks.",
+    url: "https://github.com/osaurus-ai/osaurus/blob/main/docs/SANDBOX.md",
+    status: "verified"
+  },
+  {
+    id: "opencode", auto: "open",
+    dflt: "Permissive — most tools allowed; only doom_loop and external_directory ask",
+    approval: "allow / ask / deny per tool + glob rules, last match wins",
+    sandbox: "None built in · third-party Daytona plugin for isolation",
+    config: "opencode.json permission key · ~/.config/opencode/ · --auto",
+    headless: "opencode run --auto · --permissions is deny-by-omission",
+    note: "Starts from permissive defaults — set the permission key before trusting it in a repo you care about. Rules take globs like \"git *\", and the Always button only remembers for the current session. Note --permissions has the opposite polarity to --auto: anything omitted is denied.",
+    url: "https://opencode.ai/docs/permissions",
+    status: "verified"
+  },
+  {
+    id: "openclaw", auto: "open",
+    dflt: "Host shell runs with no approval (mode=full); sandboxing off",
+    approval: "tools.exec.mode deny / allowlist / ask / auto / full · tools.allow, tools.deny",
+    sandbox: "Off by default · opt-in Docker, SSH or OpenShell per agent",
+    config: "~/.openclaw/openclaw.json — tools.exec.*, tools.*, agents.*.sandbox.*",
+    headless: "Always-on gateway daemon · askFallback=deny when no approver answers",
+    note: "The most autonomous here: no sandbox, no allowlist, no prompt out of the box — and a heartbeat wakes it every 30 minutes by default. Every approval mechanism is opt-in hardening; `openclaw exec-policy preset cautious` is the one-command fix. Inbound senders are gated separately and do fail closed.",
+    url: "https://docs.openclaw.ai/tools/permission-modes",
+    status: "verified"
+  }
+];
 
 var STORAGE_KEY = "ai_tool_matrix_prefs";
+// Selected-row state for the three row-detail tables. These must be assigned
+// before the init IIFE runs — `var` hoists the declaration but not the value.
 var pmState = { have: {}, filter: "all", detail: null };
+var portState = { detail: null }, permState = { detail: null };
 var CARD_IDS = LAYERS.map(function(L){ return L.id; });
 
 function loadPrefs(){
@@ -1176,8 +1235,6 @@ function pmRenderMatrix(){
   host.innerHTML = html;
 }
 /* ---- shared helpers for the two harness-keyed tables ---- */
-var portState = { detail: null }, permState = { detail: null };
-
 function harnessName(id){
   for (var i = 0; i < HARNESSES.length; i++){ if (HARNESSES[i].id === id) return HARNESSES[i].label; }
   return id;
