@@ -13,8 +13,9 @@ Deployed on Vercel from `main`; `vercel.json` holds the config.
   changes Vercel's zero-config inference for this static site. Put throwaway
   scripts in a scratch directory outside the repo.
 - **Data lives in JS constants** near the top of the `<script>` block. Prefer
-  editing those over touching markup. The harness tab is still hand-written
-  HTML; see `docs/harness-tab-refactor.md`.
+  editing those over touching markup. Both tabs render from them: the provider
+  tab from `CREDENTIALS`/`TOOLS`/`MECH`/`CLOSED`, the harness tab from
+  `HARNESSES`/`LAYERS` (see `docs/harness-tab-refactor.md` for the design).
 - **Both themes matter.** Colors come from the CSS custom properties at the top
   of the stylesheet; check light and dark before calling a visual change done.
 - **Keep the accessibility scaffolding**: tab roles with arrow-key handling,
