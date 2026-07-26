@@ -181,6 +181,8 @@
   /* portability + autonomy badges reuse the same diamond, different hues */
   .m-own{--mc:var(--m-native)} .m-reads{--mc:var(--c-mcp)}
   .m-gated{--mc:var(--m-oauth)} .m-mixed{--mc:var(--m-key)} .m-open{--mc:var(--m-restr)}
+  .m-official{--mc:var(--c-mcp)} .m-community{--mc:var(--m-native)}
+  .m-read{--mc:var(--m-oauth)} .m-deploy{--mc:var(--m-key)} .m-full{--mc:var(--m-restr)}
   .pm-shell td .loc{margin-top:5px}
   .pm-detail .dgrid{display:grid;grid-template-columns:repeat(auto-fit,minmax(210px,1fr));gap:1px;background:var(--line);border:1px solid var(--line);border-radius:3px;overflow:hidden;margin-top:14px}
   .pm-detail .dg{background:var(--surface);padding:11px 13px}
@@ -355,6 +357,28 @@
 
 </main>
 
+<main id="panel-infra" role="tabpanel" aria-labelledby="tab-infra" hidden>
+
+<header class="title">
+  <h1>Infrastructure<br><span class="dim">Your Agent Can Drive</span></h1>
+  <p class="lede">The hosts and databases behind a vibe-coded project increasingly ship their own MCP servers, which means your agent can reach production directly. This table asks two things of each: <strong>can an agent drive it, and what can it break?</strong> Your repo is version-controlled — a dropped database and a bought domain are not. Tap any row for detail.</p>
+</header>
+
+<nav class="legend" aria-label="Reach legend" id="infraLegend"></nav>
+
+<div class="matrix-shell pm-shell">
+<div class="matrix-scroll">
+<div id="infraMatrix"></div>
+</div>
+<div class="hint"><span class="scrollnote">← scroll → on mobile · </span>tap a row for the riskiest operations and how to scope them</div>
+</div>
+
+<div class="pm-detail" id="infraDetail"></div>
+
+<p class="pm-foot">reach is what the official integration exposes at its most permissive — scoping the token is what actually limits it</p>
+
+</main>
+
 </div>
 <script>
 // ---------------------------------------------------------------------------
@@ -372,7 +396,8 @@ var TABS = [
   { id: "harness",     hash: "harnesses",   label: "Harness layers" },
   { id: "providers",   hash: "providers",   label: "Provider matrix" },
   { id: "portability", hash: "portability", label: "Portability" },
-  { id: "permissions", hash: "permissions", label: "Permissions" }
+  { id: "permissions", hash: "permissions", label: "Permissions" },
+  { id: "infra",       hash: "infra",       label: "Infrastructure" }
 ];
 
 var MECH = {
@@ -1132,6 +1157,28 @@ var PERMISSIONS = [
   }
 ];
 
+// ---------------------------------------------------------------------------
+// Infrastructure: deploy targets and databases an agent can operate directly.
+// Unlike the other harness-keyed tables this one has its own rows, sorted by
+// name at render time. `reach` is our own severity summary of what the official
+// MCP server or CLI can do at its most permissive — not a vendor claim:
+//   read = telemetry only · deploy = ships code and mutates config
+//   full = destructive or spends money
+// ---------------------------------------------------------------------------
+var MCPKIND = {
+  official:  { label: "Official" },
+  community: { label: "Community" },
+  none:      { label: "—" }
+};
+
+var REACH = {
+  read:   { label: "Read-only" },
+  deploy: { label: "Deploy" },
+  full:   { label: "Full control" }
+};
+
+var INFRA = [];
+
 var STORAGE_KEY = "ai_tool_matrix_prefs";
 // Selected-row state for the three row-detail tables. These must be assigned
 // before the init IIFE runs — `var` hoists the declaration but not the value.
@@ -1188,6 +1235,7 @@ function esc(s){
   pmRenderAll();
   renderPortability();
   renderPermissions();
+  renderInfra();
   if (isCard) openCard(target, false);
   // Hash changes are same-document navigations — this code doesn't re-run, so
   // follow them here for both tab links and layer cards.
@@ -1545,6 +1593,58 @@ function renderPermissions(){
     ['Configure in', esc(sel.config)],
     ['Headless / CI', esc(sel.headless)]
   ]) : '');
+}
+
+/* ---- infrastructure tab ---- */
+var infraState = { detail: null };
+function infraSelect(id){ infraState.detail = id; renderInfra(); }
+function renderInfra(){
+  legendFrom(REACH, 'infraLegend');
+  var host = document.getElementById('infraMatrix');
+  if (!host) return;
+  var rows = INFRA.slice().sort(function(a, b){
+    return a.name.toLowerCase() < b.name.toLowerCase() ? -1 : a.name.toLowerCase() > b.name.toLowerCase() ? 1 : 0;
+  });
+  if (!rows.length){ host.innerHTML = '<p class="pm-empty">No infrastructure data yet.</p>'; return; }
+  host.innerHTML = '<table><thead><tr><th class="pm-tool-h">Service</th>' +
+    ['MCP server', 'What it can reach', 'CLI', 'Non-prod target', 'Scoping'].map(function(h){
+      return '<th><span class="chd">' + esc(h) + '</span></th>';
+    }).join('') + '</tr></thead><tbody>' +
+    rows.map(function(r){
+      var sel = infraState.detail === r.id;
+      var cells =
+        '<td>' + (r.mcp === 'none' ? '<span class="dash">—</span>' : badge(r.mcp, MCPKIND[r.mcp].label)) +
+          (r.mcpDetail ? '<span class="loc">' + esc(r.mcpDetail) + '</span>' : '') + '</td>' +
+        '<td>' + badge(r.reach, REACH[r.reach].label) +
+          (r.reachDetail ? '<span class="loc">' + esc(r.reachDetail) + '</span>' : '') + '</td>' +
+        '<td><span class="note">' + esc(r.cli || '—') + '</span></td>' +
+        '<td><span class="note">' + esc(r.isolation || '—') + '</span></td>' +
+        '<td><span class="note">' + esc(r.guardrails || '—') + '</span></td>';
+      return '<tr class="pm-row' + (sel ? ' sel' : '') + '" data-tool="' + esc(r.id) + '"' + (sel ? ' aria-current="true"' : '') +
+        ' tabindex="0" onclick="infraSelect(\'' + esc(r.id) + '\')"' +
+        ' onkeydown="if(event.key===\'Enter\'||event.key===\' \'){event.preventDefault();infraSelect(\'' + esc(r.id) + '\')}">' +
+        '<td class="pm-tool"><div class="tname">' + esc(r.name) + '</div><div class="tkind">' + esc(r.kind) + '</div></td>' +
+        cells + '</tr>';
+    }).join('') + '</tbody></table>';
+
+  var sel = null;
+  rows.forEach(function(r){ if (r.id === infraState.detail) sel = r; });
+  var el = document.getElementById('infraDetail');
+  if (!sel){ el.style.display = 'none'; return; }
+  el.style.display = '';
+  el.innerHTML = '<div class="dname">' + esc(sel.name) + '</div>' +
+    '<div class="dkind">' + esc(sel.kind) + '</div>' +
+    '<p class="dnote">' + esc(sel.note) + '</p>' +
+    dgrid([
+      ['MCP server', esc(MCPKIND[sel.mcp].label) + (sel.mcpDetail ? ' — ' + esc(sel.mcpDetail) : '')],
+      ['Riskiest operations', esc(sel.reachDetail)],
+      ['CLI', esc(sel.cli)],
+      ['Non-prod target', esc(sel.isolation)],
+      ['Scoping', esc(sel.guardrails)]
+    ]) +
+    (sel.status && sel.status !== 'verified'
+      ? '<div class="unver">' + esc(sel.status === 'partial' ? 'partly unverified — see docs' : 'unverified — see docs') + '</div>' : '') +
+    (sel.url ? '<br><a href="' + esc(sel.url) + '" target="_blank" rel="noopener noreferrer">' + esc(sel.name) + ' docs <span aria-hidden="true">↗</span></a>' : '');
 }
 
 function pmRenderDetail(){
