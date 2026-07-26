@@ -1,6 +1,6 @@
 # AI Tool Reference
 
-A single-file interactive reference for AI developer tools, in four tabs:
+A single-file interactive reference for AI developer tools, in five tabs:
 
 - **Harness layers** — the Agent Harness Rosetta Stone: maps the five extension
   layers of AI agent harnesses (instructions, skills, tool access/MCP, bundles,
@@ -18,6 +18,10 @@ A single-file interactive reference for AI developer tools, in four tabs:
 - **Permissions** — what each harness does without asking, and how to constrain
   it: default autonomy, approval granularity, sandboxing, where permissions are
   declared, and what happens unattended.
+- **Infrastructure** — the hosts and databases an agent can operate directly
+  through a first-party MCP server, and what it can break: how far the official
+  integration reaches, what non-production target exists, and whether there's
+  any enforced brake on it.
 
 ## Usage
 
@@ -81,6 +85,12 @@ Everything lives in `index.html`.
   summary of a researched default, not a vendor's own label. Rows carry a
   `status` of `verified`, `partial` or `unverified`, and anything short of
   verified shows a caveat in the detail panel.
+- **`INFRA`** is the one table whose rows aren't harnesses, so it sorts itself
+  by name. It carries three badge vocabularies: `MCPKIND` (is there a
+  first-party MCP server), `REACH` (how far the official integration goes at
+  its most permissive) and `LOCK` (whether anything can stop it). `REACH` and
+  `LOCK` are both our own summaries rather than vendor labels — reach is nearly
+  always `full`, so `LOCK` is the column that actually discriminates.
 - The harness tab renders from plain JS constants (the refactor that got it
   there is specced in
   [`docs/harness-tab-refactor.md`](./docs/harness-tab-refactor.md)):
