@@ -43,8 +43,12 @@
   .tabs button:hover{color:var(--text)}
   .tabs button[aria-selected="true"]{color:var(--text);border-bottom-color:var(--text);font-weight:600}
   .tabs button:focus-visible{outline:2px solid var(--c-mcp);outline-offset:-2px}
-  body[data-tab="harness"] #panel-providers{display:none}
-  body[data-tab="providers"] #panel-harness{display:none}
+  /* Panels are toggled by JS setting [hidden] — same order-independent trick as
+     the harness column filter, so adding a tab needs no new CSS. */
+  main[role="tabpanel"][hidden]{display:none}
+  .tabs{overflow-x:auto;scrollbar-width:none}
+  .tabs::-webkit-scrollbar{display:none}
+  .tabs button{flex:none;white-space:nowrap}
 
   header.title{padding:38px 0 6px}
   h1{font-family:'Archivo',sans-serif;font-weight:800;font-size:clamp(30px,6.2vw,50px);line-height:1.02;letter-spacing:-.022em}
@@ -174,6 +178,16 @@
   .mech i{width:8px;height:8px;border-radius:1px;background:var(--mc);transform:rotate(45deg);flex:none}
   .mech.m-restricted{border-bottom:1px dashed var(--mc);padding-bottom:1px}
   .m-apikey{--mc:var(--m-key)} .m-oauth{--mc:var(--m-oauth)} .m-native{--mc:var(--m-native)} .m-restricted{--mc:var(--m-restr)}
+  /* portability + autonomy badges reuse the same diamond, different hues */
+  .m-own{--mc:var(--m-oauth)} .m-reads{--mc:var(--m-local)}
+  .m-gated{--mc:var(--m-oauth)} .m-mixed{--mc:var(--m-key)} .m-open{--mc:var(--m-restr)}
+  .pm-shell td .loc{margin-top:5px}
+  .pm-detail .dgrid{display:grid;grid-template-columns:repeat(auto-fit,minmax(210px,1fr));gap:1px;background:var(--line);border:1px solid var(--line);border-radius:3px;overflow:hidden;margin-top:14px}
+  .pm-detail .dg{background:var(--surface);padding:11px 13px}
+  .pm-detail .dg .k{font-family:'IBM Plex Mono',monospace;font-size:10px;letter-spacing:.13em;text-transform:uppercase;color:var(--faint);margin-bottom:5px}
+  .pm-detail .dg .v{font-size:12.5px;color:var(--text)}
+  .pm-detail .dg .v code{font-size:.9em}
+  .unver{display:inline-block;margin-top:10px;font-family:'IBM Plex Mono',monospace;font-size:11.5px;color:var(--m-key);border:1px dashed var(--m-key);border-radius:3px;padding:3px 8px}
   .pm-empty{color:var(--muted);font-size:14px;font-style:italic;padding:16px}
   .pm-detail{border:1px solid var(--line);border-radius:4px;background:var(--surface);padding:16px 18px;margin-top:16px}
   .pm-detail .dname{font-family:'Archivo',sans-serif;font-size:17px;font-weight:700}
@@ -192,10 +206,7 @@
   <button class="theme-btn" id="themeBtn" onclick="toggleTheme()" aria-label="Toggle color theme">dark / light</button>
 </div>
 
-<nav class="tabs" role="tablist" aria-label="Reference sections" onkeydown="tabsKey(event)">
-  <button id="tab-harness" role="tab" aria-selected="true" aria-controls="panel-harness" onclick="setTab('harness')">Harness layers</button>
-  <button id="tab-providers" role="tab" aria-selected="false" aria-controls="panel-providers" onclick="setTab('providers')">Provider matrix</button>
-</nav>
+<nav class="tabs" role="tablist" aria-label="Reference sections" id="tabBar" onkeydown="tabsKey(event)"></nav>
 
 <noscript><p class="lede">Both reference tables render from data with JavaScript — enable it to see the content.</p></noscript>
 
@@ -300,6 +311,50 @@
 
 </main>
 
+<main id="panel-portability" role="tabpanel" aria-labelledby="tab-portability" hidden>
+
+<header class="title">
+  <h1>What Carries<br><span class="dim">Over</span></h1>
+  <p class="lede">You've set one harness up; what survives if you add or switch to another? Three things travel as open standards — <strong>AGENTS.md instructions, SKILL.md skills, and MCP servers</strong> — and several tools read each other's directories outright, so one folder can serve many. Everything else is stranded. Tap any row for the exact paths.</p>
+</header>
+
+<nav class="legend" aria-label="Portability legend" id="portLegend"></nav>
+
+<div class="matrix-shell pm-shell">
+<div class="matrix-scroll">
+<div id="portMatrix"></div>
+</div>
+<div class="hint"><span class="scrollnote">← scroll → on mobile · </span>tap a row for exact paths and what doesn't port</div>
+</div>
+
+<div class="pm-detail" id="portDetail"></div>
+
+<p class="pm-foot">paths are what each project's current docs specify — verify before pointing one folder at several tools</p>
+
+</main>
+
+<main id="panel-permissions" role="tabpanel" aria-labelledby="tab-permissions" hidden>
+
+<header class="title">
+  <h1>Permissions<br><span class="dim">&amp; Autonomy</span></h1>
+  <p class="lede">The question to answer before you let an agent near a repo: <strong>what can it do without asking, and how do you constrain it?</strong> Every harness names this differently — approval modes, allowlists, sandboxes, trust levels. Five dimensions, side by side. Tap any row for detail and docs.</p>
+</header>
+
+<nav class="legend" aria-label="Autonomy legend" id="permLegend"></nav>
+
+<div class="matrix-shell pm-shell">
+<div class="matrix-scroll">
+<div id="permMatrix"></div>
+</div>
+<div class="hint"><span class="scrollnote">← scroll → on mobile · </span>tap a row for the full picture and provider docs</div>
+</div>
+
+<div class="pm-detail" id="permDetail"></div>
+
+<p class="pm-foot">defaults change between releases and are the most consequential cell here — confirm against your installed version, not this table</p>
+
+</main>
+
 </div>
 <script>
 // ---------------------------------------------------------------------------
@@ -308,7 +363,17 @@
 // from these constants. CLOSED lists the tool ids grouped as closed source.
 // ---------------------------------------------------------------------------
 // Edit the build stamp here only — the masthead and footer both render from it.
-var BUILD = { version: "v8", compiled: "july 2026", updated: "25 jul 2026" };
+var BUILD = { version: "v9", compiled: "july 2026", updated: "26 jul 2026" };
+
+// The tab bar renders from this: one entry per reference, in display order.
+// `hash` is the public deep link (#harnesses, #providers, …) — don't rename
+// existing ones, they're shared. Each needs a <main id="panel-<id>">.
+var TABS = [
+  { id: "harness",     hash: "harnesses",   label: "Harness layers" },
+  { id: "providers",   hash: "providers",   label: "Provider matrix" },
+  { id: "portability", hash: "portability", label: "What carries over" },
+  { id: "permissions", hash: "permissions", label: "Permissions" }
+];
 
 var MECH = {
   apikey:     { label: "API Key" },
@@ -771,6 +836,48 @@ var LAYERS = [
   }
 ];
 
+// ---------------------------------------------------------------------------
+// Portability: what config transfers between harnesses. Rows reuse HARNESSES
+// for order and naming, so this stays in step with the harness tab. Per column
+// a cell is { m: PORT_MECH key, loc: exact path(s) }; `foreign` lists other
+// vendors' directories this tool also reads, which is what makes one folder
+// serve several tools. `stranded` is what has no equivalent elsewhere.
+// ---------------------------------------------------------------------------
+var PORT_MECH = {
+  own:   { label: "Its own" },
+  reads: { label: "Also reads" },
+  no:    { label: "—" }
+};
+
+var PORT_COLS = [
+  { id: "agents", label: "AGENTS.md" },
+  { id: "skills", label: "SKILL.md skills" },
+  { id: "mcp",    label: "MCP servers" }
+];
+
+var PORTABILITY = [];
+
+// ---------------------------------------------------------------------------
+// Permissions: what each harness does without asking, and how to constrain it.
+// `auto` is our own summary of the researched default, not a vendor claim:
+//   gated = asks before acting · mixed = reads freely, gates writes/exec
+//   open  = acts without prompting by default
+// ---------------------------------------------------------------------------
+var AUTO = {
+  gated: { label: "Asks first" },
+  mixed: { label: "Gates writes" },
+  open:  { label: "Acts freely" }
+};
+
+var PERM_COLS = [
+  { id: "approval", label: "Approval granularity" },
+  { id: "sandbox",  label: "Sandbox" },
+  { id: "config",   label: "Where to configure" },
+  { id: "headless", label: "Headless / CI" }
+];
+
+var PERMISSIONS = [];
+
 var STORAGE_KEY = "ai_tool_matrix_prefs";
 var pmState = { have: {}, filter: "all", detail: null };
 var CARD_IDS = LAYERS.map(function(L){ return L.id; });
@@ -799,6 +906,7 @@ function esc(s){
   var prefersDark = window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches;
   var theme = (saved.theme === 'dark' || saved.theme === 'light') ? saved.theme : (prefersDark ? 'dark' : 'light');
   document.documentElement.setAttribute('data-theme', theme);
+  renderTabs();
   renderHarnessPicker();
   renderHarnessMatrix();
   renderLayerCards();
@@ -811,31 +919,55 @@ function esc(s){
   document.getElementById('buildTag').textContent = 'ai-tool-reference · ' + BUILD.version;
   document.getElementById('buildFoot').textContent = 'compiled ' + BUILD.compiled + ' · updated ' + BUILD.updated;
 
-  // The hash addresses either a tab (#harnesses / #providers) or a layer card (#c-skill).
+  // The hash addresses either a tab (#harnesses, #providers, …) or a layer card (#c-skill).
   var target = location.hash.replace('#', '');
   var isCard = CARD_IDS.indexOf(target) !== -1;
-  var tab = (target === 'providers') ? 'providers'
-          : (target === 'harnesses' || isCard) ? 'harness'
-          : (saved.tab === 'providers' ? 'providers' : 'harness');
+  var byHash = null;
+  TABS.forEach(function(t){ if (t.hash === target) byHash = t.id; });
+  var tab = byHash ? byHash
+          : isCard ? 'harness'
+          : (tabById(saved.tab) ? saved.tab : TABS[0].id);
   applyTab(tab, false);
   pmRenderAll();
+  renderPortability();
+  renderPermissions();
   if (isCard) openCard(target, false);
+  // Hash changes are same-document navigations — this code doesn't re-run, so
+  // follow them here for both tab links and layer cards.
   window.addEventListener('hashchange', function(){
     var id = location.hash.replace('#', '');
     if (CARD_IDS.indexOf(id) !== -1){
       if (document.body.getAttribute('data-tab') !== 'harness') applyTab('harness', false);
       openCard(id, false);
+      return;
     }
+    TABS.forEach(function(t){
+      if (t.hash === id && document.body.getAttribute('data-tab') !== t.id) applyTab(t.id, false);
+    });
   });
 })();
 
+function tabById(id){
+  for (var i = 0; i < TABS.length; i++){ if (TABS[i].id === id) return TABS[i]; }
+  return null;
+}
+function renderTabs(){
+  document.getElementById('tabBar').innerHTML = TABS.map(function(t){
+    return '<button id="tab-' + esc(t.id) + '" role="tab" aria-selected="false" aria-controls="panel-' +
+      esc(t.id) + '" onclick="setTab(\'' + esc(t.id) + '\')">' + esc(t.label) + '</button>';
+  }).join('');
+}
 function applyTab(tab, updateHash){
+  if (!tabById(tab)) tab = TABS[0].id;
   document.body.setAttribute('data-tab', tab);
-  var h = document.getElementById('tab-harness'), p = document.getElementById('tab-providers');
-  h.setAttribute('aria-selected', tab === 'harness' ? 'true' : 'false');
-  p.setAttribute('aria-selected', tab === 'providers' ? 'true' : 'false');
+  TABS.forEach(function(t){
+    var btn = document.getElementById('tab-' + t.id);
+    var panel = document.getElementById('panel-' + t.id);
+    if (btn) btn.setAttribute('aria-selected', t.id === tab ? 'true' : 'false');
+    if (panel) panel.hidden = (t.id !== tab);
+  });
   if (updateHash && window.history && history.replaceState) {
-    history.replaceState(null, '', tab === 'providers' ? '#providers' : '#harnesses');
+    history.replaceState(null, '', '#' + tabById(tab).hash);
   }
 }
 function setTab(tab){
@@ -849,11 +981,13 @@ function setTab(tab){
 function tabsKey(ev){
   if (ev.key !== 'ArrowLeft' && ev.key !== 'ArrowRight' && ev.key !== 'Home' && ev.key !== 'End') return;
   ev.preventDefault();
-  var cur = document.body.getAttribute('data-tab');
-  var next = ev.key === 'Home' ? 'harness' : ev.key === 'End' ? 'providers'
-           : (cur === 'harness' ? 'providers' : 'harness');
-  setTab(next);
-  document.getElementById(next === 'harness' ? 'tab-harness' : 'tab-providers').focus();
+  var cur = 0;
+  for (var i = 0; i < TABS.length; i++){ if (TABS[i].id === document.body.getAttribute('data-tab')) cur = i; }
+  var next = ev.key === 'Home' ? 0
+           : ev.key === 'End' ? TABS.length - 1
+           : (cur + (ev.key === 'ArrowRight' ? 1 : TABS.length - 1)) % TABS.length;
+  setTab(TABS[next].id);
+  document.getElementById('tab-' + TABS[next].id).focus();
 }
 
 function applyHarness(id){
@@ -1041,6 +1175,116 @@ function pmRenderMatrix(){
   html += '</tbody></table>';
   host.innerHTML = html;
 }
+/* ---- shared helpers for the two harness-keyed tables ---- */
+var portState = { detail: null }, permState = { detail: null };
+
+function harnessName(id){
+  for (var i = 0; i < HARNESSES.length; i++){ if (HARNESSES[i].id === id) return HARNESSES[i].label; }
+  return id;
+}
+function byHarnessOrder(rows){
+  return HARNESSES.map(function(h){
+    for (var i = 0; i < rows.length; i++){ if (rows[i].id === h.id) return rows[i]; }
+    return null;
+  }).filter(Boolean);
+}
+function badge(cls, label){
+  return '<span class="mech m-' + esc(cls) + '"><i></i>' + esc(label) + '</span>';
+}
+function legendFrom(map, host){
+  var el = document.getElementById(host);
+  if (!el) return;
+  el.innerHTML = Object.keys(map).filter(function(k){ return k !== 'no'; }).map(function(k){
+    return '<span class="lg mech m-' + esc(k) + '"><i></i>' + esc(map[k].label) + '</span>';
+  }).join('');
+}
+function rowShell(id, sel, fn, cells){
+  return '<tr class="pm-row' + (sel ? ' sel' : '') + '" data-tool="' + esc(id) + '"' + (sel ? ' aria-current="true"' : '') +
+    ' tabindex="0" onclick="' + fn + '(\'' + esc(id) + '\')" onkeydown="if(event.key===\'Enter\'||event.key===\' \'){event.preventDefault();' + fn + '(\'' + esc(id) + '\')}">' +
+    '<td class="pm-tool"><div class="tname">' + esc(harnessName(id)) + '</div></td>' + cells + '</tr>';
+}
+function detailPanel(host, r, title, grid){
+  var el = document.getElementById(host);
+  if (!el) return;
+  if (!r){ el.style.display = 'none'; return; }
+  el.style.display = '';
+  el.innerHTML = '<div class="dname">' + esc(harnessName(r.id)) + '</div>' +
+    '<div class="dkind">' + esc(title) + '</div>' +
+    '<p class="dnote">' + esc(r.note) + '</p>' +
+    grid +
+    (r.status && r.status !== 'verified'
+      ? '<div class="unver">' + esc(r.status === 'partial' ? 'partly unverified — see docs' : 'unverified — see docs') + '</div>' : '') +
+    (r.url ? '<br><a href="' + esc(r.url) + '" target="_blank" rel="noopener noreferrer">' + esc(harnessName(r.id)) + ' docs <span aria-hidden="true">↗</span></a>' : '');
+}
+function dgrid(pairs){
+  var items = pairs.filter(function(p){ return p[1]; }).map(function(p){
+    return '<div class="dg"><div class="k">' + esc(p[0]) + '</div><div class="v">' + p[1] + '</div></div>';
+  }).join('');
+  return items ? '<div class="dgrid">' + items + '</div>' : '';
+}
+function pathList(arr){
+  if (!arr || !arr.length) return '<span class="dash">none</span>';
+  return arr.map(function(s){ return '<code>' + esc(s) + '</code>'; }).join(' ');
+}
+
+/* ---- portability tab ---- */
+function portSelect(id){ portState.detail = id; renderPortability(); }
+function renderPortability(){
+  legendFrom(PORT_MECH, 'portLegend');
+  var host = document.getElementById('portMatrix');
+  if (!host) return;
+  var rows = byHarnessOrder(PORTABILITY);
+  if (!rows.length){ host.innerHTML = '<p class="pm-empty">No portability data yet.</p>'; return; }
+  host.innerHTML = '<table><thead><tr><th class="pm-tool-h">Tool</th>' +
+    PORT_COLS.map(function(c){ return '<th><span class="chd">' + esc(c.label) + '</span></th>'; }).join('') +
+    '<th><span class="chd">Doesn\'t port</span></th></tr></thead><tbody>' +
+    rows.map(function(r){
+      var cells = PORT_COLS.map(function(c){
+        var cell = r.cells[c.id] || { m: 'no' };
+        var html = cell.m === 'no' ? '<span class="dash">—</span>' : badge(cell.m, PORT_MECH[cell.m].label);
+        if (cell.loc) html += '<span class="loc">' + esc(cell.loc) + '</span>';
+        return '<td>' + html + '</td>';
+      }).join('') + '<td><span class="note">' + esc(r.stranded || '—') + '</span></td>';
+      return rowShell(r.id, portState.detail === r.id, 'portSelect', cells);
+    }).join('') + '</tbody></table>';
+  var sel = null;
+  rows.forEach(function(r){ if (r.id === portState.detail) sel = r; });
+  detailPanel('portDetail', sel, 'what transfers', sel ? dgrid([
+    ['Instruction files', pathList(sel.instr)],
+    ['Skill directories', pathList(sel.skills)],
+    ["Other vendors' dirs it reads", pathList(sel.foreign)],
+    ['MCP config', sel.mcp ? '<code>' + esc(sel.mcp) + '</code>' : '<span class="dash">none</span>']
+  ]) : '');
+}
+
+/* ---- permissions tab ---- */
+function permSelect(id){ permState.detail = id; renderPermissions(); }
+function renderPermissions(){
+  legendFrom(AUTO, 'permLegend');
+  var host = document.getElementById('permMatrix');
+  if (!host) return;
+  var rows = byHarnessOrder(PERMISSIONS);
+  if (!rows.length){ host.innerHTML = '<p class="pm-empty">No permissions data yet.</p>'; return; }
+  host.innerHTML = '<table><thead><tr><th class="pm-tool-h">Tool</th><th><span class="chd">Out of the box</span></th>' +
+    PERM_COLS.map(function(c){ return '<th><span class="chd">' + esc(c.label) + '</span></th>'; }).join('') +
+    '</tr></thead><tbody>' +
+    rows.map(function(r){
+      var cells = '<td>' + badge(r.auto, AUTO[r.auto] ? AUTO[r.auto].label : r.auto) +
+        '<span class="loc">' + esc(r.dflt) + '</span></td>' +
+        PERM_COLS.map(function(c){ return '<td><span class="note">' + esc(r[c.id] || '—') + '</span></td>'; }).join('');
+      return rowShell(r.id, permState.detail === r.id, 'permSelect', cells);
+    }).join('') + '</tbody></table>';
+  var sel = null;
+  rows.forEach(function(r){ if (r.id === permState.detail) sel = r; });
+  detailPanel('permDetail', sel, 'permissions & autonomy', sel ? dgrid([
+    ['Out of the box', esc(sel.dflt)],
+    ['Approval', esc(sel.approval)],
+    ['Sandbox', esc(sel.sandbox)],
+    ['Configure in', esc(sel.config)],
+    ['Headless / CI', esc(sel.headless)]
+  ]) : '');
+}
+
 function pmRenderDetail(){
   var t = null;
   for (var i = 0; i < TOOLS.length; i++) if (TOOLS[i].id === pmState.detail) t = TOOLS[i];
