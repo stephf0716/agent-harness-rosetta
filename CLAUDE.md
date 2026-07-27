@@ -54,8 +54,25 @@ Two things learned the hard way while compiling the newer tabs:
 
 ## Verifying a change
 
-Chromium is preinstalled at `/opt/pw-browsers/chromium` — `npm i
-playwright-core` in a scratch directory and launch with `executablePath`. Never
-run `playwright install`. Load the page over `file://`, exercise the filters and
-both themes, and screenshot desktop (1380×900) and mobile (390×844). A failed
-Google Fonts request is expected offline; anything else in the console is a bug.
+`.claude/launch.json` defines a **rosetta** preview server: a static file server
+written inline as a `node -e` one-liner, so it stays true to the no-dependency
+rule and needs nothing installed. Start it and drive the page with the preview
+tools — screenshot, resize, click, and `preview_eval` for things like
+`setTab('permissions')` or `toggleTheme()`. Prefer `preview_eval` with
+`scrollBehavior='auto'` before scrolling; the stylesheet's smooth scroll
+otherwise races the screenshot and you capture the old position.
+
+Exercise the filters and **both themes**, and screenshot desktop and mobile
+(the `mobile` preset is 375×812). A failed Google Fonts request is expected
+offline; anything else in the console is a bug.
+
+Verify visually whenever a change is visible — density, colour and duplication
+problems are invisible to a DOM-level check. The sandbox column, for instance,
+passed every structural assertion while rendering "Opt-in" directly above prose
+beginning "None built in".
+
+For logic that isn't visual, driving the render functions in Node with a small
+DOM stub is fast and catches missing data: extract the `<script>` block, stub
+`document.getElementById` to capture `innerHTML`, then call the `render*`
+functions and assert over the output. Keep those scripts in a scratch directory
+outside the repo.
