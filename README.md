@@ -5,7 +5,9 @@ A single-file interactive reference for AI developer tools, in five tabs:
 - **Harness layers** — the Agent Harness Rosetta Stone: maps the five extension
   layers of AI agent harnesses (instructions, skills, tool access/MCP, bundles,
   delegation) across Claude, Codex/ChatGPT, Goose, Hermes Agent, Osaurus,
-  Gemini CLI, Cursor, OpenCode, OpenClaw, and GitHub Copilot in one matrix.
+  Gemini CLI, Cursor, OpenCode, OpenClaw, GitHub Copilot, Zed, and Jan in one
+  matrix. Jan is the outlier and the row shows it: a local chat/RAG app with a
+  real MCP tool loop, but no skills layer and no file-write or shell tool.
 - **Provider matrix** — a compatibility matrix of AI developer tools and the
   credentials each one supports. Each row is a tool (Cline, Cursor, Goose,
   Claude, ChatGPT, and more); each column is a credential you might hold.
@@ -29,14 +31,16 @@ A single-file interactive reference for AI developer tools, in five tabs:
 ## Usage
 
 Open `index.html` in a browser. No build step, no dependencies beyond Google
-Fonts. Both tabs render from data with JavaScript, so the page needs it enabled
+Fonts. Every tab renders from data with JavaScript, so the page needs it enabled
 (a `<noscript>` note says so).
 
 Features:
-- Tab bar to switch between the two references (deep-linkable via `#harnesses` / `#providers`)
-- Light/dark theme toggle (defaults to system preference), one theme for both tabs
+- Tab bar to switch between the five references (deep-linkable via `#harnesses`,
+  `#providers`, `#portability`, `#permissions` and `#infra`)
+- Light/dark theme toggle (defaults to system preference), one theme across all tabs
 - Harness tab: sticky harness picker filters the matrix and layer cards to one
-  platform; tap any matrix row or layer card for the full explanation;
+  platform; tap any matrix cell or layer card for the full explanation (the
+  column headers are buttons, so the same jump works from the keyboard);
   terminology traps section covers the "plugin" / "extension" naming collisions
 - Provider tab: toggle the credentials you have to filter columns, "only show
   available" to hide tools you can't use, tap any row for connection details
@@ -112,16 +116,25 @@ Everything lives in `index.html`.
 - The harness tab renders from plain JS constants (the refactor that got it
   there is specced in
   [`docs/harness-tab-refactor.md`](./docs/harness-tab-refactor.md)):
-  - **`HARNESSES`** — the columns, in matrix/card-grid order. Each has an `id`,
-    a `label` (matrix header), a `short` (picker chip — the picker sorts these
+  - The matrix is **harness-per-row, layer-per-column**, the same orientation as
+    the other four tabs. The five layers are fixed by the premise, so the column
+    count never grows and the table fits without horizontal scroll on desktop;
+    each new harness costs one row instead of one column.
+  - **`HARNESSES`** — the rows, in matrix/card-grid order. Each has an `id`,
+    a `label` (row header), a `short` (picker chip — the picker sorts these
     alphabetically), and optionally a `tile` when the card-grid heading differs.
-  - **`LAYERS`** — one entry per layer: matrix row, explainer card, and a
-    `cells` map from harness `id` to that harness's cell (`term`, matrix-only
-    `loc`/`note`/`warn`, card-tile `desc`, and `pterm` when the tile term
-    differs). Adding a harness means one `HARNESSES` object plus one `cells`
-    entry per layer — no markup or CSS changes.
-  - Filtering tags every rendered cell and tile with `data-h="<harness id>"`
-    and toggles the `hidden` attribute, so it never depends on column order.
+  - **`LAYERS`** — one entry per layer: matrix column, explainer card, and a
+    `cells` map from harness `id` to that harness's cell. A cell's `term` and
+    `loc` are what the matrix shows; `note` renders in the layer card's tile,
+    `warn` styles that note and puts an inline ⚠ in the matrix cell; `desc` is
+    the tile's prose and `pterm` overrides `term` there when the two differ.
+    Adding a harness means one `HARNESSES` object plus one `cells` entry per
+    layer — no markup or CSS changes. A missing `cells` entry throws rather
+    than degrading, so all five are required.
+  - Filtering tags every rendered row and tile with `data-h="<harness id>"`
+    and toggles the `hidden` attribute, so it never depends on row order.
+    Because filtering removes rows without narrowing the table, the scroll
+    hint and the table's `min-width` stay put when a filter is active.
 - The provider matrix renders from plain JS constants near the top of the
   `<script>` block:
   - **`CREDENTIALS`** — the columns. Each has an `id` and a `label`.
@@ -136,14 +149,18 @@ Everything lives in `index.html`.
 
 ## A note on accuracy
 
-Compiled July 2026; all four tabs last fact-checked against provider docs on
-26 July 2026, and the infrastructure capability columns on 27 July 2026. Where a vendor's docs site blocked automated access, claims were
+Compiled July 2026; all five tabs last fact-checked against provider docs on
+26 July 2026, with the infrastructure capability columns and the Zed and Jan
+rows verified on 27 July 2026. Where a vendor's docs site blocked automated
+access, claims were
 verified against the same docs in the project's public repo, or against the
-shipping source behind them; the two Cursor rows rest on secondary sources that
-agree with each other and are marked `partial` for that reason. Terminology and provider support in this space move fast — tools
-add subscription sign-in, vendors change their terms, projects get renamed or
-merged. Both tabs are point-in-time snapshots; verify against each project's
-linked docs before relying on any single cell.
+shipping source behind them. Three rows fall short of fully verified and are
+marked `partial`, each carrying its caveat in the detail panel: both Cursor rows
+(portability and permissions), which rest on secondary sources that agree with
+each other, and Goose's permissions row. Terminology and provider support in
+this space move fast — tools add subscription sign-in, vendors change their
+terms, projects get renamed or merged. Every tab is a point-in-time snapshot;
+verify against each project's linked docs before relying on any single cell.
 
 One nuance the matrix can't yet express: since Anthropic's February 2026 terms
 change and its April 2026 enforcement, several third-party harnesses still offer
