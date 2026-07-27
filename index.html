@@ -199,6 +199,10 @@
   .m-official{--mc:var(--c-mcp)} .m-community{--mc:var(--m-native)}
   .m-read{--mc:var(--m-oauth)} .m-deploy{--mc:var(--m-key)} .m-full{--mc:var(--m-restr)}
   .m-readonly{--mc:var(--m-oauth)} .m-scoped{--mc:var(--m-key)} .m-none{--mc:var(--m-restr)}
+  /* permissions: the per-action verdict is the only badge on that tab, so it is
+     the only vocabulary there that spends colour. "No such tool" is neutral
+     rather than red — a harness that cannot run shell at all is not a risk. */
+  .m-ask{--mc:var(--m-oauth)} .m-free{--mc:var(--m-restr)} .m-notool{--mc:var(--m-native)}
   .pm-shell td .loc{margin-top:5px}
   /* infrastructure: capability cells, their qualifiers, and the picked columns */
   .pm-shell td .cap{display:block;font-size:12.5px;color:var(--text)}
@@ -364,7 +368,7 @@
 
 <header class="title">
   <h1>Permissions<br><span class="dim">&amp; Autonomy</span></h1>
-  <p class="lede">The question to answer before you let an agent near a repo: <strong>what can it do without asking, and how do you constrain it?</strong> Every harness names this differently — approval modes, allowlists, sandboxes, trust levels. Five dimensions, side by side. Tap any row for detail and docs.</p>
+  <p class="lede">Every harness names this differently — approval modes, allowlists, sandboxes, trust levels — so this table asks the two blunt questions instead: <strong>before checking with you, does it edit your files, and does it run your shell?</strong> Then what contains it, and where you change it. Tap any row for the default in full, approval granularity, and unattended behaviour.</p>
 </header>
 
 <nav class="legend" aria-label="Autonomy legend" id="permLegend"></nav>
@@ -436,7 +440,7 @@
 // from these constants. CLOSED lists the tool ids grouped as closed source.
 // ---------------------------------------------------------------------------
 // Edit the build stamp here only — the masthead and footer both render from it.
-var BUILD = { version: "v13", compiled: "july 2026", updated: "27 jul 2026" };
+var BUILD = { version: "v15", compiled: "july 2026", updated: "27 jul 2026" };
 
 // The tab bar renders from this: one entry per reference, in display order.
 // `hash` is the public deep link (#harnesses, #providers, …) — don't rename
@@ -1177,16 +1181,48 @@ var AUTO = {
   open:  { label: "Acts freely" }
 };
 
+// The two actions that actually change something, split out of `auto` because
+// the summary hides real differences — Cursor edits files without asking but
+// stops at the terminal; Hermes is the reverse. Both are our reading of the
+// researched default, not a vendor label. `notool` means the harness ships no
+// such tool at all, which is a different answer from "does it freely".
+var ACT = {
+  ask:    { label: "Asks first" },
+  free:   { label: "No prompt" },
+  notool: { label: "No such tool" }
+};
+
+// Whether an OS-level boundary exists, and whether you get it for free.
+// Deliberately NOT a badge vocabulary: it renders as a plain leading word.
+// Three badge vocabularies on one tab all drew from the same three hues, so
+// the colour stopped distinguishing anything and every row became a wall of
+// diamonds. ACT is the only vocabulary that earns a colour here.
+//   on = sandboxed without doing anything · optin = exists behind a flag
+//   none = no first-party sandbox at all
+var SBX = {
+  on:    { label: "On by default" },
+  optin: { label: "Opt-in" },
+  none:  { label: "None" }
+};
+
+// `vocab` renders a badge, `plain` renders the same label as unstyled text; in
+// both cases `sub` names the row key holding the qualifying prose underneath.
+// A bare entry is plain text.
+// Two columns are deliberately detail-panel-only. Approval granularity was a
+// list of each vendor's mode names — reference material, not something you can
+// compare across a row. "Out of the box" was a roll-up of the two columns that
+// replaced it, so keeping it was pure duplication in badge form.
 var PERM_COLS = [
-  { id: "approval", label: "Approval granularity" },
-  { id: "sandbox",  label: "Sandbox" },
-  { id: "config",   label: "Where to configure" },
-  { id: "headless", label: "Headless / CI" }
+  { id: "edit",   label: "Edits files",        vocab: ACT, sub: "editq" },
+  { id: "shell",  label: "Runs shell",         vocab: ACT, sub: "shellq" },
+  { id: "sbx",    label: "Sandbox",            plain: SBX, sub: "sandbox" },
+  { id: "config", label: "Where to configure" }
 ];
 
 var PERMISSIONS = [
   {
     id: "claude", auto: "gated",
+    edit: "ask", shell: "ask", shellq: "most shell", sbx: "optin",
     dflt: "Reads freely; asks before edits, writes and most shell",
     approval: "Per call · \"don't ask again\" saves a Bash prefix rule · 6 modes",
     sandbox: "Opt-in: macOS Seatbelt, Linux/WSL2 bubblewrap + seccomp",
@@ -1198,6 +1234,7 @@ var PERMISSIONS = [
   },
   {
     id: "codex", auto: "gated",
+    edit: "free", editq: "inside the workspace", shell: "free", shellq: "inside the workspace", sbx: "on",
     dflt: "Reads, edits and runs inside the workspace; asks to leave it",
     approval: "Per call + session prefix allow · -a on-request / never / untrusted",
     sandbox: "On by default — Seatbelt, Linux bubblewrap + seccomp, Windows sbx",
@@ -1209,6 +1246,7 @@ var PERMISSIONS = [
   },
   {
     id: "gemini", auto: "gated",
+    edit: "ask", editq: "write_file", shell: "ask", shellq: "run_shell_command", sbx: "optin",
     dflt: "Reads and globs auto-allowed; write_file and run_shell_command ask",
     approval: "--approval-mode default / auto_edit / yolo / plan · TOML policy rules",
     sandbox: "Off by default · -s for Docker, Podman or macOS sandbox-exec",
@@ -1220,6 +1258,7 @@ var PERMISSIONS = [
   },
   {
     id: "cursor", auto: "gated",
+    edit: "free", editq: "workspace files", shell: "ask", shellq: "terminal commands", sbx: "on",
     dflt: "Reads and edits workspace files freely; terminal commands ask",
     approval: "Run modes: Auto-review (default), Allowlist, Run Everything",
     sandbox: "On by default on macOS · cloud agents in isolated VMs",
@@ -1231,6 +1270,7 @@ var PERMISSIONS = [
   },
   {
     id: "copilot", auto: "gated",
+    edit: "ask", shell: "ask", shellq: "destructive commands", sbx: "optin",
     dflt: "CLI reads free, asks for destructive shell, edits and URLs",
     approval: "Per action: once, session or repo · --allow-tool 'shell(git:*)' · deny wins",
     sandbox: "Opt-in /sandbox · the cloud agent runs in an ephemeral Actions VM",
@@ -1242,6 +1282,7 @@ var PERMISSIONS = [
   },
   {
     id: "goose", auto: "open",
+    edit: "free", editq: "edits and deletes", shell: "free", sbx: "optin",
     dflt: "Edits, deletes and runs shell with no prompt",
     approval: "4 modes: auto / approve / smart_approve / chat · per-tool allow, ask, never",
     sandbox: "None built in · opt-in Docker via --container",
@@ -1253,6 +1294,7 @@ var PERMISSIONS = [
   },
   {
     id: "hermes", auto: "mixed",
+    edit: "free", editq: "writes, web and MCP", shell: "ask", shellq: "LLM triage decides", sbx: "optin",
     dflt: "Shell is gated by LLM triage; writes, web and MCP never ask",
     approval: "smart / manual / off · once, session or always · allowlist + deny globs",
     sandbox: "None by default · terminal.backend docker, ssh or modal",
@@ -1264,6 +1306,7 @@ var PERMISSIONS = [
   },
   {
     id: "osaurus", auto: "mixed",
+    edit: "free", editq: "most tools run automatically", shell: "ask", shellq: "shell and git commit", sbx: "optin",
     dflt: "Most tools run automatically; shell, git commit and MCP ask",
     approval: "Per tool name: auto / ask / deny · Allow, Deny or Always Allow",
     sandbox: "Opt-in per agent: Linux VM (Containerization) or seatbelt fallback",
@@ -1275,6 +1318,7 @@ var PERMISSIONS = [
   },
   {
     id: "opencode", auto: "open",
+    edit: "free", shell: "free", shellq: "only doom_loop asks", sbx: "none",
     dflt: "Permissive — most tools allowed; only doom_loop and external_directory ask",
     approval: "allow / ask / deny per tool + glob rules, last match wins",
     sandbox: "None built in · third-party Daytona plugin for isolation",
@@ -1286,6 +1330,7 @@ var PERMISSIONS = [
   },
   {
     id: "openclaw", auto: "open",
+    edit: "free", shell: "free", shellq: "host shell, mode=full", sbx: "optin",
     dflt: "Host shell runs with no approval (mode=full); sandboxing off",
     approval: "tools.exec.mode deny / allowlist / ask / auto / full · tools.allow, tools.deny",
     sandbox: "Off by default · opt-in Docker, SSH or OpenShell per agent",
@@ -1297,6 +1342,7 @@ var PERMISSIONS = [
   },
   {
     id: "zed", auto: "gated",
+    edit: "ask", shell: "ask", shellq: "plus fetch and web search", sbx: "on",
     dflt: "Reads freely; prompts for edits, writes, shell, fetch and web search",
     approval: "Per call · per tool · per regex pattern · allow / deny / confirm · MCP keys are mcp:<server>:<tool>",
     sandbox: "On by default, but terminal + fetch only — Seatbelt · bubblewrap (needs bwrap) · WSL",
@@ -1308,6 +1354,7 @@ var PERMISSIONS = [
   },
   {
     id: "jan", auto: "gated",
+    edit: "notool", shell: "notool", sbx: "none",
     dflt: "No built-in file-edit or shell at all; every MCP tool call prompts",
     approval: "Per call · \"allow always\" is scoped to one tool in one thread · global allow-all switch",
     sandbox: "None — MCP servers are spawned as unrestricted child processes",
@@ -2037,29 +2084,44 @@ function renderPortability(){
 
 /* ---- permissions tab ---- */
 function permSelect(id){ permState.detail = id; renderPermissions(); }
+// A PERM_COLS entry with a `vocab` renders as a badge over the row's own prose,
+// so compressing the verdict never costs the qualifier that makes it true —
+// "No prompt" alone would misread Codex, which is only free inside the workspace.
+function permCell(r, c){
+  var map = c.vocab || c.plain;
+  if (!map) return '<span class="note">' + esc(r[c.id] || '—') + '</span>';
+  var v = r[c.id];
+  if (!v || !map[v]) return '<span class="dash">—</span>';
+  var sub = c.sub ? r[c.sub] : null;
+  var head = c.vocab ? badge(v, map[v].label)
+                     : '<span class="cap">' + esc(map[v].label) + '</span>';
+  return head + (sub ? '<span class="loc">' + esc(sub) + '</span>' : '');
+}
 function renderPermissions(){
-  legendFrom(AUTO, 'permLegend');
+  // One vocabulary, one legend. The sandbox column reads as plain text and the
+  // roll-up lives in the detail panel, so the table carries two badges a row.
+  legendFrom(ACT, 'permLegend');
   var host = document.getElementById('permMatrix');
   if (!host) return;
   var rows = alphaHarnessOrder(PERMISSIONS);
   if (!rows.length){ host.innerHTML = '<p class="pm-empty">No permissions data yet.</p>'; return; }
-  host.innerHTML = '<table><thead><tr><th class="pm-tool-h">Tool</th><th><span class="chd">Out of the box</span></th>' +
+  host.innerHTML = '<table><thead><tr><th class="pm-tool-h">Tool</th>' +
     PERM_COLS.map(function(c){ return '<th><span class="chd">' + esc(c.label) + '</span></th>'; }).join('') +
     '</tr></thead><tbody>' +
     rows.map(function(r){
-      var cells = '<td>' + badge(r.auto, AUTO[r.auto] ? AUTO[r.auto].label : r.auto) +
-        '<span class="loc">' + esc(r.dflt) + '</span></td>' +
-        PERM_COLS.map(function(c){ return '<td><span class="note">' + esc(r[c.id] || '—') + '</span></td>'; }).join('');
+      var cells = PERM_COLS.map(function(c){ return '<td>' + permCell(r, c) + '</td>'; }).join('');
       return rowShell(r.id, permState.detail === r.id, 'permSelect', cells);
     }).join('') + '</tbody></table>';
   var sel = null;
   rows.forEach(function(r){ if (r.id === permState.detail) sel = r; });
   detailPanel('permDetail', sel, 'permissions & autonomy', sel ? dgrid([
-    ['Out of the box', esc(sel.dflt)],
-    ['Approval', esc(sel.approval)],
+    ['Out of the box', sel.auto && AUTO[sel.auto]
+      ? badge(sel.auto, AUTO[sel.auto].label) + '<span class="loc">' + esc(sel.dflt) + '</span>'
+      : esc(sel.dflt)],
+    ['Approval granularity', esc(sel.approval)],
     ['Sandbox', esc(sel.sandbox)],
-    ['Configure in', esc(sel.config)],
-    ['Headless / CI', esc(sel.headless)]
+    ['Headless / CI', esc(sel.headless)],
+    ['Configure in', esc(sel.config)]
   ]) : '');
 }
 

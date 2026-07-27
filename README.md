@@ -17,9 +17,10 @@ A single-file interactive reference for AI developer tools, in five tabs:
   things travel as open standards (AGENTS.md, SKILL.md skills, MCP servers), and
   several tools read each other's directories outright; the last column is what
   has no equivalent anywhere else.
-- **Permissions** — what each harness does without asking, and how to constrain
-  it: default autonomy, approval granularity, sandboxing, where permissions are
-  declared, and what happens unattended.
+- **Permissions** — what each harness does without asking, reduced to the two
+  blunt questions: before checking with you, does it edit your files, and does
+  it run your shell? Then what contains it and where you change it. Tap a row
+  for the default in full, approval granularity and unattended behaviour.
 - **Infrastructure** — what each host and database actually gives you, and what
   an agent can break there. Pick what you're building (a web app, a web app with
   a database, …) and both tables narrow to the platforms that cover it: the
@@ -91,10 +92,28 @@ Everything lives in `index.html`.
 - The portability and permissions tabs render from **`PORTABILITY`** and
   **`PERMISSIONS`**, both keyed by harness `id` and both ordered by `HARNESSES`
   at render time, so they can't drift out of step with the harness tab.
-  `PORT_MECH` and `AUTO` are their badge vocabularies; `AUTO` is our own
-  summary of a researched default, not a vendor's own label. Rows carry a
+  `PORT_MECH`, `AUTO`, `ACT` and `SBX` are their vocabularies; all four are our
+  own summaries of a researched default, not vendors' own labels. Rows carry a
   `status` of `verified`, `partial` or `unverified`, and anything short of
   verified shows a caveat in the detail panel.
+  - Permissions is four columns: the two actions that change something (`edit`
+    and `shell`, both keyed to `ACT`), then `sbx` and where to configure. The
+    two actions are split out because a single roll-up hides real differences —
+    Cursor edits files without asking but stops at the terminal, and Hermes is
+    the reverse.
+  - **One badge vocabulary per tab.** `ACT` is the only one that gets a colour
+    here. `SBX` renders as a plain leading word instead, because three
+    vocabularies all drew from the same three hues and the colour stopped
+    distinguishing anything — every row became a wall of diamonds.
+  - A `PERM_COLS` entry with a `vocab` renders as a badge and one with `plain`
+    renders the same label unstyled; either way `sub` names the row key holding
+    the qualifying prose underneath, so a verdict never loses the caveat that
+    makes it true ("No prompt" alone would misread Codex, which is free only
+    inside the workspace). A bare entry is plain text.
+  - Approval granularity, the `auto` roll-up and headless behaviour are
+    deliberately detail-panel-only. Approval was a list of each vendor's mode
+    names — reference material, not something comparable across a row — and the
+    roll-up duplicated the two columns that replaced it.
 - **`INFRA`** is the one table whose rows aren't harnesses, so it sorts itself
   by name. Both of the tab's matrices render from it, in the same order, sharing
   one selection and one filter.
