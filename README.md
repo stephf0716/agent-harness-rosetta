@@ -18,10 +18,13 @@ A single-file interactive reference for AI developer tools, in five tabs:
 - **Permissions** — what each harness does without asking, and how to constrain
   it: default autonomy, approval granularity, sandboxing, where permissions are
   declared, and what happens unattended.
-- **Infrastructure** — the hosts and databases an agent can operate directly
-  through a first-party MCP server, and what it can break: how far the official
-  integration reaches, what non-production target exists, and whether there's
-  any enforced brake on it.
+- **Infrastructure** — what each host and database actually gives you, and what
+  an agent can break there. Pick what you're building (a web app, a web app with
+  a database, …) and both tables narrow to the platforms that cover it: the
+  first is the capability matrix — hosting, functions, servers, database, cache,
+  file storage, auth, cron — and the second is blast radius: how far the
+  official MCP integration reaches, what non-production target exists, and
+  whether there's any enforced brake on it.
 
 ## Usage
 
@@ -38,11 +41,14 @@ Features:
 - Provider tab: toggle the credentials you have to filter columns, "only show
   available" to hide tools you can't use, tap any row for connection details
   and provider docs
+- Infrastructure tab: toggle what you need to build to narrow both matrices to
+  the platforms that cover it; "every service" puts the rest back, annotated
+  with what they'd be missing
 - Individual layer cards are deep-linkable too (`#c-instr`, `#c-skill`,
   `#c-mcp`, `#c-bundle`, `#c-agent`) — the link opens the card and scrolls to it
 
-Theme, credential selections, the harness filter, and the active tab are
-remembered via `localStorage` when available.
+Theme, credential selections, the harness filter, the infrastructure capability
+picks, and the active tab are remembered via `localStorage` when available.
 
 ## Deployment
 
@@ -86,11 +92,23 @@ Everything lives in `index.html`.
   `status` of `verified`, `partial` or `unverified`, and anything short of
   verified shows a caveat in the detail panel.
 - **`INFRA`** is the one table whose rows aren't harnesses, so it sorts itself
-  by name. It carries three badge vocabularies: `MCPKIND` (is there a
-  first-party MCP server), `REACH` (how far the official integration goes at
-  its most permissive) and `LOCK` (whether anything can stop it). `REACH` and
-  `LOCK` are both our own summaries rather than vendor labels — reach is nearly
-  always `full`, so `LOCK` is the column that actually discriminates.
+  by name. Both of the tab's matrices render from it, in the same order, sharing
+  one selection and one filter.
+  - The capability half reads `CAPS` (the eight columns, `label` for the header
+    and `short` for the filter chip) against each row's `caps` map. A `caps`
+    value is the product's name as a plain string, or `{name, via}` where `via`
+    is a `CAPVIA` key — `marketplace`, `partner`, `template`, `paid` or `beta`.
+    A missing key means the platform has no first-party answer. Rows also carry
+    `provides`, `useWhen` and `pairs` for the detail panel.
+  - The blast-radius half carries three badge vocabularies: `MCPKIND` (is there
+    a first-party MCP server), `REACH` (how far the official integration goes at
+    its most permissive) and `LOCK` (whether anything can stop it). `REACH` and
+    `LOCK` are both our own summaries rather than vendor labels — reach is
+    nearly always `full`, so `LOCK` is the column that actually discriminates.
+  - The chip filter counts a capability as covered even when its `via` says
+    someone else runs it, because it does solve the problem; the tag on the cell
+    is what carries the catch. Adding a capability column is one `CAPS` entry
+    plus a `caps` key on the rows that have it.
 - The harness tab renders from plain JS constants (the refactor that got it
   there is specced in
   [`docs/harness-tab-refactor.md`](./docs/harness-tab-refactor.md)):
@@ -119,7 +137,7 @@ Everything lives in `index.html`.
 ## A note on accuracy
 
 Compiled July 2026; all four tabs last fact-checked against provider docs on
-26 July 2026. Where a vendor's docs site blocked automated access, claims were
+26 July 2026, and the infrastructure capability columns on 27 July 2026. Where a vendor's docs site blocked automated access, claims were
 verified against the same docs in the project's public repo, or against the
 shipping source behind them; the two Cursor rows rest on secondary sources that
 agree with each other and are marked `partial` for that reason. Terminology and provider support in this space move fast — tools

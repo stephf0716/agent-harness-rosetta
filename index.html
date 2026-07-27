@@ -185,6 +185,15 @@
   .m-read{--mc:var(--m-oauth)} .m-deploy{--mc:var(--m-key)} .m-full{--mc:var(--m-restr)}
   .m-readonly{--mc:var(--m-oauth)} .m-scoped{--mc:var(--m-key)} .m-none{--mc:var(--m-restr)}
   .pm-shell td .loc{margin-top:5px}
+  /* infrastructure: capability cells, their qualifiers, and the picked columns */
+  .pm-shell td .cap{display:block;font-size:12.5px;color:var(--text)}
+  .via{display:inline-block;margin-top:6px;font-family:'IBM Plex Mono',monospace;font-size:9.5px;letter-spacing:.1em;text-transform:uppercase;color:var(--m-key);border:1px dashed var(--m-key);border-radius:2px;padding:1px 5px;white-space:nowrap}
+  .pm-shell th.need .chd{color:var(--m-oauth)}
+  .pm-shell th.need,.pm-shell td.need{box-shadow:inset 0 2px 0 var(--m-oauth)}
+  .pm-tool .tmiss{margin-top:6px;font-family:'IBM Plex Mono',monospace;font-size:10.5px;color:var(--m-restr)}
+  .pm-detail .dsec{font-family:'IBM Plex Mono',monospace;font-size:10.5px;letter-spacing:.14em;text-transform:uppercase;color:var(--faint);margin-top:20px;padding-top:12px;border-top:1px solid var(--line)}
+  .pm-detail .dname+.dkind+.dsec{margin-top:14px}
+  .pm-detail .dgap{margin-top:10px;font-family:'IBM Plex Mono',monospace;font-size:11.5px;color:var(--faint)}
   .pm-detail .dgrid{display:grid;grid-template-columns:repeat(auto-fit,minmax(210px,1fr));gap:1px;background:var(--line);border:1px solid var(--line);border-radius:3px;overflow:hidden;margin-top:14px}
   .pm-detail .dg{background:var(--surface);padding:11px 13px}
   .pm-detail .dg .k{font-family:'IBM Plex Mono',monospace;font-size:10px;letter-spacing:.13em;text-transform:uppercase;color:var(--faint);margin-bottom:5px}
@@ -362,8 +371,32 @@
 
 <header class="title">
   <h1>Infrastructure<br><span class="dim">Your Agent Can Drive</span></h1>
-  <p class="lede">The hosts and databases behind a vibe-coded project increasingly ship their own MCP servers, which means your agent can reach production directly. This table asks two things of each: <strong>can an agent drive it, and what can it break?</strong> Your repo is version-controlled — a dropped database and a bought domain are not. Tap any row for detail.</p>
+  <p class="lede">The hosts and databases behind a vibe-coded project increasingly ship their own MCP servers, which means your agent can reach production directly. This tab asks two things of each: <strong>what does it give you, and what can it break?</strong> Start by picking what you're building — a web app, a web app with a database — and the tables narrow to the platforms that cover it. Tap any row for detail.</p>
 </header>
+
+<div class="hpick" role="group" aria-label="What you need to build">
+  <span class="plabel">I need</span>
+  <button class="bulk" onclick="infraNeedsAll(false)">clear</button>
+  <span id="infraNeeds" style="display:contents"></span>
+</div>
+<div class="hpick pm-filter" role="radiogroup" aria-label="Row filter" id="infraFilter">
+  <span class="plabel">Show</span>
+  <span id="infraFilterBtns" style="display:contents"></span>
+</div>
+
+<div class="matrix-shell pm-shell">
+<div class="matrix-scroll">
+<div id="infraCaps"></div>
+</div>
+<div class="hint"><span class="scrollnote">← scroll → on mobile · </span>a dash means the platform has no first-party answer — you'd bring your own</div>
+</div>
+
+<p class="pm-foot">a tag under a cell is the catch: <strong>marketplace</strong> and <strong>partner</strong> mean someone else runs it, <strong>self-run</strong> means you operate the container, <strong>beta</strong> means not yet for production</p>
+
+<div class="rule-h">
+<h2>…and what it can break</h2>
+<p class="sub">Same rows, the other half of the question. Your repo is version-controlled — a dropped database and a bought domain are not.</p>
+</div>
 
 <nav class="legend" aria-label="Reach legend" id="infraLegend"></nav>
 
@@ -388,7 +421,7 @@
 // from these constants. CLOSED lists the tool ids grouped as closed source.
 // ---------------------------------------------------------------------------
 // Edit the build stamp here only — the masthead and footer both render from it.
-var BUILD = { version: "v11", compiled: "july 2026", updated: "26 jul 2026" };
+var BUILD = { version: "v12", compiled: "july 2026", updated: "27 jul 2026" };
 
 // The tab bar renders from this: one entry per reference, in display order.
 // `hash` is the public deep link (#harnesses, #providers, …) — don't rename
@@ -1189,9 +1222,46 @@ var LOCK = {
   none:     { label: "No brake" }
 };
 
+// What each platform actually gives you, in the order a project needs it:
+// serve the app, run code, keep state, then the extras. `label` heads the
+// capability column, `short` names the filter chip.
+var CAPS = [
+  { id: "site",  label: "Web app hosting",   short: "web app" },
+  { id: "fn",    label: "Serverless functions", short: "functions" },
+  { id: "run",   label: "Always-on servers",  short: "a server" },
+  { id: "db",    label: "Managed database",   short: "database" },
+  { id: "kv",    label: "Cache / key-value",  short: "cache" },
+  { id: "files", label: "File storage",       short: "file storage" },
+  { id: "auth",  label: "User auth",          short: "user auth" },
+  { id: "jobs",  label: "Cron / background",  short: "cron jobs" }
+];
+
+// A row's `caps` entry is the product name, as a plain string when the platform
+// runs it itself. Where that would overstate things, it's {name, via} instead —
+// the qualifier is the difference between "this platform has a database" and
+// "this platform will sell you someone else's".
+var CAPVIA = {
+  marketplace: { label: "marketplace" },
+  partner:     { label: "partner" },
+  template:    { label: "self-run" },
+  paid:        { label: "paid plan" },
+  beta:        { label: "beta" }
+};
+
 var INFRA = [
   {
     id: "vercel", name: "Vercel", kind: "Hosting / edge",
+    provides: "Front-end and full-stack app hosting: framework-aware builds, a global CDN, serverless functions, a preview deployment per branch, and Edge Config for read-heavy flags and settings.",
+    useWhen: "The app is the product and the data lives somewhere else. Vercel serves the site; the database is something you add.",
+    pairs: "A Marketplace database — vercel install neon (or supabase, or upstash) provisions one and writes its connection string into the project's environment variables.",
+    caps: {
+      site:  "Any JS framework",
+      fn:    "Functions · Middleware",
+      db:    { name: "Neon · Supabase · Upstash", via: "marketplace" },
+      kv:    { name: "Upstash Redis", via: "marketplace" },
+      files: "Vercel Blob",
+      jobs:  "Cron Jobs"
+    },
     mcp: "official", mcpDetail: "remote mcp.vercel.com · OAuth · ~25 tools",
     cli: "vercel · token + --yes runs headless · vercel buy spends money",
     reach: "full", reachDetail: "buy_pro, buy_domain, buy_credits, buy_addon, deploy_to_vercel",
@@ -1204,6 +1274,15 @@ var INFRA = [
   },
   {
     id: "neon", name: "Neon", kind: "Serverless Postgres",
+    provides: "Serverless Postgres that branches like git — autoscaling, scale-to-zero, instant restore — plus a beta backend layer of Functions, S3-compatible Object Storage and an AI gateway that branch along with the data.",
+    useWhen: "You want a real Postgres with a fork-per-branch workflow. Everything past the database is beta, single-region and not recommended for production, so plan to host the front end elsewhere.",
+    pairs: "Any front-end host. It's the default Postgres on the Vercel Marketplace, and Netlify DB is Neon underneath.",
+    caps: {
+      fn:    { name: "Neon Functions", via: "beta" },
+      db:    "Postgres",
+      files: { name: "Object Storage", via: "beta" },
+      auth:  "Managed Better Auth"
+    },
     mcp: "official", mcpDetail: "remote mcp.neon.tech · OAuth or API key · 33 tools",
     cli: "neonctl · --output json · fully non-interactive",
     reach: "full", reachDetail: "delete_project, delete_branch, run_sql (arbitrary DDL/DML)",
@@ -1216,6 +1295,16 @@ var INFRA = [
   },
   {
     id: "render", name: "Render", kind: "Hosting + Postgres",
+    provides: "A conventional PaaS: static sites, always-on web services, private services, background workers and cron jobs, with managed Postgres and Key Value reachable over one private network.",
+    useWhen: "You have an ordinary server process — Rails, Django, Express — and want the database beside it rather than split across two vendors.",
+    pairs: "Nothing, for a standard web app; it's the shortest path from repo to app-plus-database here. Bring your own S3-compatible bucket if you need file uploads.",
+    caps: {
+      site: "Static Sites · Web Services",
+      run:  "Web / private services",
+      db:   "Postgres",
+      kv:   "Key Value (Redis API)",
+      jobs: "Cron Jobs · Background Workers"
+    },
     mcp: "official", mcpDetail: "remote or local · API key · 25 tools, none of them delete",
     cli: "render · --output json · --confirm · fully headless",
     reach: "deploy", reachDetail: "create_web_service / create_postgres on paid plans · no delete tools",
@@ -1228,6 +1317,16 @@ var INFRA = [
   },
   {
     id: "supabase", name: "Supabase", kind: "Postgres + backend",
+    provides: "A backend built around Postgres: auto-generated REST and GraphQL APIs, auth wired to row-level security, S3-compatible file storage, realtime subscriptions, Deno edge functions, cron and queues.",
+    useWhen: "You want users, files and realtime without writing a server — the most complete backend here for someone who isn't running one.",
+    pairs: "A front-end host — Vercel, Netlify or Cloudflare. Supabase does not serve your site.",
+    caps: {
+      fn:    "Edge Functions (Deno)",
+      db:    "Postgres",
+      files: "Storage (S3-compatible)",
+      auth:  "Supabase Auth + RLS",
+      jobs:  "Cron (pg_cron) · Queues (pgmq)"
+    },
     mcp: "official", mcpDetail: "remote mcp.supabase.com · OAuth, or npx --read-only · ~29 tools",
     cli: "supabase · access token via env · CI-friendly",
     reach: "full", reachDetail: "execute_sql (raw SQL), apply_migration, merge_branch, pause_project",
@@ -1240,6 +1339,18 @@ var INFRA = [
   },
   {
     id: "railway", name: "Railway", kind: "App / infra hosting",
+    provides: "Anything that runs in a container, wired together on one canvas: services with volumes, S3-compatible storage buckets, cron jobs, and single-file TypeScript functions on Bun.",
+    useWhen: "The stack is several moving parts — an API, a worker, a queue, a database — and you want them in one project on one private network.",
+    pairs: "Self-contained, with a caveat worth knowing: its databases are open-source images Railway deploys from templates, not a managed service with an SLA behind it.",
+    caps: {
+      site:  "Any repo or image",
+      fn:    "Functions (single-file Bun)",
+      run:   "Services + Volumes",
+      db:    { name: "Postgres · MySQL · Mongo", via: "template" },
+      kv:    { name: "Redis", via: "template" },
+      files: "Storage Buckets (S3)",
+      jobs:  "Cron Jobs"
+    },
     mcp: "official", mcpDetail: "bundled in the CLI (railway mcp) · stdio or hosted · 47 tools",
     cli: "railway · --json · token-based headless deploys",
     reach: "full", reachDetail: "remove_service, remove_volume, remove_bucket, delete_domain",
@@ -1252,6 +1363,18 @@ var INFRA = [
   },
   {
     id: "netlify", name: "Netlify", kind: "Hosting / edge",
+    provides: "Front-end hosting with deploy previews, serverless and edge functions, Blobs for key/value and unstructured data, an image CDN, and a Postgres database built into the deploy workflow.",
+    useWhen: "A front-end-first site that needs some backend. Netlify DB went generally available in April 2026, so the database no longer has to live off-platform.",
+    pairs: "Self-contained for most sites. Netlify DB is Neon underneath, so Neon's console and branching are there when you outgrow the one-command setup.",
+    caps: {
+      site:  "Sites + Deploy Previews",
+      fn:    "Functions · Edge Functions",
+      db:    "Netlify DB (Neon)",
+      kv:    "Netlify Blobs",
+      files: "Netlify Blobs",
+      auth:  "Netlify Identity",
+      jobs:  "Scheduled · Background Functions"
+    },
     mcp: "official", mcpDetail: "local npx @netlify/mcp · stdio · CLI auth or a token",
     cli: "netlify · --json, --force · sites:delete --force runs headless",
     reach: "full", reachDetail: "no MCP delete, but the CLI it bridges to deletes sites",
@@ -1264,6 +1387,17 @@ var INFRA = [
   },
   {
     id: "fly", name: "Fly.io", kind: "Containers / VMs",
+    provides: "Firecracker VMs — Fly Machines — that boot in about a second in any of its regions, with Managed Postgres, persistent volumes, and machines you can put on an hourly-to-monthly schedule.",
+    useWhen: "You need a real machine: a custom runtime, a GPU, regional placement, or a long-lived process that a serverless platform won't hold open for you.",
+    pairs: "Partner services fill the gaps — Upstash for Redis and Tigris for S3-compatible object storage, both documented as first-class on Fly.",
+    caps: {
+      site:  "Any app, static included",
+      run:   "Fly Machines (VMs)",
+      db:    "Managed Postgres",
+      kv:    { name: "Upstash Redis", via: "partner" },
+      files: { name: "Tigris object storage", via: "partner" },
+      jobs:  "Scheduled Machines"
+    },
     mcp: "official", mcpDetail: "flyctl mcp server · local stdio · access token · ~55 tools",
     cli: "flyctl · headless with --json / --now · the MCP server wraps the CLI",
     reach: "full", reachDetail: "apps-destroy, machine-exec, machine-run, volumes-destroy",
@@ -1276,6 +1410,18 @@ var INFRA = [
   },
   {
     id: "cloudflare", name: "Cloudflare", kind: "Edge / Workers",
+    provides: "The most complete single-vendor stack here: Workers that serve static assets and run your code, D1 for SQL, KV and Durable Objects for state, R2 for files, Queues, Containers and cron triggers.",
+    useWhen: "You want the whole app on one platform at the edge, and can build on D1's SQLite rather than holding out for Postgres.",
+    pairs: "Nothing, usually. If the data has to stay in Postgres elsewhere, Hyperdrive pools and caches that connection from a Worker.",
+    caps: {
+      site:  "Workers static assets",
+      fn:    "Workers",
+      run:   { name: "Containers", via: "paid" },
+      db:    "D1 (SQLite)",
+      kv:    "Workers KV · Durable Objects",
+      files: "R2",
+      jobs:  "Cron Triggers · Queues"
+    },
     mcp: "official", mcpDetail: "14 remote servers, split by blast radius · OAuth",
     cli: "wrangler · API token, non-interactive, JSON output",
     reach: "full", reachDetail: "d1_database_delete, r2_bucket_delete, d1_database_query (raw SQL)",
@@ -1288,6 +1434,16 @@ var INFRA = [
   },
   {
     id: "convex", name: "Convex", kind: "Reactive DB / backend",
+    provides: "A reactive backend: TypeScript functions that run in the database, queries that push updates to the client, plus file storage, auth, scheduling, cron and search.",
+    useWhen: "The app is live-updating — chat, presence, collaboration — and you'd rather write TypeScript than SQL and websocket plumbing.",
+    pairs: "A front-end host. Convex documents deploying the UI to Vercel or Netlify and pointing it at a Convex deployment.",
+    caps: {
+      fn:    "Queries · Mutations · Actions",
+      db:    "Reactive document store",
+      files: "File storage",
+      auth:  "Convex Auth · Clerk · Auth0",
+      jobs:  "Cron + scheduled functions"
+    },
     mcp: "official", mcpDetail: "npx convex mcp start · stdio · 12 tools · CLI login",
     cli: "npx convex · agent mode · auto-provisions a local backend",
     reach: "full", reachDetail: "run any deployed mutation, envSet — but prod is locked by default",
@@ -1300,6 +1456,13 @@ var INFRA = [
   },
   {
     id: "upstash", name: "Upstash", kind: "Serverless Redis",
+    provides: "Serverless Redis billed per request, plus Vector, Search and QStash — a message queue with scheduling — on the same account.",
+    useWhen: "A serverless app needs a cache, a rate limiter or a queue, and an always-on Redis instance would be the wrong shape of bill.",
+    pairs: "Whatever hosts the app. It's a native integration on both the Vercel Marketplace and Fly.io.",
+    caps: {
+      kv:   "Redis (per-request)",
+      jobs: "QStash queue + schedules"
+    },
     mcp: "official", mcpDetail: "@upstash/mcp-server · stdio · email + API key",
     cli: "@upstash/cli · non-interactive, JSON on stdout",
     reach: "full", reachDetail: "database_delete, create_new (billable), arbitrary Redis commands",
@@ -1312,6 +1475,12 @@ var INFRA = [
   },
   {
     id: "planetscale", name: "PlanetScale", kind: "MySQL / Postgres",
+    provides: "Managed MySQL on Vitess and, since its September 2025 launch, managed Postgres — both with database branches, deploy requests and non-blocking schema changes.",
+    useWhen: "The database is the hard part: big tables, sharding, or schema migrations that can't take a lock.",
+    pairs: "Any host. Nothing else lives on the platform — no app hosting, no storage, no auth.",
+    caps: {
+      db: "MySQL (Vitess) · Postgres"
+    },
     mcp: "official", mcpDetail: "hosted mcp.pscale.dev · OAuth scopes · insights-only variant",
     cli: "pscale · non-interactive sql · the local mcp command is deprecated",
     reach: "full", reachDetail: "execute_write_query (arbitrary DML/DDL) · list_invoices",
@@ -1331,7 +1500,9 @@ var pmState = { have: {}, filter: "all", detail: null };
 // Declared up here, not beside their render functions: the init IIFE below
 // calls those renderers, and a `var` assignment further down the file has not
 // run yet at that point.
-var portState = { detail: null }, permState = { detail: null }, infraState = { detail: null };
+var portState = { detail: null }, permState = { detail: null };
+// `need` is the capability filter on the infrastructure tab: cap id -> wanted.
+var infraState = { detail: null, need: {}, filter: "covers" };
 var CARD_IDS = LAYERS.map(function(L){ return L.id; });
 
 function loadPrefs(){
@@ -1343,6 +1514,8 @@ function savePrefs(){
     localStorage.setItem(STORAGE_KEY, JSON.stringify({
       have: pmState.have,
       filter: pmState.filter,
+      need: infraState.need,
+      ineed: infraState.filter,
       theme: document.documentElement.getAttribute("data-theme"),
       tab: document.body.getAttribute("data-tab"),
       hf: document.body.getAttribute("data-hf")
@@ -1367,6 +1540,10 @@ function esc(s){
     pmState.have[c.id] = (saved.have && typeof saved.have[c.id] === 'boolean') ? saved.have[c.id] : true;
   });
   pmState.filter = (saved.filter === 'usable' || saved.filter === 'sub') ? saved.filter : 'all';
+  CAPS.forEach(function(c){
+    infraState.need[c.id] = !!(saved.need && saved.need[c.id]);
+  });
+  infraState.filter = saved.ineed === 'all' ? 'all' : 'covers';
 
   document.getElementById('buildTag').textContent = 'ai-tool-reference · ' + BUILD.version;
   document.getElementById('buildFoot').textContent = 'compiled ' + BUILD.compiled + ' · updated ' + BUILD.updated;
@@ -1744,9 +1921,106 @@ function renderPermissions(){
 }
 
 /* ---- infrastructure tab ---- */
-function infraSelect(id){ infraState.detail = id; renderInfra(); }
+function infraSelect(id){
+  infraState.detail = id;
+  renderInfra();
+  var row = document.querySelector('#infraCaps tr[data-tool="' + id + '"]');
+  if (row) row.focus({preventScroll:true});
+}
+// A caps entry is either a bare product name or {name, via} when something
+// qualifies it — a marketplace add-on, a partner, a beta.
+function capName(v){ return typeof v === 'string' ? v : v.name; }
+function capVia(v){ return typeof v === 'string' ? '' : (v.via || ''); }
+function capViaLabel(via){ return CAPVIA[via] ? CAPVIA[via].label : via; }
+// "Covers" is deliberately generous: a marketplace or partner answer still
+// counts, because it does solve the problem — the cell's tag carries the catch.
+function infraMissing(r){
+  return CAPS.filter(function(c){ return infraState.need[c.id] && !r.caps[c.id]; });
+}
+function infraCovers(r){ return infraMissing(r).length === 0; }
+function infraSorted(){
+  return INFRA.slice().sort(function(a, b){
+    return a.name.toLowerCase() < b.name.toLowerCase() ? -1 : a.name.toLowerCase() > b.name.toLowerCase() ? 1 : 0;
+  });
+}
+function infraRows(){
+  var rows = infraSorted();
+  return infraState.filter === 'covers' ? rows.filter(infraCovers) : rows;
+}
+function infraToggleNeed(id){
+  infraState.need[id] = !infraState.need[id];
+  savePrefs();
+  renderInfra();
+  var chip = document.querySelector('#infraNeeds button[data-cap="' + id + '"]');
+  if (chip) chip.focus({preventScroll:true});
+}
+function infraNeedsAll(on){
+  CAPS.forEach(function(c){ infraState.need[c.id] = on; });
+  savePrefs(); renderInfra();
+}
+function infraSetFilter(mode){ infraState.filter = mode; savePrefs(); renderInfra(); }
+function renderInfraNeeds(){
+  document.getElementById('infraNeeds').innerHTML = CAPS.map(function(c){
+    var on = !!infraState.need[c.id];
+    return '<button class="cred" data-cap="' + esc(c.id) + '" aria-pressed="' + on + '" onclick="infraToggleNeed(\'' + esc(c.id) + '\')">' +
+      '<span class="dia">' + (on ? '◆' : '◇') + '</span> ' + esc(c.short) + '</button>';
+  }).join('');
+}
+function renderInfraFilter(){
+  var n = infraSorted().filter(infraCovers).length;
+  var opts = [
+    { id: 'covers', label: 'only what covers it' },
+    { id: 'all',    label: 'every service' }
+  ];
+  document.getElementById('infraFilterBtns').innerHTML = opts.map(function(o){
+    var on = infraState.filter === o.id;
+    var txt = (o.id === 'covers' && on) ? (o.label + ' · ' + n) : o.label;
+    return '<button role="radio" aria-checked="' + on + '" onclick="infraSetFilter(\'' + o.id + '\')">' + esc(txt) + '</button>';
+  }).join('');
+}
+// Both tables on this tab are the same rows in the same order, so they share a
+// row shell and a selection — pick a candidate above, read its blast radius below.
+function infraRowShell(r, cells, extra){
+  var sel = infraState.detail === r.id;
+  return '<tr class="pm-row' + (sel ? ' sel' : '') + '" data-tool="' + esc(r.id) + '"' + (sel ? ' aria-current="true"' : '') +
+    ' tabindex="0" onclick="infraSelect(\'' + esc(r.id) + '\')"' +
+    ' onkeydown="if(event.key===\'Enter\'||event.key===\' \'){event.preventDefault();infraSelect(\'' + esc(r.id) + '\')}">' +
+    '<td class="pm-tool"><div class="tname">' + esc(r.name) + '</div><div class="tkind">' + esc(r.kind) + '</div>' +
+    (extra || '') + '</td>' + cells + '</tr>';
+}
+function renderInfraCaps(){
+  var host = document.getElementById('infraCaps');
+  if (!host) return;
+  var rows = infraRows();
+  if (!rows.length){
+    host.innerHTML = '<p class="pm-empty">Nothing here does all of that on its own. That\'s the normal answer past a certain point — the usual shape is a host plus a database. Drop a chip, then read "pairs with" on any row.</p>';
+    return;
+  }
+  host.innerHTML = '<table><thead><tr><th class="pm-tool-h">Service</th>' +
+    CAPS.map(function(c){
+      return '<th' + (infraState.need[c.id] ? ' class="need"' : '') + '><span class="chd">' + esc(c.label) + '</span></th>';
+    }).join('') + '</tr></thead><tbody>' +
+    rows.map(function(r){
+      var cells = CAPS.map(function(c){
+        var v = r.caps[c.id];
+        var td = '<td' + (infraState.need[c.id] ? ' class="need"' : '') + ' title="' +
+          esc(r.name + ' · ' + c.label + ': ' + (v ? capName(v) : 'none')) + '">';
+        if (!v) return td + '<span class="dash">—</span></td>';
+        var via = capVia(v);
+        return td + '<span class="cap">' + esc(capName(v)) + '</span>' +
+          (via ? '<span class="via">' + esc(capViaLabel(via)) + '</span>' : '') + '</td>';
+      }).join('');
+      var miss = infraMissing(r);
+      var extra = miss.length
+        ? '<div class="tmiss">no ' + miss.map(function(c){ return esc(c.short); }).join(', ') + '</div>' : '';
+      return infraRowShell(r, cells, extra);
+    }).join('') + '</tbody></table>';
+}
 function renderInfra(){
-  // Two vocabularies on this tab: how far it reaches, and whether you can stop it.
+  renderInfraNeeds();
+  renderInfraFilter();
+  renderInfraCaps();
+  // Two vocabularies on the second table: how far it reaches, and whether you can stop it.
   document.getElementById('infraLegend').innerHTML =
     Object.keys(REACH).map(function(k){
       return '<span class="lg mech m-' + esc(k) + '"><i></i>' + esc(REACH[k].label) + '</span>';
@@ -1756,16 +2030,13 @@ function renderInfra(){
     }).join('');
   var host = document.getElementById('infraMatrix');
   if (!host) return;
-  var rows = INFRA.slice().sort(function(a, b){
-    return a.name.toLowerCase() < b.name.toLowerCase() ? -1 : a.name.toLowerCase() > b.name.toLowerCase() ? 1 : 0;
-  });
-  if (!rows.length){ host.innerHTML = '<p class="pm-empty">No infrastructure data yet.</p>'; return; }
+  var rows = infraRows();
+  if (!rows.length){ host.innerHTML = '<p class="pm-empty">No service matches what you picked above.</p>'; return; }
   host.innerHTML = '<table><thead><tr><th class="pm-tool-h">Service</th>' +
     ['MCP server', 'What it can reach', 'CLI', 'Non-prod target', 'Scoping'].map(function(h){
       return '<th><span class="chd">' + esc(h) + '</span></th>';
     }).join('') + '</tr></thead><tbody>' +
     rows.map(function(r){
-      var sel = infraState.detail === r.id;
       var cells =
         '<td>' + (r.mcp === 'none' ? '<span class="dash">—</span>' : badge(r.mcp, MCPKIND[r.mcp].label)) +
           (r.mcpDetail ? '<span class="loc">' + esc(r.mcpDetail) + '</span>' : '') + '</td>' +
@@ -1775,20 +2046,35 @@ function renderInfra(){
         '<td><span class="note">' + esc(r.isolation || '—') + '</span></td>' +
         '<td>' + badge(r.lock, LOCK[r.lock].label) +
           (r.guardrails ? '<span class="loc">' + esc(r.guardrails) + '</span>' : '') + '</td>';
-      return '<tr class="pm-row' + (sel ? ' sel' : '') + '" data-tool="' + esc(r.id) + '"' + (sel ? ' aria-current="true"' : '') +
-        ' tabindex="0" onclick="infraSelect(\'' + esc(r.id) + '\')"' +
-        ' onkeydown="if(event.key===\'Enter\'||event.key===\' \'){event.preventDefault();infraSelect(\'' + esc(r.id) + '\')}">' +
-        '<td class="pm-tool"><div class="tname">' + esc(r.name) + '</div><div class="tkind">' + esc(r.kind) + '</div></td>' +
-        cells + '</tr>';
+      return infraRowShell(r, cells);
     }).join('') + '</tbody></table>';
 
+  renderInfraDetail(rows);
+}
+function renderInfraDetail(rows){
   var sel = null;
   rows.forEach(function(r){ if (r.id === infraState.detail) sel = r; });
   var el = document.getElementById('infraDetail');
   if (!sel){ el.style.display = 'none'; return; }
   el.style.display = '';
+  var stack = CAPS.filter(function(c){ return sel.caps[c.id]; }).map(function(c){
+    var v = sel.caps[c.id];
+    var via = capVia(v);
+    return '<div class="dg"><div class="k">' + esc(c.label) + '</div><div class="v">' + esc(capName(v)) +
+      (via ? ' <span class="via">' + esc(capViaLabel(via)) + '</span>' : '') + '</div></div>';
+  }).join('');
+  var absent = CAPS.filter(function(c){ return !sel.caps[c.id]; }).map(function(c){ return c.short; });
   el.innerHTML = '<div class="dname">' + esc(sel.name) + '</div>' +
     '<div class="dkind">' + esc(sel.kind) + '</div>' +
+    '<div class="dsec">What you get</div>' +
+    '<p class="dnote">' + esc(sel.provides) + '</p>' +
+    (stack ? '<div class="dgrid">' + stack + '</div>' : '') +
+    (absent.length ? '<p class="dgap">Not on the platform: ' + esc(absent.join(', ')) + '.</p>' : '') +
+    dgrid([
+      ['Reach for it when', esc(sel.useWhen)],
+      ['Pairs with', esc(sel.pairs)]
+    ]) +
+    '<div class="dsec">What it can break</div>' +
     '<p class="dnote">' + esc(sel.note) + '</p>' +
     dgrid([
       ['MCP server', esc(MCPKIND[sel.mcp].label) + (sel.mcpDetail ? ' — ' + esc(sel.mcpDetail) : '')],
