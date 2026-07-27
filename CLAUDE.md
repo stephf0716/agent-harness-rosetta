@@ -18,8 +18,9 @@ Deployed on Vercel from `main`; `vercel.json` holds the config.
   `HARNESSES`/`LAYERS` (see `docs/harness-tab-refactor.md` for the design), and
   the portability and permissions tabs from `PORTABILITY`/`PERMISSIONS`, and
   the infrastructure tab's two matrices from `INFRA` (capabilities via
-  `CAPS`/`CAPVIA` and each row's `caps` map, blast radius via
-  `MCPKIND`/`REACH`/`LOCK`). The tab bar itself comes from `TABS`, so
+  `CAPS`/`CAPVIA` and each row's `caps` map, blast radius via `LOCK`, with
+  `MCPKIND`/`REACH` detail-panel-only because they are near-uniform). The tab
+  bar itself comes from `TABS`, so
   a new reference is one entry plus a `<main id="panel-…">`. Declare any new
   render state near the other `*State` variables — the init IIFE runs before
   `var` assignments further down the file.

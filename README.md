@@ -123,11 +123,16 @@ Everything lives in `index.html`.
     is a `CAPVIA` key — `marketplace`, `partner`, `template`, `paid` or `beta`.
     A missing key means the platform has no first-party answer. Rows also carry
     `provides`, `useWhen` and `pairs` for the detail panel.
-  - The blast-radius half carries three badge vocabularies: `MCPKIND` (is there
-    a first-party MCP server), `REACH` (how far the official integration goes at
-    its most permissive) and `LOCK` (whether anything can stop it). `REACH` and
-    `LOCK` are both our own summaries rather than vendor labels — reach is
-    nearly always `full`, so `LOCK` is the column that actually discriminates.
+  - The blast-radius half is three columns: what it can break (`reachDetail` —
+    the actual destructive calls, `buy_domain`, `d1_database_delete`,
+    `apps-destroy`), the safe target (`isolation`), and the brake (`lock`,
+    keyed to `LOCK`). `LOCK` is the only badge vocabulary on the tab, the same
+    one-per-tab rule the permissions tab follows.
+  - `MCPKIND` and `REACH` are still defined and still render in the detail
+    panel, but they are deliberately not columns. `mcp` is `official` for all
+    eleven rows and `reach` is `full` for ten of them, so as columns they were
+    22 diamonds carrying almost no information. Both facts are stated once in
+    the lede instead — a uniform column is a sentence, not a column.
   - The chip filter counts a capability as covered even when its `via` says
     someone else runs it, because it does solve the problem; the tag on the cell
     is what carries the catch. Adding a capability column is one `CAPS` entry
