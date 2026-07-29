@@ -199,6 +199,9 @@
   .m-official{--mc:var(--c-mcp)} .m-community{--mc:var(--m-native)}
   .m-read{--mc:var(--m-oauth)} .m-deploy{--mc:var(--m-key)} .m-full{--mc:var(--m-restr)}
   .m-readonly{--mc:var(--m-oauth)} .m-scoped{--mc:var(--m-key)} .m-none{--mc:var(--m-restr)}
+  /* infrastructure, free tier: green is a free tier you can hold indefinitely,
+     red is no free tier at all, and the two in between are the partial cases */
+  .m-nocard{--mc:var(--m-local)} .m-part{--mc:var(--m-key)} .m-trial{--mc:var(--m-native)} .m-nofree{--mc:var(--m-restr)}
   /* permissions: the per-action verdict is the only badge on that tab, so it is
      the only vocabulary there that spends colour. "No such tool" is neutral
      rather than red — a harness that cannot run shell at all is not a risk. */
@@ -390,7 +393,7 @@
 
 <header class="title">
   <h1>Infrastructure<br><span class="dim">Your Agent Can Drive</span></h1>
-  <p class="lede">The hosts and databases behind a vibe-coded project increasingly ship their own MCP servers, which means your agent can reach production directly. This tab asks two things of each: <strong>what does it give you, and what can it break?</strong> Start by picking what you're building — a web app, a web app with a database — and the tables narrow to the platforms that cover it. Tap any row for detail.</p>
+  <p class="lede">The hosts and databases behind a vibe-coded project increasingly ship their own MCP servers, which means your agent can reach production directly. This tab asks three things of each: <strong>what does it give you, how much of it is free, and what can it break?</strong> Start by picking what you're building — a web app, a web app with a database — and the tables narrow to the platforms that cover it. Tap any row for detail.</p>
   <p class="lede">Two answers are the same everywhere, so they're stated here once instead of in a column: <strong>all eleven ship an official MCP server</strong>, and all but Render expose full control through it. The question was never whether your agent can reach production — it's what stops it.</p>
 </header>
 
@@ -412,6 +415,22 @@
 </div>
 
 <p class="pm-foot">a tag under a cell is the catch: <strong>marketplace</strong> and <strong>partner</strong> mean someone else runs it, <strong>self-run</strong> means you operate the container, <strong>beta</strong> means not yet for production</p>
+
+<div class="rule-h">
+<h2>…how much of it is free</h2>
+<p class="sub">Same rows, read as a starting cost. Everything above is available to a signed-up account with no payment method on file, except where this table says otherwise.</p>
+</div>
+
+<nav class="legend" aria-label="Free tier legend" id="freeLegend"></nav>
+
+<div class="matrix-shell pm-shell">
+<div class="matrix-scroll">
+<div id="infraFree"></div>
+</div>
+<div class="hint"><span class="scrollnote">← scroll → on mobile · </span>allowances are per month unless the cell says otherwise</div>
+</div>
+
+<p class="pm-foot">a free tier is not the same shape everywhere: some are quotas that fail closed, some are credit that runs down, and one is a trial with a clock on it — the third column is where each one ends</p>
 
 <div class="rule-h">
 <h2>…and what it can break</h2>
@@ -441,7 +460,7 @@
 // from these constants. CLOSED lists the tool ids grouped as closed source.
 // ---------------------------------------------------------------------------
 // Edit the build stamp here only — the masthead and footer both render from it.
-var BUILD = { version: "v16", compiled: "july 2026", updated: "27 jul 2026" };
+var BUILD = { version: "v17", compiled: "july 2026", updated: "29 jul 2026" };
 
 // The tab bar renders from this: one entry per reference, in display order.
 // `hash` is the public deep link (#harnesses, #providers, …) — don't rename
@@ -1398,6 +1417,23 @@ var LOCK = {
   none:     { label: "No brake" }
 };
 
+// What a card-less account gets. The question this answers is "can I hold this
+// forever without paying", so the vocabulary is about the payment method, not
+// the size of the allowance — a generous 7-day trial still ends in a card:
+//   nocard = a free tier with no expiry and no payment method
+//   part   = free tier, but one piece of the platform is gated behind billing
+//   trial  = time- or credit-limited, then it stops
+//   nofree = no free tier at all
+// `freeStatus: "partial"` on a row's `free` block means the numbers came from
+// the vendor's own pricing page but read through a search index — several of
+// these sites 403 an automated fetch of the page itself.
+var FREE = {
+  nocard: { label: "No card" },
+  part:   { label: "Card for parts" },
+  trial:  { label: "Trial only" },
+  nofree: { label: "No free tier" }
+};
+
 // What each platform actually gives you, in the order a project needs it:
 // serve the app, run code, keep state, then the extras. `label` heads the
 // capability column, `short` names the filter chip.
@@ -1438,6 +1474,13 @@ var INFRA = [
       files: "Vercel Blob",
       jobs:  "Cron Jobs"
     },
+    free: {
+      card: "nocard",
+      gets: "Hobby: 100 GB fast data transfer, 1M edge requests, 1M function invocations, 200 projects",
+      stops: "Non-commercial use only · past a cap the feature is cut off until the 30-day window rolls over",
+      freeUrl: "https://vercel.com/docs/plans/hobby",
+      freeStatus: "partial"
+    },
     mcp: "official", mcpDetail: "remote mcp.vercel.com · OAuth · ~25 tools",
     cli: "vercel · token + --yes runs headless · vercel buy spends money",
     reach: "full", reachDetail: "buy_pro, buy_domain, buy_credits, buy_addon, deploy_to_vercel",
@@ -1458,6 +1501,12 @@ var INFRA = [
       db:    "Postgres",
       files: { name: "Object Storage", via: "beta" },
       auth:  "Managed Better Auth"
+    },
+    free: {
+      card: "nocard",
+      gets: "100 projects, each 0.5 GB storage and 100 CU-hours · 10 branches · 5 GB egress · 60k auth MAU",
+      stops: "Out of CU-hours, compute suspends till next month · past 0.5 GB, writes fail · nothing is deleted",
+      freeUrl: "https://neon.com/docs/introduction/plans"
     },
     mcp: "official", mcpDetail: "remote mcp.neon.tech · OAuth or API key · 33 tools",
     cli: "neonctl · --output json · fully non-interactive",
@@ -1481,6 +1530,13 @@ var INFRA = [
       kv:   "Key Value (Redis API)",
       jobs: "Cron Jobs · Background Workers"
     },
+    free: {
+      card: "nocard",
+      gets: "750 instance hours a workspace a month, across web services, static sites, Postgres, 25 MB Key Value",
+      stops: "Services sleep after 15 min idle · a free Postgres expires 30 days after you create it",
+      freeUrl: "https://render.com/docs/free",
+      freeStatus: "partial"
+    },
     mcp: "official", mcpDetail: "remote or local · API key · 25 tools, none of them delete",
     cli: "render · --output json · --confirm · fully headless",
     reach: "deploy", reachDetail: "create_web_service / create_postgres on paid plans · no delete tools",
@@ -1502,6 +1558,12 @@ var INFRA = [
       files: "Storage (S3-compatible)",
       auth:  "Supabase Auth + RLS",
       jobs:  "Cron (pg_cron) · Queues (pgmq)"
+    },
+    free: {
+      card: "nocard",
+      gets: "500 MB database, 1 GB files, 5 GB egress, 50k monthly active users, unlimited API requests",
+      stops: "Two active projects · a week without activity pauses one until you restore it by hand",
+      freeUrl: "https://supabase.com/pricing"
     },
     mcp: "official", mcpDetail: "remote mcp.supabase.com · OAuth, or npx --read-only · ~29 tools",
     cli: "supabase · access token via env · CI-friendly",
@@ -1527,6 +1589,12 @@ var INFRA = [
       files: "Storage Buckets (S3)",
       jobs:  "Cron Jobs"
     },
+    free: {
+      card: "nocard",
+      gets: "$5 trial credit for 30 days, then $1 a month: one replica, 0.5 GB RAM, 1 vCPU, 0.5 GB volume",
+      stops: "Credit, not quota — deployments stop when it runs out · unverified accounts get restricted networking",
+      freeUrl: "https://docs.railway.com/pricing/free-trial"
+    },
     mcp: "official", mcpDetail: "bundled in the CLI (railway mcp) · stdio or hosted · 47 tools",
     cli: "railway · --json · token-based headless deploys",
     reach: "full", reachDetail: "remove_service, remove_volume, remove_bucket, delete_domain",
@@ -1551,6 +1619,13 @@ var INFRA = [
       auth:  "Netlify Identity",
       jobs:  "Scheduled · Background Functions"
     },
+    free: {
+      card: "nocard",
+      gets: "100 GB bandwidth, 300 build minutes, 125k function and 1M edge invocations, 10 GB storage",
+      stops: "Caps pause every project on the account until the next cycle, not just the one that overran",
+      freeUrl: "https://www.netlify.com/pricing/",
+      freeStatus: "partial"
+    },
     mcp: "official", mcpDetail: "local npx @netlify/mcp · stdio · CLI auth or a token",
     cli: "netlify · --json, --force · sites:delete --force runs headless",
     reach: "full", reachDetail: "no MCP delete, but the CLI it bridges to deletes sites",
@@ -1573,6 +1648,12 @@ var INFRA = [
       kv:    { name: "Upstash Redis", via: "partner" },
       files: { name: "Tigris object storage", via: "partner" },
       jobs:  "Scheduled Machines"
+    },
+    free: {
+      card: "trial",
+      gets: "No free tier — a trial of 2 machine-hours or 7 days: 10 machines, 20 GB volumes, 2 vCPU each",
+      stops: "Then apps stop until you add a card, and adding one ends the trial · every org needs one on file",
+      freeUrl: "https://fly.io/docs/about/free-trial/"
     },
     mcp: "official", mcpDetail: "flyctl mcp server · local stdio · access token · ~55 tools",
     cli: "flyctl · headless with --json / --now · the MCP server wraps the CLI",
@@ -1598,6 +1679,12 @@ var INFRA = [
       files: "R2",
       jobs:  "Cron Triggers · Queues"
     },
+    free: {
+      card: "part",
+      gets: "Workers 100k requests/day · D1 5 GB and 5M row reads/day · KV 1 GB and 100k reads/day · 100 Workers",
+      stops: "Daily caps fail closed rather than into a bill · R2 is a billing-checkout subscription, so files want a card",
+      freeUrl: "https://developers.cloudflare.com/workers/platform/pricing/"
+    },
     mcp: "official", mcpDetail: "14 remote servers, split by blast radius · OAuth",
     cli: "wrangler · API token, non-interactive, JSON output",
     reach: "full", reachDetail: "d1_database_delete, r2_bucket_delete, d1_database_query (raw SQL)",
@@ -1620,6 +1707,13 @@ var INFRA = [
       auth:  "Convex Auth · Clerk · Auth0",
       jobs:  "Cron + scheduled functions"
     },
+    free: {
+      card: "nocard",
+      gets: "40 deployments, 6 team members, hard caps on calls, storage and bandwidth · referrals raise them",
+      stops: "Past a cap, writes fail rather than bill you · Starter, the pay-as-you-go tier, is where the card goes",
+      freeUrl: "https://www.convex.dev/pricing",
+      freeStatus: "partial"
+    },
     mcp: "official", mcpDetail: "npx convex mcp start · stdio · 12 tools · CLI login",
     cli: "npx convex · agent mode · auto-provisions a local backend",
     reach: "full", reachDetail: "run any deployed mutation, envSet — but prod is locked by default",
@@ -1639,6 +1733,13 @@ var INFRA = [
       kv:   "Redis (per-request)",
       jobs: "QStash queue + schedules"
     },
+    free: {
+      card: "nocard",
+      gets: "Redis with 256 MB of data and 500K commands a month, on a database you keep indefinitely",
+      stops: "No middle setting — adding a card converts the database to pay-as-you-go",
+      freeUrl: "https://upstash.com/pricing/redis",
+      freeStatus: "partial"
+    },
     mcp: "official", mcpDetail: "@upstash/mcp-server · stdio · email + API key",
     cli: "@upstash/cli · non-interactive, JSON on stdout",
     reach: "full", reachDetail: "database_delete, create_new (billable), arbitrary Redis commands",
@@ -1656,6 +1757,13 @@ var INFRA = [
     pairs: "Any host. Nothing else lives on the platform — no app hosting, no storage, no auth.",
     caps: {
       db: "MySQL (Vitess) · Postgres"
+    },
+    free: {
+      card: "nofree",
+      gets: "Nothing — Hobby was deprecated in 2024 and every database is created on a paid plan",
+      stops: "The floor is a PS-10 cluster, 1/8 vCPU and 1 GB RAM, $39/month in us-east-1, billed pro rata",
+      freeUrl: "https://planetscale.com/pricing",
+      freeStatus: "partial"
     },
     mcp: "official", mcpDetail: "hosted mcp.pscale.dev · OAuth scopes · insights-only variant",
     cli: "pscale · non-interactive sql · the local mcp command is deprecated",
@@ -2224,10 +2332,34 @@ function renderInfraCaps(){
       return infraRowShell(r, cells, extra);
     }).join('') + '</tbody></table>';
 }
+// The free tier as a third view of the same rows. The badge answers "will this
+// ask for a card", the two prose columns answer "how much" and "until when" —
+// and the third is the one that varies most, because a quota that fails closed,
+// a credit balance and a seven-day clock all read as "free" until they don't.
+function renderInfraFree(){
+  legendFrom(FREE, 'freeLegend');
+  var host = document.getElementById('infraFree');
+  if (!host) return;
+  var rows = infraRows();
+  if (!rows.length){ host.innerHTML = '<p class="pm-empty">No service matches what you picked above.</p>'; return; }
+  host.innerHTML = '<table><thead><tr><th class="pm-tool-h">Service</th>' +
+    ['Card up front', 'What $0 gets you', 'Where it stops'].map(function(h){
+      return '<th><span class="chd">' + esc(h) + '</span></th>';
+    }).join('') + '</tr></thead><tbody>' +
+    rows.map(function(r){
+      var f = r.free || {};
+      var cells =
+        '<td>' + (f.card ? badge(f.card, FREE[f.card].label) : '<span class="dash">—</span>') + '</td>' +
+        '<td><span class="note">' + esc(f.gets || '—') + '</span></td>' +
+        '<td><span class="note">' + esc(f.stops || '—') + '</span></td>';
+      return infraRowShell(r, cells);
+    }).join('') + '</tbody></table>';
+}
 function renderInfra(){
   renderInfraNeeds();
   renderInfraFilter();
   renderInfraCaps();
+  renderInfraFree();
   // Two vocabularies on the second table: how far it reaches, and whether you can stop it.
   // LOCK is the only vocabulary that earns a colour here. `mcp` is "official"
   // for all eleven rows and `reach` is "full" for ten of them, so as columns
@@ -2277,6 +2409,16 @@ function renderInfraDetail(rows){
       ['Reach for it when', esc(sel.useWhen)],
       ['Pairs with', esc(sel.pairs)]
     ]) +
+    (sel.free ? '<div class="dsec">Starting for free</div>' +
+      dgrid([
+        ['Card up front', badge(sel.free.card, FREE[sel.free.card].label)],
+        ['What $0 gets you', esc(sel.free.gets)],
+        ['Where it stops', esc(sel.free.stops)]
+      ]) +
+      (sel.free.freeStatus === 'partial'
+        ? '<div class="unver">figures read from the vendor\'s pricing page indirectly — its docs refuse automated fetches</div>' : '') +
+      (sel.free.freeUrl ? '<a href="' + esc(sel.free.freeUrl) + '" target="_blank" rel="noopener noreferrer">' +
+        esc(sel.name) + ' pricing <span aria-hidden="true">↗</span></a>' : '') : '') +
     '<div class="dsec">What it can break</div>' +
     '<p class="dnote">' + esc(sel.note) + '</p>' +
     dgrid([

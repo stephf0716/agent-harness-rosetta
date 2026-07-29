@@ -21,13 +21,15 @@ A single-file interactive reference for AI developer tools, in five tabs:
   blunt questions: before checking with you, does it edit your files, and does
   it run your shell? Then what contains it and where you change it. Tap a row
   for the default in full, approval granularity and unattended behaviour.
-- **Infrastructure** — what each host and database actually gives you, and what
-  an agent can break there. Pick what you're building (a web app, a web app with
-  a database, …) and both tables narrow to the platforms that cover it: the
-  first is the capability matrix — hosting, functions, servers, database, cache,
-  file storage, auth, cron — and the second is blast radius: how far the
-  official MCP integration reaches, what non-production target exists, and
-  whether there's any enforced brake on it.
+- **Infrastructure** — what each host and database actually gives you, how much
+  of it is free, and what an agent can break there. Pick what you're building (a
+  web app, a web app with a database, …) and all three tables narrow to the
+  platforms that cover it: the first is the capability matrix — hosting,
+  functions, servers, database, cache, file storage, auth, cron — the second is
+  the free tier, meaning what a card-less account gets and where that allowance
+  ends, and the third is blast radius: how far the official MCP integration
+  reaches, what non-production target exists, and whether there's any enforced
+  brake on it.
 
 ## Usage
 
@@ -46,8 +48,8 @@ Features:
 - Provider tab: toggle the credentials you have to filter columns, "only show
   available" to hide tools you can't use, tap any row for connection details
   and provider docs
-- Infrastructure tab: toggle what you need to build to narrow both matrices to
-  the platforms that cover it; "every service" puts the rest back, annotated
+- Infrastructure tab: toggle what you need to build to narrow all three matrices
+  to the platforms that cover it; "every service" puts the rest back, annotated
   with what they'd be missing
 - Individual layer cards are deep-linkable too (`#c-instr`, `#c-skill`,
   `#c-mcp`, `#c-bundle`, `#c-agent`) — the link opens the card and scrolls to it
@@ -115,19 +117,27 @@ Everything lives in `index.html`.
     names — reference material, not something comparable across a row — and the
     roll-up duplicated the two columns that replaced it.
 - **`INFRA`** is the one table whose rows aren't harnesses, so it sorts itself
-  by name. Both of the tab's matrices render from it, in the same order, sharing
-  one selection and one filter.
+  by name. All three of the tab's matrices render from it, in the same order,
+  sharing one selection and one filter.
   - The capability half reads `CAPS` (the eight columns, `label` for the header
     and `short` for the filter chip) against each row's `caps` map. A `caps`
     value is the product's name as a plain string, or `{name, via}` where `via`
     is a `CAPVIA` key — `marketplace`, `partner`, `template`, `paid` or `beta`.
     A missing key means the platform has no first-party answer. Rows also carry
     `provides`, `useWhen` and `pairs` for the detail panel.
+  - The free-tier half reads each row's `free` block: `card` (a `FREE` key —
+    `nocard`, `part`, `trial` or `nofree`), `gets` and `stops`. The vocabulary
+    is about the payment method rather than the size of the allowance, because
+    the question it answers is "can I hold this without paying" — a generous
+    seven-day trial still ends in a card. `freeUrl` links the pricing page, and
+    `freeStatus: "partial"` marks a row whose numbers came from the vendor's own
+    pricing page read through a search index, because the page itself 403s an
+    automated fetch; the detail panel says so.
   - The blast-radius half is three columns: what it can break (`reachDetail` —
     the actual destructive calls, `buy_domain`, `d1_database_delete`,
     `apps-destroy`), the safe target (`isolation`), and the brake (`lock`,
-    keyed to `LOCK`). `LOCK` is the only badge vocabulary on the tab, the same
-    one-per-tab rule the permissions tab follows.
+    keyed to `LOCK`). `LOCK` and `FREE` are the only badge vocabularies on the
+    tab, one per matrix that has something colour can rank.
   - `MCPKIND` and `REACH` are still defined and still render in the detail
     panel, but they are deliberately not columns. `mcp` is `official` for all
     eleven rows and `reach` is `full` for ten of them, so as columns they were
@@ -175,13 +185,21 @@ Everything lives in `index.html`.
 
 Compiled July 2026; all five tabs last fact-checked against provider docs on
 26 July 2026, with the infrastructure capability columns and the Zed and Jan
-rows verified on 27 July 2026. Where a vendor's docs site blocked automated
+rows verified on 27 July 2026, and the infrastructure free-tier columns on
+29 July 2026. Where a vendor's docs site blocked automated
 access, claims were
 verified against the same docs in the project's public repo, or against the
 shipping source behind them. Three rows fall short of fully verified and are
 marked `partial`, each carrying its caveat in the detail panel: both Cursor rows
 (portability and permissions), which rest on secondary sources that agree with
-each other, and Goose's permissions row. Terminology and provider support in
+each other, and Goose's permissions row.
+
+Free-tier figures for Neon, Railway, Fly.io and Cloudflare come from those
+vendors' own docs; Supabase's from the plan data in its shipping source. The
+other six sites 403 an automated fetch of any page, so their numbers were read
+from the vendor's pricing page through a search index and their `free` block is
+marked `freeStatus: "partial"`. Pricing moves faster than anything else in these
+tables — check the linked pricing page before planning around a number. Terminology and provider support in
 this space move fast — tools add subscription sign-in, vendors change their
 terms, projects get renamed or merged. Every tab is a point-in-time snapshot;
 verify against each project's linked docs before relying on any single cell.
