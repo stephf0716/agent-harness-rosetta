@@ -41,9 +41,12 @@
 
   /* masthead */
   .masthead{display:flex;justify-content:space-between;align-items:center;padding:16px 0;border-bottom:1px solid var(--line);font-family:'IBM Plex Mono',monospace;font-size:11.5px;color:var(--faint)}
-  .theme-btn{appearance:none;background:none;border:1px solid var(--line);color:var(--muted);font-family:'IBM Plex Mono',monospace;font-size:11.5px;padding:5px 11px;border-radius:3px;cursor:pointer}
-  .theme-btn:hover{color:var(--text);border-color:var(--muted)}
-  .theme-btn:focus-visible{outline:2px solid var(--c-mcp);outline-offset:2px}
+  .theme-seg{display:flex;border:1px solid var(--line);border-radius:4px;overflow:hidden}
+  .theme-seg button{appearance:none;background:none;border:none;border-right:1px solid var(--line);color:var(--muted);font-family:'IBM Plex Mono',monospace;font-size:11.5px;padding:5px 10px;cursor:pointer;transition:background .15s,color .15s}
+  .theme-seg button:last-child{border-right:none}
+  .theme-seg button:hover{color:var(--text)}
+  .theme-seg button[aria-pressed="true"]{background:var(--line);color:var(--text);font-weight:600}
+  .theme-seg button:focus-visible{outline:2px solid var(--c-mcp);outline-offset:-2px}
 
   /* tabs */
   .tabs{display:flex;gap:4px;border-bottom:1px solid var(--line);margin-top:6px}
@@ -245,7 +248,11 @@
 
 <div class="masthead">
   <span id="buildTag">ai-tool-reference</span>
-  <button class="theme-btn" id="themeBtn" onclick="toggleTheme()" aria-label="Toggle color theme">dark / light / system</button>
+  <div class="theme-seg" role="group" aria-label="Color theme">
+    <button id="themeDark"   onclick="setTheme('dark')"   aria-pressed="false">dark</button>
+    <button id="themeLight"  onclick="setTheme('light')"  aria-pressed="false">light</button>
+    <button id="themeSystem" onclick="setTheme('system')" aria-pressed="false">system</button>
+  </div>
 </div>
 
 <nav class="tabs" role="tablist" aria-label="Reference sections" id="tabBar" onkeydown="tabsKey(event)"></nav>
@@ -419,7 +426,7 @@
 <div class="matrix-scroll">
 <div id="infraCaps"></div>
 </div>
-<div class="hint"><span class="scrollnote">← scroll → on mobile · </span>a dash means the platform has no first-party answer — you'd bring your own</div>
+<div class="hint"><span class="scrollnote">← scroll �� on mobile · </span>a dash means the platform has no first-party answer — you'd bring your own</div>
 </div>
 
 <p class="pm-foot">a tag under a cell is the catch: <strong>marketplace</strong> and <strong>partner</strong> mean someone else runs it, <strong>self-run</strong> means you operate the container, <strong>beta</strong> means not yet for production</p>
@@ -1822,10 +1829,7 @@ function esc(s){
   var saved = loadPrefs();
   var theme = (saved.theme === 'dark' || saved.theme === 'light') ? saved.theme : 'system';
   if(theme !== 'system') document.documentElement.setAttribute('data-theme', theme);
-  (function(){
-    var btn = document.getElementById('themeBtn');
-    if(btn) btn.textContent = theme === 'dark' ? 'light / system / dark' : theme === 'light' ? 'system / dark / light' : 'dark / light / system';
-  })();
+  updateThemeBtns(theme);
   renderTabs();
   renderHarnessPicker();
   renderHarnessMatrix();
@@ -1992,20 +1996,23 @@ function renderLayerCards(){
       '</div></div></details>';
   }).join('');
 }
-function toggleTheme(){
+  function updateThemeBtns(theme){
+  ['dark','light','system'].forEach(function(t){
+    var id = t === 'dark' ? 'themeDark' : t === 'light' ? 'themeLight' : 'themeSystem';
+    var el = document.getElementById(id);
+    if(el) el.setAttribute('aria-pressed', t === theme ? 'true' : 'false');
+  });
+  }
+  function setTheme(theme){
   var root = document.documentElement;
-  var cur = root.getAttribute('data-theme') || 'system';
-  var cycle = {dark:'light', light:'system', system:'dark'};
-  var next = cycle[cur] || 'dark';
-  if(next === 'system'){
+  if(theme === 'system'){
     root.removeAttribute('data-theme');
   } else {
-    root.setAttribute('data-theme', next);
+    root.setAttribute('data-theme', theme);
   }
-  var btn = document.getElementById('themeBtn');
-  if(btn) btn.textContent = next === 'dark' ? 'light / system / dark' : next === 'light' ? 'system / dark / light' : 'dark / light / system';
+  updateThemeBtns(theme);
   savePrefs();
-}
+  }
 function openCard(id, updateHash){
   var el = document.getElementById(id);
   if(!el) return;
