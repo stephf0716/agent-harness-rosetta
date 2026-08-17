@@ -58,7 +58,7 @@ Two things learned the hard way while compiling the newer tabs:
 written inline as a `node -e` one-liner, so it stays true to the no-dependency
 rule and needs nothing installed. Start it and drive the page with the preview
 tools — screenshot, resize, click, and `preview_eval` for things like
-`setTab('permissions')` or `toggleTheme()`. Prefer `preview_eval` with
+`setTab('permissions')` or `setTheme('light')`. Prefer `preview_eval` with
 `scrollBehavior='auto'` before scrolling; the stylesheet's smooth scroll
 otherwise races the screenshot and you capture the old position.
 

@@ -40,14 +40,15 @@ Fonts. Every tab renders from data with JavaScript, so the page needs it enabled
 Features:
 - Tab bar to switch between the five references (deep-linkable via `#harnesses`,
   `#providers`, `#portability`, `#permissions` and `#infra`)
-- Light/dark theme toggle (defaults to system preference), one theme across all tabs
+- Dark / light / system theme control (a three-way segmented control, defaulting
+  to system), one theme across all tabs
 - Harness tab: sticky harness picker filters the matrix and layer cards to one
   platform; tap any matrix cell or layer card for the full explanation (the
   column headers are buttons, so the same jump works from the keyboard);
   terminology traps section covers the "plugin" / "extension" naming collisions
-- Provider tab: toggle the credentials you have to filter columns, "only show
-  available" to hide tools you can't use, tap any row for connection details
-  and provider docs
+- Provider tab: toggle the credentials you have to filter columns, then narrow
+  the rows to "selected providers" or "subscription sign-in only"; tap any row
+  for connection details and provider docs
 - Infrastructure tab: toggle what you need to build to narrow all three matrices
   to the platforms that cover it; "every service" puts the rest back, annotated
   with what they'd be missing
@@ -55,7 +56,8 @@ Features:
   `#c-mcp`, `#c-bundle`, `#c-agent`) — the link opens the card and scrolls to it
 
 Theme, credential selections, the harness filter, the infrastructure capability
-picks, and the active tab are remembered via `localStorage` when available.
+picks, both row filters, and the active tab are remembered via `localStorage`
+when available.
 
 ## Deployment
 
@@ -83,7 +85,8 @@ git-ignored because it holds machine-specific project and org ids.
 Everything lives in `index.html`.
 
 - CSS custom properties drive the two themes, the five per-concept hues, and
-  the five connection-type hues.
+  the four connection-type hues (plus one green the free-tier badge and the
+  filter chips reuse).
 - **`BUILD`** (top of the `<script>` block) holds the version and dates; the
   masthead and footer both render from it, so bump it in one place.
 - **`TABS`** — one entry per reference, in display order, with the public deep
@@ -101,8 +104,8 @@ Everything lives in `index.html`.
   - Permissions is four columns: the two actions that change something (`edit`
     and `shell`, both keyed to `ACT`), then `sbx` and where to configure. The
     two actions are split out because a single roll-up hides real differences —
-    Cursor edits files without asking but stops at the terminal, and Hermes is
-    the reverse.
+    Cursor, Hermes and Osaurus all write to your disk unprompted but stop at the
+    terminal, which one word can't say.
   - **One badge vocabulary per tab.** `ACT` is the only one that gets a colour
     here. `SBX` renders as a plain leading word instead, because three
     vocabularies all drew from the same three hues and the colour stopped
@@ -189,10 +192,10 @@ rows verified on 27 July 2026, and the infrastructure free-tier columns on
 29 July 2026. Where a vendor's docs site blocked automated
 access, claims were
 verified against the same docs in the project's public repo, or against the
-shipping source behind them. Three rows fall short of fully verified and are
+shipping source behind them. Five rows fall short of fully verified and are
 marked `partial`, each carrying its caveat in the detail panel: both Cursor rows
 (portability and permissions), which rest on secondary sources that agree with
-each other, and Goose's permissions row.
+each other, Goose's permissions row, and Netlify and Upstash on infrastructure.
 
 Free-tier figures for Neon, Railway, Fly.io and Cloudflare come from those
 vendors' own docs; Supabase's from the plan data in its shipping source. The
