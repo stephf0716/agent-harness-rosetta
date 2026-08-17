@@ -275,7 +275,7 @@
 </nav>
 
 <div class="hpick" role="group" aria-label="Filter by harness">
-  <span class="plabel">show</span>
+  <span class="plabel">Show</span>
   <span id="hPickBtns" style="display:contents"></span>
 </div>
 
@@ -327,11 +327,11 @@
 
 </main>
 
-<main id="panel-providers" role="tabpanel" aria-labelledby="tab-providers">
+<main id="panel-providers" role="tabpanel" aria-labelledby="tab-providers" hidden>
 
 <header class="title">
   <h1>Provider<br><span class="dim">Compatibility Matrix</span></h1>
-  <p class="lede">Each row is an AI developer tool; each column is a credential you might hold. Every cell records <strong>how that credential connects</strong> — an API key, a subscription sign-in, a local endpoint, a built-in first-party path, or not at all. Select the credentials you have, and tap any row for connection details and provider docs.</p>
+  <p class="lede">Each row is an AI developer tool; each column is a credential you might hold. Every cell records <strong>how that credential connects</strong> — an API key, a subscription sign-in, a built-in first-party path, or not at all. Select the credentials you have, and tap any row for connection details and provider docs.</p>
 </header>
 
 <nav class="legend" aria-label="Connection type legend" id="pmLegend"></nav>
@@ -426,7 +426,7 @@
 <div class="matrix-scroll">
 <div id="infraCaps"></div>
 </div>
-<div class="hint"><span class="scrollnote">← scroll �� on mobile · </span>a dash means the platform has no first-party answer — you'd bring your own</div>
+<div class="hint"><span class="scrollnote">← scroll → on mobile · </span>a dash means the platform has no first-party answer — you'd bring your own</div>
 </div>
 
 <p class="pm-foot">a tag under a cell is the catch: <strong>marketplace</strong> and <strong>partner</strong> mean someone else runs it, <strong>self-run</strong> means you operate the container, <strong>beta</strong> means not yet for production</p>
@@ -475,7 +475,7 @@
 // from these constants. CLOSED lists the tool ids grouped as closed source.
 // ---------------------------------------------------------------------------
 // Edit the build stamp here only — the masthead and footer both render from it.
-var BUILD = { version: "v17", compiled: "july 2026", updated: "29 jul 2026" };
+var BUILD = { version: "v18", compiled: "july 2026", updated: "16 aug 2026" };
 
 // The tab bar renders from this: one entry per reference, in display order.
 // `hash` is the public deep link (#harnesses, #providers, …) — don't rename
@@ -717,7 +717,7 @@ var LAYERS = [
     oneliner: "Reusable know-how, loaded only when relevant",
     body: [
       "<p>A folder containing a <code>SKILL.md</code> file (instructions + YAML frontmatter) plus optional scripts, references, and templates. The key trick is <strong>progressive disclosure</strong>: the agent sees only each skill's name and description up front, and loads the full instructions only when the task matches. That's why fifty installed skills don't blow up your context window. Skills teach <em>how</em> to do something — a review checklist, a document format, a deployment procedure. They make no network calls and need no credentials.</p>",
-      "<p>This is the layer where the ecosystem has genuinely converged: the same SKILL.md format is an open standard (Agent Skills / agentskills.io) shared across vendors, with large cross-harness registries — and as of late 2025 every harness on this page supports it. Several now read each other's directories outright, so one skills folder can serve multiple tools.</p>"
+      "<p>This is the layer where the ecosystem has genuinely converged: the same SKILL.md format is an open standard (Agent Skills / agentskills.io) shared across vendors, with large cross-harness registries — and as of late 2025 every harness on this page supports it bar one: Jan has no skills layer at all. Several now read each other's directories outright, so one skills folder can serve multiple tools.</p>"
     ],
     cells: {
       claude: {
@@ -792,7 +792,7 @@ var LAYERS = [
     name: "Tool access", question: "external systems",
     oneliner: "Connections to external systems — all MCP underneath",
     body: [
-      "<p>This is where the naming confusion is worst, because every harness gives MCP servers a friendlier product name. An <strong>MCP server</strong> is a process (local or remote) that publishes callable tools — read email, query a database, create a Jira ticket — over a standard protocol. Unlike skills, these <em>do</em> reach external systems, use real credentials (usually OAuth acting as you), and consume meaningful context per connected server. Install only what you use.</p>"
+      "<p>This is where the naming confusion is worst, because several harnesses give MCP servers a friendlier product name. An <strong>MCP server</strong> is a process (local or remote) that publishes callable tools — read email, query a database, create a Jira ticket — over a standard protocol. Unlike skills, these <em>do</em> reach external systems, use real credentials (usually OAuth acting as you), and consume meaningful context per connected server. Install only what you use.</p>"
     ],
     cells: {
       claude: {
@@ -1206,9 +1206,11 @@ var PORTABILITY = [
 // Permissions: what each harness does without asking, and how to constrain it.
 // `auto` is our own one-word summary of the researched default, not a vendor
 // claim. Reading is free everywhere; the question is what it takes to change
-// something:
-//   gated = asks before writes and shell · mixed = only some changes prompt
+// something — a prompt, or a boundary it has to ask to cross:
+//   gated = nothing changes until you say so · mixed = only some changes prompt
 //   open  = changes the disk and runs shell with no prompt at all
+// Codex reads as gated even though both its actions are `free`, because the
+// freedom stops at the workspace and crossing it prompts.
 // ---------------------------------------------------------------------------
 var AUTO = {
   gated: { label: "Gates changes" },
@@ -1217,10 +1219,11 @@ var AUTO = {
 };
 
 // The two actions that actually change something, split out of `auto` because
-// the summary hides real differences — Cursor edits files without asking but
-// stops at the terminal; Hermes is the reverse. Both are our reading of the
-// researched default, not a vendor label. `notool` means the harness ships no
-// such tool at all, which is a different answer from "does it freely".
+// the summary hides real differences — Cursor, Hermes and Osaurus all write to
+// your disk unprompted but stop at the terminal, which one word can't say. Both
+// are our reading of the researched default, not a vendor label. `notool` means
+// the harness ships no such tool at all, a different answer from "does it
+// freely".
 var ACT = {
   ask:    { label: "Asks first" },
   free:   { label: "No prompt" },
@@ -1287,12 +1290,12 @@ var PERMISSIONS = [
     sandbox: "-s for Docker, Podman or macOS sandbox-exec",
     config: "~/.gemini/settings.json · ~/.gemini/policies/*.toml",
     headless: "gemini -p turns an ask into a deny — needs yolo or allow rules",
-    note: "The most configurable of the five: a TOML policy engine sets allow, deny or ask per tool name and command prefix with priorities, and a deny also hides the tool from the model entirely. Note that yolo cannot be set as the default from settings, only per invocation.",
+    note: "The most configurable here: a TOML policy engine sets allow, deny or ask per tool name and command prefix with priorities, and a deny also hides the tool from the model entirely. Note that yolo cannot be set as the default from settings, only per invocation.",
     url: "https://github.com/google-gemini/gemini-cli/blob/main/docs/reference/policy-engine.md",
     status: "verified"
   },
   {
-    id: "cursor", auto: "gated",
+    id: "cursor", auto: "mixed",
     edit: "free", editq: "workspace files", shell: "ask", shellq: "terminal commands", sbx: "on",
     dflt: "Reads and edits workspace files freely; terminal commands ask",
     approval: "Run modes: Auto-review (default), Allowlist, Run Everything",
@@ -1793,7 +1796,7 @@ var INFRA = [
 ];
 
 var STORAGE_KEY = "ai_tool_matrix_prefs";
-// Selected-row state for the three row-detail tables. These must be assigned
+// Selected-row state for the four row-detail tables. These must be assigned
 // before the init IIFE runs — `var` hoists the declaration but not the value.
 var pmState = { have: {}, filter: "all", detail: null };
 // Declared up here, not beside their render functions: the init IIFE below
@@ -1996,14 +1999,14 @@ function renderLayerCards(){
       '</div></div></details>';
   }).join('');
 }
-  function updateThemeBtns(theme){
+function updateThemeBtns(theme){
   ['dark','light','system'].forEach(function(t){
     var id = t === 'dark' ? 'themeDark' : t === 'light' ? 'themeLight' : 'themeSystem';
     var el = document.getElementById(id);
     if(el) el.setAttribute('aria-pressed', t === theme ? 'true' : 'false');
   });
-  }
-  function setTheme(theme){
+}
+function setTheme(theme){
   var root = document.documentElement;
   if(theme === 'system'){
     root.removeAttribute('data-theme');
@@ -2012,7 +2015,7 @@ function renderLayerCards(){
   }
   updateThemeBtns(theme);
   savePrefs();
-  }
+}
 function openCard(id, updateHash){
   var el = document.getElementById(id);
   if(!el) return;
