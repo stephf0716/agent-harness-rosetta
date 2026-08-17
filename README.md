@@ -5,9 +5,10 @@ A single-file interactive reference for AI developer tools, in five tabs:
 - **Harness layers** — the Agent Harness Rosetta Stone: maps the five extension
   layers of AI agent harnesses (instructions, skills, tool access/MCP, bundles,
   delegation) across Claude, Codex/ChatGPT, Goose, Hermes Agent, Osaurus,
-  Gemini CLI, Cursor, OpenCode, OpenClaw, GitHub Copilot, Zed, and Jan in one
-  matrix. Jan is the outlier and the row shows it: a local chat/RAG app with a
-  real MCP tool loop, but no skills layer and no file-write or shell tool.
+  Gemini CLI, Grok Build, Cursor, OpenCode, OpenClaw, GitHub Copilot, Zed, and
+  Jan in one matrix. Jan is the outlier and the row shows it: a local chat/RAG
+  app with a real MCP tool loop, but no skills layer and no file-write or shell
+  tool.
 - **Provider matrix** — a compatibility matrix of AI developer tools and the
   credentials each one supports. Each row is a tool (Cline, Cursor, Goose,
   Claude, ChatGPT, and more); each column is a credential you might hold.
@@ -15,8 +16,10 @@ A single-file interactive reference for AI developer tools, in five tabs:
   sign-in, a built-in first-party path, or not at all.
 - **Portability** — what config survives if you add or switch harnesses. Three
   things travel as open standards (AGENTS.md, SKILL.md skills, MCP servers), and
-  several tools read each other's directories outright; the last column is what
-  has no equivalent anywhere else.
+  several tools read each other's directories outright — Grok Build furthest of
+  all, being the only one that reads a rival's bundle layer (Claude Code's
+  plugins and marketplaces) and the only "reads others'" cell in the MCP column.
+  The last column is what has no equivalent anywhere else.
 - **Permissions** — what each harness does without asking, reduced to the two
   blunt questions: before checking with you, does it edit your files, and does
   it run your shell? Then what contains it and where you change it. Tap a row
@@ -192,10 +195,18 @@ rows verified on 27 July 2026, and the infrastructure free-tier columns on
 29 July 2026. Where a vendor's docs site blocked automated
 access, claims were
 verified against the same docs in the project's public repo, or against the
-shipping source behind them. Five rows fall short of fully verified and are
+shipping source behind them. Six rows fall short of fully verified and are
 marked `partial`, each carrying its caveat in the detail panel: both Cursor rows
 (portability and permissions), which rest on secondary sources that agree with
-each other, Goose's permissions row, and Netlify and Upstash on infrastructure.
+each other, Goose's permissions row, Netlify and Upstash on infrastructure, and
+Grok Build's permissions row, where the vendor's docs simply don't state what an
+unapproved tool call does in a headless run.
+
+The Grok Build rows were added on 17 August 2026 from xAI's own documentation at
+`docs.x.ai/build`, which — unusually for this list — serves an automated fetch
+without a 403. Two facts it doesn't cover: the name of the tool the model calls
+to delegate, and whether subagents run in parallel. Both are stated as open in
+the delegation card rather than guessed at.
 
 Free-tier figures for Neon, Railway, Fly.io and Cloudflare come from those
 vendors' own docs; Supabase's from the plan data in its shipping source. The

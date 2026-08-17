@@ -10,7 +10,7 @@
 > (`HARNESSES` is now row order, not column order), which means filtering no
 > longer narrows the table — the `min-width` and the `.scrollnote` hint stay put
 > when a filter is active, contradicting the invariant listed below. And the
-> harness list has since grown from ten to twelve, so the picker has thirteen
+> harness list has since grown from ten to thirteen, so the picker has fourteen
 > options rather than eleven.
 
 A task spec for a fresh session. Everything you need should be here; read

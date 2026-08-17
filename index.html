@@ -4,10 +4,10 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>AI Tool Reference</title>
-<meta name="description" content="Five interactive references for AI developer tools: the Agent Harness Rosetta Stone, mapping the five extension layers across twelve harnesses, plus matrices of which credentials each tool accepts, what config ports between them, what each one does without asking, and what each host and database gives an agent to work with — or break.">
+<meta name="description" content="Five interactive references for AI developer tools: the Agent Harness Rosetta Stone, mapping the five extension layers across thirteen harnesses, plus matrices of which credentials each tool accepts, what config ports between them, what each one does without asking, and what each host and database gives an agent to work with — or break.">
 <meta property="og:type" content="website">
 <meta property="og:title" content="AI Tool Reference">
-<meta property="og:description" content="The five extension layers of AI agent harnesses, mapped across twelve platforms — plus which credentials each AI developer tool accepts, what config travels between them, and what each one does without asking.">
+<meta property="og:description" content="The five extension layers of AI agent harnesses, mapped across thirteen platforms — plus which credentials each AI developer tool accepts, what config travels between them, and what each one does without asking.">
 <meta name="twitter:card" content="summary">
 <link rel="icon" href="data:image/svg+xml,%3Csvg%20xmlns='http://www.w3.org/2000/svg'%20viewBox='0%200%2032%2032'%3E%3Crect%20width='32'%20height='32'%20rx='6'%20fill='%2314161A'/%3E%3Cg%3E%3Crect%20x='6'%20y='5'%20width='20'%20height='3'%20rx='1.5'%20fill='%23DFA83E'/%3E%3Crect%20x='6'%20y='10'%20width='20'%20height='3'%20rx='1.5'%20fill='%2342C0A5'/%3E%3Crect%20x='6'%20y='15'%20width='20'%20height='3'%20rx='1.5'%20fill='%235EA9F2'/%3E%3Crect%20x='6'%20y='20'%20width='20'%20height='3'%20rx='1.5'%20fill='%23A88EF5'/%3E%3Crect%20x='6'%20y='25'%20width='20'%20height='3'%20rx='1.5'%20fill='%23E4718F'/%3E%3C/g%3E%3C/svg%3E">
 <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -296,7 +296,7 @@
 <section class="trap r-instr">
   <div class="rule-h hue"><h2>Terminology traps</h2></div>
   <ul>
-    <li><strong>"Plugin" is the most overloaded word in the ecosystem.</strong> In Claude and Codex, a plugin is a distribution bundle (skills + MCP + commands). In Hermes, OpenClaw, and OpenCode, a plugin is a code extension — a Python or JS file that adds tools and hooks to the runtime. Osaurus splits the difference: its plugin is a native code extension <em>packaged as</em> a bundle (binary + SKILL.md + UI in one zip). Same word, three different meanings.</li>
+    <li><strong>"Plugin" is the most overloaded word in the ecosystem.</strong> In Claude, Codex and Grok Build, a plugin is a distribution bundle (skills + MCP + commands, and in Grok's case an LSP server too). In Hermes, OpenClaw, and OpenCode, a plugin is a code extension — a Python or JS file that adds tools and hooks to the runtime. Osaurus splits the difference: its plugin is a native code extension <em>packaged as</em> a bundle (binary + SKILL.md + UI in one zip). Same word, three different meanings.</li>
     <li><strong>"Extension" flips meaning too.</strong> In Goose, an extension is an MCP server (tool access). In Gemini CLI, an extension is a bundle. In Zed it's an <em>editor</em> bundle — themes, languages, language servers, debuggers — which can carry an MCP server but has no manifest field for a skill or an instruction file, so it stops short of being an agent bundle. Copilot used the word for its marketplace GitHub Apps until they were sunset in Nov 2025 — so older Copilot writing means something that no longer exists. Check which layer, and which year, before assuming.</li>
     <li><strong>"Skills" is the safest word.</strong> Everyone who implements it means the same SKILL.md open standard, and every harness here supports it bar one — Jan has no skills layer at all. The wrinkles are in distribution and authorship, not format: Hermes skills can be written by the agent itself, and OpenClaw ships them as versioned ClawHub bundles. Note also that the shared folder is increasingly the vendor-neutral <code>.agents/skills</code> rather than any one vendor's directory.</li>
     <li><strong>"Connector" is mostly Claude-speak</strong> for a packaged remote MCP server — though the word shows up generically elsewhere to mean any MCP integration.</li>
@@ -475,7 +475,7 @@
 // from these constants. CLOSED lists the tool ids grouped as closed source.
 // ---------------------------------------------------------------------------
 // Edit the build stamp here only — the masthead and footer both render from it.
-var BUILD = { version: "v18", compiled: "july 2026", updated: "16 aug 2026" };
+var BUILD = { version: "v19", compiled: "july 2026", updated: "17 aug 2026" };
 
 // The tab bar renders from this: one entry per reference, in display order.
 // `hash` is the public deep link (#harnesses, #providers, …) — don't rename
@@ -628,6 +628,7 @@ var HARNESSES = [
   { id: "hermes",   label: "Hermes Agent",    short: "Hermes" },
   { id: "osaurus",  label: "Osaurus",         short: "Osaurus" },
   { id: "gemini",   label: "Gemini CLI",      short: "Gemini", tile: "Gemini CLI" },
+  { id: "grok",     label: "Grok Build",      short: "Grok",   tile: "Grok Build" },
   { id: "cursor",   label: "Cursor",          short: "Cursor" },
   { id: "opencode", label: "OpenCode",        short: "OpenCode" },
   { id: "openclaw", label: "OpenClaw",        short: "OpenClaw" },
@@ -675,6 +676,12 @@ var LAYERS = [
         term: "GEMINI.md",
         loc: "repo root · ~/.gemini · AGENTS.md only if you opt in",
         desc: "Same pattern as CLAUDE.md, hierarchical from home dir to subdirectory. It can read <code>AGENTS.md</code> instead, but not by default — you have to point <code>context.fileName</code> at it, so one file serves both harnesses only after you say so."
+      },
+      grok: {
+        term: "AGENTS.md + CLAUDE.md",
+        loc: "~/.grok/ → repo root → cwd · .grok/rules/",
+        note: "every match concatenates — no first-match-wins",
+        desc: "Per directory it reads any of <code>AGENTS.md</code>, <code>Agents.md</code>, <code>AGENT.md</code>, <code>CLAUDE.md</code>, <code>Claude.md</code> and <code>CLAUDE.local.md</code>, plus every <code>*.md</code> in a <code>.grok/rules/</code> directory — with <code>.claude/rules/</code> and <code>.cursor/rules/</code> read for compatibility. Global rules in <code>~/.grok/</code> load first, then every directory from the repo root down to the working directory, deeper files winning on conflict. Unlike Hermes or Zed, nothing is picked as a single winner: all matches concatenate, and <code>.gitignore</code>d files are skipped so a <code>CLAUDE.local.md</code> stays personal."
       },
       cursor: {
         term: "Rules",
@@ -752,6 +759,12 @@ var LAYERS = [
         loc: "same SKILL.md standard",
         desc: "Same SKILL.md standard — skills written for Claude or Codex usually run here with little or no change."
       },
+      grok: {
+        term: "Skills",
+        loc: "SKILL.md · .grok/skills/ · ~/.grok/skills/ · /slash form",
+        note: "also reads ~/.agents/skills and Claude Code's",
+        desc: "Same <code>SKILL.md</code> standard with YAML frontmatter, discovered from <code>./.grok/skills/</code> walked to the repo root, <code>~/.grok/skills/</code>, any enabled plugin's <code>skills/</code> directory, and extra paths under <code>[skills]</code> in <code>~/.grok/config.toml</code> — plus <code>~/.agents/skills/</code> and Claude Code's own directories. A user-invocable skill also surfaces as a slash command, with a qualified <code>/local:name</code> form when two collide."
+      },
       cursor: {
         term: "Skills",
         loc: "SKILL.md format supported",
@@ -828,6 +841,12 @@ var LAYERS = [
         loc: "settings.json · or shipped inside extensions",
         desc: "Configured in settings.json, or shipped inside an extension. A server you set up for one harness works across all of them."
       },
+      grok: {
+        term: "MCP servers",
+        loc: "~/.grok/config.toml [mcp_servers.*] · grok mcp add",
+        note: "also merges ~/.claude.json, .cursor/mcp.json and .mcp.json",
+        desc: "Declared as <code>[mcp_servers.&lt;name&gt;]</code> tables in <code>~/.grok/config.toml</code>, or managed with <code>grok mcp add</code> / <code>list</code> / <code>remove</code> / <code>doctor</code>. Local stdio and remote HTTP, with OAuth handled automatically and tokens kept in <code>~/.grok/mcp_credentials.json</code>; tools arrive namespaced as <code>&lt;server&gt;__&lt;tool&gt;</code>. It also loads MCP config out of <code>~/.claude.json</code>, <code>.cursor/mcp.json</code> and a project <code>.mcp.json</code>, merged below <code>config.toml</code> in priority."
+      },
       cursor: {
         term: "MCP servers",
         loc: "mcp.json · one-click installs",
@@ -903,6 +922,12 @@ var LAYERS = [
         note: "⚠ \"extension\" here = bundle, not MCP server (Goose's usage)", warn: true,
         desc: "Bundle MCP servers, context files, and commands into one install. Note the trap: \"extension\" means <em>bundle</em> here, not MCP server as in Goose."
       },
+      grok: {
+        term: "Plugins",
+        loc: ".grok/plugins/ · ~/.grok/plugins/ · marketplaces",
+        note: "reads Claude Code's plugins and marketplaces as they are",
+        desc: "A plugin adds skills, agents, hooks, MCP servers <em>and</em> LSP servers — Claude's payload plus a language server. Loaded from <code>./.grok/plugins/</code>, <code>~/.grok/plugins/</code> and marketplace installs under <code>~/.grok/plugins/marketplaces/</code>, with sources in <code>[[marketplace.sources]]</code> and <code>known_marketplaces.json</code>; <code>grok plugin install</code> and friends manage them. The unusual part is at the other end: it reads Claude Code's plugins and marketplaces directly, which no other harness here does at the bundle layer."
+      },
       cursor: {
         term: null,
         note: "share rules + skills via the repo",
@@ -976,6 +1001,12 @@ var LAYERS = [
         loc: ".gemini/agents/ · parallel execution",
         note: "added Apr 2026",
         desc: "Markdown definitions in <code>.gemini/agents/</code>, delegated to and run in parallel. Added April 2026 — before that, parallel work meant scripting multiple CLI invocations yourself."
+      },
+      grok: {
+        term: "Subagents",
+        loc: ".grok/agents/ · ~/.grok/agents/ · workflows orchestrate them",
+        note: "two of the three built-in types are read-only by design",
+        desc: "Independent child sessions with their own context that hand a summary back to the parent. Three built-in types: <code>general-purpose</code> (full capability), <code>explore</code> (read, list and search only — no shell, no edits) and <code>plan</code> (drafts an implementation plan, likewise). Add or override types under <code>.grok/agents/</code> or <code>~/.grok/agents/</code>, with personas as <code>.grok/personas/*.toml</code>. Workflows are on by default and orchestrate them — <code>/deep-research</code> is a built-in one. The docs stop short of naming the delegating tool or saying whether children run in parallel."
       },
       cursor: {
         term: "Subagents + background agents",
@@ -1114,6 +1145,20 @@ var PORTABILITY = [
     stranded: "TOML custom commands, extensions, checkpointing",
     note: "Easy one to get backwards: Gemini CLI does not read AGENTS.md by default — GEMINI.md is the default and AGENTS.md only applies if you set context.fileName. Skills are the generous half: .agents/skills works as a documented alias for its own directories.",
     url: "https://github.com/google-gemini/gemini-cli/blob/main/docs/cli/using-agent-skills.md",
+    status: "verified"
+  },
+  {
+    id: "grok",
+    cells: { agents: { m: "reads", loc: "AGENTS.md family + CLAUDE.md, all concatenated" },
+             skills: { m: "reads", loc: ".grok/skills · .claude · ~/.agents/skills" },
+             mcp:    { m: "reads", loc: "~/.claude.json · .cursor/mcp.json · .mcp.json" } },
+    instr: ["AGENTS.md", "Agents.md", "AGENT.md", "CLAUDE.md", "Claude.md", "CLAUDE.local.md", ".grok/rules/**/*.md", ".claude/rules/", ".cursor/rules/", "~/.grok/"],
+    skills: [".grok/skills/", "~/.grok/skills/", "~/.agents/skills/", ".claude/skills/", "<plugin>/skills/"],
+    foreign: ["CLAUDE.md", "Claude.md", "CLAUDE.local.md", ".claude/rules/", ".cursor/rules/", ".claude/skills/", "~/.agents/skills/", "~/.claude.json", ".cursor/mcp.json", ".mcp.json", "Claude Code plugins + marketplaces"],
+    mcp: "~/.grok/config.toml ([mcp_servers.<name>])",
+    stranded: "personas, workflows, LSP servers in plugins, config.toml shape, sandbox profiles",
+    note: "The most omnivorous reader here, and the only one that reaches a rival's bundle layer: Claude Code's plugins and marketplaces load as they are, alongside its skills, agents, hooks and instruction files. All of it is runtime discovery with no import step — the distinction that matters in this column. MCP is where it stands alone: every other row writes only its own config, so this is the one \"reads others'\" cell in that column. The asymmetry is the flip side — nothing on this page reads .grok/.",
+    url: "https://docs.x.ai/build/features/skills-plugins-marketplaces",
     status: "verified"
   },
   {
@@ -1293,6 +1338,18 @@ var PERMISSIONS = [
     note: "The most configurable here: a TOML policy engine sets allow, deny or ask per tool name and command prefix with priorities, and a deny also hides the tool from the model entirely. Note that yolo cannot be set as the default from settings, only per invocation.",
     url: "https://github.com/google-gemini/gemini-cli/blob/main/docs/reference/policy-engine.md",
     status: "verified"
+  },
+  {
+    id: "grok", auto: "gated",
+    edit: "ask", shell: "ask", shellq: "anything not already allowed", sbx: "optin",
+    dflt: "Ask mode: anything not already allowed prompts, edits and shell alike",
+    approval: "Shift+Tab cycles Normal → Plan → Auto → Always-approve · allow / deny rules, deny wins",
+    sandbox: "Landlock on Linux, Seatbelt on macOS · files and network · --sandbox workspace",
+    config: "~/.grok/config.toml [ui] permission_mode · --allow / --deny · GROK_SANDBOX",
+    headless: "grok -p · --always-approve (alias --yolo) auto-approves · enterprise dontAsk modes can be locked",
+    note: "Ask covers both actions, which is the stricter half of this table. Auto puts a classifier in front of the safe calls and Always-approve skips prompts, but deny rules and PreToolUse hooks survive both — deny always wins over allow. The sandbox is a separate axis and stays off until you ask for it. One quiet strength: a project .grok/config.toml can carry only MCP servers, plugins and permission rules, so a cloned repo can't widen the rest of your config. What the docs don't say is what an unapproved call does under -p — it names no default, so treat headless runs as needing an explicit --allow or --always-approve.",
+    url: "https://docs.x.ai/build/features/permissions",
+    status: "partial"
   },
   {
     id: "cursor", auto: "mixed",
