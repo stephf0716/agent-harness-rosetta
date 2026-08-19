@@ -2,6 +2,10 @@
 
 A dependency-free, interactive reference for comparing AI developer tools.
 
+[View the live reference](https://agent-harness-rosetta.vercel.app) · [Report a correction](https://github.com/stephf0716/agent-harness-rosetta/issues/new)
+
+![Agent Harness Rosetta social preview](./social-preview.png)
+
 Use it to see how agent harnesses name and organize their extension layers, which credentials different tools accept, what configuration is portable, what actions run without approval, and how much infrastructure access an agent can receive.
 
 Everything runs from a single `index.html` file—no framework, package manager, or build step.
@@ -47,9 +51,11 @@ Theme and filter selections are saved in `localStorage` when available. The inte
 | File | Purpose |
 | --- | --- |
 | `index.html` | Application, styles, data, and rendering logic |
+| `social-preview.png` | Repository and README preview image |
 | `vercel.json` | Static Vercel configuration and response headers |
 | `.vercelignore` | Deployment allowlist; only the site and Vercel config are published |
-| `LICENSE` | CC BY 4.0 license |
+| `LICENSE` | MIT license for the implementation |
+| `LICENSE-CONTENT` | CC BY 4.0 license for reference data and editorial content |
 
 The data model also lives in `index.html`:
 
@@ -80,4 +86,6 @@ The repository is configured as a static Vercel site:
 
 ## License
 
-[CC BY 4.0](./LICENSE). You may share and adapt the work, including commercially, with attribution and an indication of changes.
+The implementation—HTML structure, CSS, and JavaScript rendering logic—is available under the [MIT License](./LICENSE).
+
+The reference data, comparison tables, and editorial content are available under [CC BY 4.0](./LICENSE-CONTENT). You may share and adapt that material, including commercially, with attribution and an indication of changes.
