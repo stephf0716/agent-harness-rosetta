@@ -2,3 +2,7 @@
 
 # Local Vercel link (project + org ids) — created by `vercel link`, machine-specific
 .vercel
+
+# AI agent configuration — keep local, not for public repo
+CLAUDE.md
+.claude/
