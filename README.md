@@ -89,3 +89,5 @@ The repository is configured as a static Vercel site:
 The implementation—HTML structure, CSS, and JavaScript rendering logic—is available under the [MIT License](./LICENSE).
 
 The reference data, comparison tables, and editorial content are available under [CC BY 4.0](./LICENSE-CONTENT). You may share and adapt that material, including commercially, with attribution and an indication of changes.
+
+Because both live in `index.html`, the comment at the top of that file is the authoritative boundary: it names which constants are content and which code is implementation. GitHub's sidebar reports only "MIT," as its license detection cannot represent a split.

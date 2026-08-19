@@ -1,4 +1,23 @@
 <!DOCTYPE html>
+<!--
+  Agent Harness Rosetta — https://github.com/stephf0716/agent-harness-rosetta
+
+  This file is dual-licensed, because it holds both the implementation and the
+  reference content. Copying the whole file means honoring both terms.
+
+  Implementation — MIT (see LICENSE). The markup, the stylesheet, and the
+  rendering logic: esc(), the render*/pm*/port*/perm*/infra* functions, and the
+  tab, theme, hash and preference handling.
+
+  Reference data and editorial content — CC BY 4.0 (see LICENSE-CONTENT). The
+  BUILD, TABS, HARNESSES, LAYERS, CREDENTIALS, TOOLS, MECH, CLOSED, PORTABILITY,
+  PERMISSIONS, INFRA, CAPS, CAPVIA, FREE, LOCK, MCPKIND and REACH constants, and
+  the prose rendered from them. Reuse needs attribution and an indication of
+  changes.
+
+  GitHub's sidebar reports "MIT" for the repository because its license
+  detection cannot express a split. This comment is the authoritative boundary.
+-->
 <html lang="en">
 <head>
 <meta charset="UTF-8">
@@ -6,9 +25,12 @@
 <title>AI Tool Reference</title>
 <meta name="description" content="Five interactive references for AI developer tools: the Agent Harness Rosetta Stone, mapping the five extension layers across thirteen harnesses, plus matrices of which credentials each tool accepts, what config ports between them, what each one does without asking, and what each host and database gives an agent to work with — or break.">
 <meta property="og:type" content="website">
+<meta property="og:url" content="https://agent-harness-rosetta.vercel.app/">
 <meta property="og:title" content="AI Tool Reference">
 <meta property="og:description" content="The five extension layers of AI agent harnesses, mapped across thirteen platforms — plus which credentials each AI developer tool accepts, what config travels between them, and what each one does without asking.">
-<meta name="twitter:card" content="summary">
+<meta property="og:image" content="https://agent-harness-rosetta.vercel.app/social-preview.png">
+<meta property="og:image:alt" content="Agent Harness Rosetta — compare agent layers, providers, portability, permissions, and infrastructure in one interactive reference.">
+<meta name="twitter:card" content="summary_large_image">
 <link rel="icon" href="data:image/svg+xml,%3Csvg%20xmlns='http://www.w3.org/2000/svg'%20viewBox='0%200%2032%2032'%3E%3Crect%20width='32'%20height='32'%20rx='6'%20fill='%2314161A'/%3E%3Cg%3E%3Crect%20x='6'%20y='5'%20width='20'%20height='3'%20rx='1.5'%20fill='%23DFA83E'/%3E%3Crect%20x='6'%20y='10'%20width='20'%20height='3'%20rx='1.5'%20fill='%2342C0A5'/%3E%3Crect%20x='6'%20y='15'%20width='20'%20height='3'%20rx='1.5'%20fill='%235EA9F2'/%3E%3Crect%20x='6'%20y='20'%20width='20'%20height='3'%20rx='1.5'%20fill='%23A88EF5'/%3E%3Crect%20x='6'%20y='25'%20width='20'%20height='3'%20rx='1.5'%20fill='%23E4718F'/%3E%3C/g%3E%3C/svg%3E">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Archivo:wght@500;600;700;800&family=IBM+Plex+Sans:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet">
@@ -2249,7 +2271,13 @@ function pathList(arr){
 }
 
 /* ---- portability tab ---- */
-function portSelect(id){ portState.detail = id; renderPortability(); }
+function portSelect(id){
+  portState.detail = id;
+  renderPortability();
+  // The re-render replaces the row that was focused, so put focus back on it.
+  var row = document.querySelector('#portMatrix tr[data-tool="' + id + '"]');
+  if (row) row.focus({preventScroll:true});
+}
 function renderPortability(){
   legendFrom(PORT_MECH, 'portLegend');
   var host = document.getElementById('portMatrix');
@@ -2279,7 +2307,13 @@ function renderPortability(){
 }
 
 /* ---- permissions tab ---- */
-function permSelect(id){ permState.detail = id; renderPermissions(); }
+function permSelect(id){
+  permState.detail = id;
+  renderPermissions();
+  // The re-render replaces the row that was focused, so put focus back on it.
+  var row = document.querySelector('#permMatrix tr[data-tool="' + id + '"]');
+  if (row) row.focus({preventScroll:true});
+}
 // A PERM_COLS entry with a `vocab` renders as a badge over the row's own prose,
 // so compressing the verdict never costs the qualifier that makes it true —
 // "No prompt" alone would misread Codex, which is only free inside the workspace.
