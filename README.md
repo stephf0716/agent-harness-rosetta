@@ -225,4 +225,8 @@ plan limits. Those cells read "Sign-in"; the row's note carries the caveat.
 
 ## License
 
-MIT — see [LICENSE](./LICENSE).
+[CC BY 4.0](./LICENSE) — you're free to share and adapt this for any purpose,
+including commercial use, as long as you give credit. Appropriate credit means
+linking back to this repository (or the deployed site) and indicating if you
+made changes. You don't have to use my name if it isn't public — a URL is
+enough.
