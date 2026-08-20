@@ -2298,8 +2298,8 @@ function alphaHarnessOrder(rows){
     return null;
   }).filter(Boolean);
 }
-function badge(cls, label){
-  return '<span class="mech m-' + esc(cls) + '"><i></i>' + esc(label) + '</span>';
+function badge(cls, label, noIcon){
+  return '<span class="mech m-' + esc(cls) + (noIcon ? ' no-dia' : '') + '">' + (noIcon ? '' : '<i></i>') + esc(label) + '</span>';
 }
 function legendFrom(map, host){
   var el = document.getElementById(host);
@@ -2536,7 +2536,7 @@ function renderInfraFree(){
     rows.map(function(r){
       var f = r.free || {};
       var cells =
-        '<td>' + (f.card ? badge(f.card, FREE[f.card].label) : '<span class="dash">—</span>') + '</td>' +
+        '<td>' + (f.card ? badge(f.card, FREE[f.card].label, true) : '<span class="dash">—</span>') + '</td>' +
         '<td><span class="note">' + esc(f.gets || '—') + '</span></td>' +
         '<td><span class="note">' + esc(f.stops || '—') + '</span></td>';
       return infraRowShell(r, cells);
@@ -2579,7 +2579,7 @@ function renderInfraDetail(rows){
     ]) +
     (sel.free ? '<div class="dsec">Starting for free</div>' +
       dgrid([
-        ['Card up front', badge(sel.free.card, FREE[sel.free.card].label)],
+        ['Card up front', badge(sel.free.card, FREE[sel.free.card].label, true)],
         ['What $0 gets you', esc(sel.free.gets)],
         ['Where it stops', esc(sel.free.stops)]
       ]) +
