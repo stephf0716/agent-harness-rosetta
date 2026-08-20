@@ -1179,7 +1179,7 @@ var PORTABILITY = [
     mcp: ".mcp.json (project) · ~/.claude.json (user)",
     stranded: "hooks, subagents, output styles, plugin manifests",
     note: "The holdout. It originated the SKILL.md format and four other harnesses now read .claude/skills, but Claude Code reads nobody else's directory — sharing with it is strictly one-directional. Its /init imports rival rule files once at migration time, which is not the same as reading them at runtime.",
-    url: "https://code.claude.com/docs/en/skills",
+    url: "https://code.claude.com/docs/en/memory",
     status: "verified"
   },
   {
@@ -1193,7 +1193,7 @@ var PORTABILITY = [
     mcp: "~/.codex/config.toml ([mcp_servers])",
     stranded: "profiles, sandbox modes, trust levels",
     note: "Joined via the neutral .agents/ path rather than by reading rivals directly — it does not scan .claude/skills. Its own ~/.codex/skills is now deprecated in favour of .agents/skills, which is a vendor deprecating its namespace for the shared one.",
-    url: "https://developers.openai.com/codex/skills",
+    url: "https://developers.openai.com/codex/guides/agents-md",
     status: "verified"
   },
   {
@@ -1207,7 +1207,7 @@ var PORTABILITY = [
     mcp: "~/.config/goose/config.yaml (extensions:)",
     stranded: "recipes, the extension YAML schema, permission.yaml",
     note: "Reads AGENTS.md by default and concatenates rather than picking a winner, so AGENTS.md and .goosehints both apply. It does not read CLAUDE.md or .cursorrules unless you set CONTEXT_FILE_NAMES. Subagents cross over too: it scans .claude/agents.",
-    url: "https://goose-docs.ai/docs/guides/context-engineering/using-skills",
+    url: "https://goose-docs.ai/docs/guides/using-goosehints",
     status: "verified"
   },
   {
@@ -1235,7 +1235,7 @@ var PORTABILITY = [
     mcp: "~/.osaurus/providers/mcp.json",
     stranded: "macOS app config, Claude-plugin imports, local model store",
     note: "The oddest row here: it reads .hermes.md and HERMES.md at top priority — a competitor's native instruction file, ahead of AGENTS.md — and neither project mentions the other. Flat lookup in the mounted folder only, no upward walk. Skills stay in one global library.",
-    url: "https://github.com/osaurus-ai/osaurus/blob/main/docs/SKILLS.md",
+    url: "https://github.com/osaurus-ai/osaurus/blob/main/docs/FEATURES.md#agent-loop--folder-context",
     status: "verified"
   },
   {
@@ -1249,7 +1249,7 @@ var PORTABILITY = [
     mcp: "~/.gemini/settings.json · .gemini/settings.json",
     stranded: "TOML custom commands, extensions, checkpointing",
     note: "Easy one to get backwards: Gemini CLI does not read AGENTS.md by default — GEMINI.md is the default and AGENTS.md only applies if you set context.fileName. Skills are the generous half: .agents/skills works as a documented alias for its own directories.",
-    url: "https://github.com/google-gemini/gemini-cli/blob/main/docs/cli/using-agent-skills.md",
+    url: "https://github.com/google-gemini/gemini-cli/blob/main/docs/cli/gemini-md.md",
     status: "verified"
   },
   {
@@ -1263,7 +1263,7 @@ var PORTABILITY = [
     mcp: "~/.grok/config.toml ([mcp_servers.<name>])",
     stranded: "personas, workflows, LSP servers in plugins, config.toml shape, sandbox profiles",
     note: "The most omnivorous reader here, and the only one that reaches a rival's bundle layer: Claude Code's plugins and marketplaces load as they are, alongside its skills, agents, hooks and instruction files. All of it is runtime discovery with no import step — the distinction that matters in this column. MCP is where it stands alone: every other row writes only its own config, so this is the one \"reads others'\" cell in that column. The asymmetry is the flip side — nothing on this page reads .grok/.",
-    url: "https://docs.x.ai/build/features/skills-plugins-marketplaces",
+    url: "https://docs.x.ai/build/features/project-rules",
     status: "verified"
   },
   {
@@ -1277,7 +1277,7 @@ var PORTABILITY = [
     mcp: ".cursor/mcp.json · ~/.cursor/mcp.json",
     stranded: "Rules .mdc frontmatter, Team Rules, hooks.json",
     note: "The most omnivorous reader: Claude's, Codex's and the shared .agents directories all load. Enough so that users have asked for a way to switch it off. Cursor is the one vendor with no public docs repo, so this row rests on secondary sources that agree rather than on primary source.",
-    url: "https://cursor.com/docs/skills",
+    url: "https://cursor.com/docs/context/rules",
     status: "partial"
   },
   {
@@ -1291,7 +1291,7 @@ var PORTABILITY = [
     mcp: "opencode.json / opencode.jsonc (mcp key)",
     stranded: "opencode.json provider, agent, permission and plugin blocks",
     note: "Falls back to CLAUDE.md when no AGENTS.md is present, and labels its skill roots by origin — \"Project Claude-compatible\", \"Global agent-compatible\". The Claude-directory reading can be switched off with OPENCODE_DISABLE_CLAUDE_CODE_SKILLS=1.",
-    url: "https://opencode.ai/docs/skills/",
+    url: "https://opencode.ai/docs/rules/",
     status: "verified"
   },
   {
@@ -1305,7 +1305,7 @@ var PORTABILITY = [
     mcp: "~/.openclaw/openclaw.json (mcp.servers)",
     stranded: "gateway and channels, SOUL/IDENTITY bootstrap files, ClawHub",
     note: "Takes the shared .agents path but is the only project whose docs name a rival directory in order to reject it: Codex's $CODEX_HOME/skills is explicitly not an OpenClaw skill root.",
-    url: "https://docs.openclaw.ai/tools/skills",
+    url: "https://docs.openclaw.ai/concepts/agent-workspace",
     status: "verified"
   },
   {
@@ -1319,7 +1319,7 @@ var PORTABILITY = [
     mcp: ".vscode/mcp.json (VS Code) · repo settings (cloud agent)",
     stranded: "copilot-setup-steps.yml, agent firewall, org instruction settings",
     note: "Five skill roots across three vendors' namespaces, and it reads AGENTS.md, CLAUDE.md and GEMINI.md as well. One caveat that is easy to miss: for code review the directory name itself matters, so a skill folder needs a review-ish name to be picked up.",
-    url: "https://docs.github.com/en/copilot/concepts/agents/about-agent-skills",
+    url: "https://docs.github.com/en/copilot/how-tos/configure-custom-instructions/add-repository-instructions",
     status: "verified"
   },
   {
