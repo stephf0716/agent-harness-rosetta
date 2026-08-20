@@ -457,8 +457,6 @@
 <p class="sub">Same rows, read as a starting cost. Everything above is available to a signed-up account with no payment method on file, except where this table says otherwise.</p>
 </div>
 
-<nav class="legend" aria-label="Free tier legend" id="freeLegend"></nav>
-
 <div class="matrix-shell pm-shell">
 <div class="matrix-scroll">
 <div id="infraFree"></div>
@@ -2527,7 +2525,6 @@ function renderInfraCaps(){
 // and the third is the one that varies most, because a quota that fails closed,
 // a credit balance and a seven-day clock all read as "free" until they don't.
 function renderInfraFree(){
-  legendFrom(FREE, 'freeLegend');
   var host = document.getElementById('infraFree');
   if (!host) return;
   var rows = infraRows();
