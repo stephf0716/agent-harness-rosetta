@@ -20,7 +20,7 @@ Everything runs from a single `index.html` file—no framework, package manager,
 | **Permissions** | Will a harness edit files or run shell commands before asking, and what contains it? |
 | **Infrastructure** | Which hosting and database platforms provide the capabilities you need, what is free, and what their agent integrations can change or delete? |
 
-The reference currently covers Claude, Codex/ChatGPT, Goose, Hermes Agent, Osaurus, Gemini CLI, Grok Build, Cursor, OpenCode, OpenClaw, GitHub Copilot, Zed, and Jan, plus a broader set of AI tools and infrastructure providers in the other matrices.
+The Harness layers reference covers Claude, Codex/ChatGPT, Goose, Hermes Agent, Osaurus, Gemini CLI, Grok Build, Cursor, OpenCode, OpenClaw, GitHub Copilot, Zed, and Pi. Jan remains covered in the provider, portability, and permissions matrices, alongside a broader set of AI tools and infrastructure providers.
 
 ## Run locally
 
