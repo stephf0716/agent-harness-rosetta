@@ -165,13 +165,13 @@
   /* concept entries */
   details.card{border-top:1px solid var(--line);background:none}
   details.card:last-of-type{border-bottom:1px solid var(--line)}
-  details.card summary{list-style:none;cursor:pointer;padding:15px 4px;display:flex;align-items:baseline;gap:14px;flex-wrap:wrap}
+  details.card summary{list-style:none;cursor:pointer;padding:15px 26px 15px 4px;display:flex;align-items:baseline;gap:14px;flex-wrap:wrap;position:relative}
   details.card summary::-webkit-details-marker{display:none}
   details.card summary:focus-visible{outline:2px solid var(--cc);outline-offset:-2px}
   .card summary .ln{font-family:'IBM Plex Mono',monospace;font-size:11px;font-weight:600;color:var(--cc);min-width:22px}
   .card summary .t{font-family:'Archivo',sans-serif;font-weight:700;font-size:17px}
-  .card summary .oneliner{color:var(--muted);font-size:13.5px;flex:1;min-width:200px}
-  .card summary .chev{color:var(--faint);font-family:'IBM Plex Mono',monospace;font-size:12px;transition:transform .15s}
+  .card summary .oneliner{color:var(--muted);font-size:13.5px;flex-basis:100%;margin-left:36px}
+  .card summary .chev{color:var(--faint);font-family:'IBM Plex Mono',monospace;font-size:12px;transition:transform .15s;position:absolute;top:17px;right:4px}
   details[open] summary .chev{transform:rotate(90deg)}
   .card .body{padding:0 4px 20px 4px}
   @media(min-width:720px){.card .body{padding-left:36px}}
@@ -457,8 +457,6 @@
 <p class="sub">Same rows, read as a starting cost. Everything above is available to a signed-up account with no payment method on file, except where this table says otherwise.</p>
 </div>
 
-<nav class="legend" aria-label="Free tier legend" id="freeLegend"></nav>
-
 <div class="matrix-shell pm-shell">
 <div class="matrix-scroll">
 <div id="infraFree"></div>
@@ -468,23 +466,9 @@
 
 <p class="pm-foot">a free tier is not the same shape everywhere: some are quotas that fail closed, some are credit that runs down, and one is a trial with a clock on it — the third column is where each one ends</p>
 
-<div class="rule-h">
-<h2>…and what it can break</h2>
-<p class="sub">Same rows, the other half of the question. Your repo is version-controlled — a dropped database and a bought domain are not.</p>
-</div>
-
-<nav class="legend" aria-label="Reach legend" id="infraLegend"></nav>
-
-<div class="matrix-shell pm-shell">
-<div class="matrix-scroll">
-<div id="infraMatrix"></div>
-</div>
-<div class="hint"><span class="scrollnote">← scroll → on mobile · </span>tap a row for its MCP server, CLI and the rest of the scoping detail</div>
-</div>
+<p class="pm-foot">tap any row above for its MCP server, riskiest operations, CLI and the rest of the scoping detail — reach is full control nearly everywhere, so a read-only mode or a narrowed token is the only thing actually limiting an agent</p>
 
 <div class="pm-detail" id="infraDetail"></div>
-
-<p class="pm-foot">the brake is the column that discriminates — reach is full control nearly everywhere, so a read-only mode or a narrowed token is the only thing actually limiting an agent</p>
 
 </main>
 
@@ -566,13 +550,13 @@ var TOOLS = [
     id: "cline", name: "Cline", kind: "IDE + CLI",
     support: { chatgpt: "oauth", gemini: "apikey", grok: "apikey", claude_sub: "no", copilot: "no", openrouter: "apikey" },
     note: "Bring-your-own-key across 30+ providers and any OpenAI-compatible endpoint; local via Ollama / LM Studio. Also offers a ChatGPT-subscription sign-in (Codex OAuth) for OpenAI models.",
-    url: "https://docs.cline.bot/provider-config/overview"
+    url: "https://docs.cline.bot/provider-config/other-30-plus-providers"
   },
   {
     id: "copilot", name: "GitHub Copilot", kind: "Desktop + IDE + CLI",
     support: { chatgpt: "apikey", gemini: "apikey", grok: "apikey", claude_sub: "apikey", copilot: "native", openrouter: "apikey" },
     note: "A standalone desktop agent app since June 2026 — not just an IDE extension — with parallel sessions on git worktrees, alongside VS Code/JetBrains extensions and Copilot CLI on one runtime. Bring-your-own-key went GA in 2026 and is broad: Anthropic, OpenAI, Google, xAI, Azure/Foundry, Bedrock, OpenRouter, and any OpenAI-compatible endpoint, plus local via Ollama / LM Studio. It covers chat and agents but never tab completion. There is no Claude-subscription sign-in — Anthropic access is by API key.",
-    url: "https://docs.github.com/en/copilot/how-tos/use-ai-models/use-a-custom-model"
+    url: "https://docs.github.com/en/copilot/concepts/models/bring-your-own-key"
   },
   {
     id: "cursor", name: "Cursor", kind: "IDE",
@@ -1179,7 +1163,7 @@ var PORTABILITY = [
     mcp: ".mcp.json (project) · ~/.claude.json (user)",
     stranded: "hooks, subagents, output styles, plugin manifests",
     note: "The holdout. It originated the SKILL.md format and four other harnesses now read .claude/skills, but Claude Code reads nobody else's directory — sharing with it is strictly one-directional. Its /init imports rival rule files once at migration time, which is not the same as reading them at runtime.",
-    url: "https://code.claude.com/docs/en/skills",
+    url: "https://code.claude.com/docs/en/memory",
     status: "verified"
   },
   {
@@ -1193,7 +1177,7 @@ var PORTABILITY = [
     mcp: "~/.codex/config.toml ([mcp_servers])",
     stranded: "profiles, sandbox modes, trust levels",
     note: "Joined via the neutral .agents/ path rather than by reading rivals directly — it does not scan .claude/skills. Its own ~/.codex/skills is now deprecated in favour of .agents/skills, which is a vendor deprecating its namespace for the shared one.",
-    url: "https://developers.openai.com/codex/skills",
+    url: "https://developers.openai.com/codex/guides/agents-md",
     status: "verified"
   },
   {
@@ -1207,7 +1191,7 @@ var PORTABILITY = [
     mcp: "~/.config/goose/config.yaml (extensions:)",
     stranded: "recipes, the extension YAML schema, permission.yaml",
     note: "Reads AGENTS.md by default and concatenates rather than picking a winner, so AGENTS.md and .goosehints both apply. It does not read CLAUDE.md or .cursorrules unless you set CONTEXT_FILE_NAMES. Subagents cross over too: it scans .claude/agents.",
-    url: "https://goose-docs.ai/docs/guides/context-engineering/using-skills",
+    url: "https://goose-docs.ai/docs/guides/using-goosehints",
     status: "verified"
   },
   {
@@ -1235,7 +1219,7 @@ var PORTABILITY = [
     mcp: "~/.osaurus/providers/mcp.json",
     stranded: "macOS app config, Claude-plugin imports, local model store",
     note: "The oddest row here: it reads .hermes.md and HERMES.md at top priority — a competitor's native instruction file, ahead of AGENTS.md — and neither project mentions the other. Flat lookup in the mounted folder only, no upward walk. Skills stay in one global library.",
-    url: "https://github.com/osaurus-ai/osaurus/blob/main/docs/SKILLS.md",
+    url: "https://github.com/osaurus-ai/osaurus/blob/main/docs/FEATURES.md#agent-loop--folder-context",
     status: "verified"
   },
   {
@@ -1249,7 +1233,7 @@ var PORTABILITY = [
     mcp: "~/.gemini/settings.json · .gemini/settings.json",
     stranded: "TOML custom commands, extensions, checkpointing",
     note: "Easy one to get backwards: Gemini CLI does not read AGENTS.md by default — GEMINI.md is the default and AGENTS.md only applies if you set context.fileName. Skills are the generous half: .agents/skills works as a documented alias for its own directories.",
-    url: "https://github.com/google-gemini/gemini-cli/blob/main/docs/cli/using-agent-skills.md",
+    url: "https://github.com/google-gemini/gemini-cli/blob/main/docs/cli/gemini-md.md",
     status: "verified"
   },
   {
@@ -1263,7 +1247,7 @@ var PORTABILITY = [
     mcp: "~/.grok/config.toml ([mcp_servers.<name>])",
     stranded: "personas, workflows, LSP servers in plugins, config.toml shape, sandbox profiles",
     note: "The most omnivorous reader here, and the only one that reaches a rival's bundle layer: Claude Code's plugins and marketplaces load as they are, alongside its skills, agents, hooks and instruction files. All of it is runtime discovery with no import step — the distinction that matters in this column. MCP is where it stands alone: every other row writes only its own config, so this is the one \"reads others'\" cell in that column. The asymmetry is the flip side — nothing on this page reads .grok/.",
-    url: "https://docs.x.ai/build/features/skills-plugins-marketplaces",
+    url: "https://docs.x.ai/build/features/project-rules",
     status: "verified"
   },
   {
@@ -1277,7 +1261,7 @@ var PORTABILITY = [
     mcp: ".cursor/mcp.json · ~/.cursor/mcp.json",
     stranded: "Rules .mdc frontmatter, Team Rules, hooks.json",
     note: "The most omnivorous reader: Claude's, Codex's and the shared .agents directories all load. Enough so that users have asked for a way to switch it off. Cursor is the one vendor with no public docs repo, so this row rests on secondary sources that agree rather than on primary source.",
-    url: "https://cursor.com/docs/skills",
+    url: "https://cursor.com/docs/context/rules",
     status: "partial"
   },
   {
@@ -1291,7 +1275,7 @@ var PORTABILITY = [
     mcp: "opencode.json / opencode.jsonc (mcp key)",
     stranded: "opencode.json provider, agent, permission and plugin blocks",
     note: "Falls back to CLAUDE.md when no AGENTS.md is present, and labels its skill roots by origin — \"Project Claude-compatible\", \"Global agent-compatible\". The Claude-directory reading can be switched off with OPENCODE_DISABLE_CLAUDE_CODE_SKILLS=1.",
-    url: "https://opencode.ai/docs/skills/",
+    url: "https://opencode.ai/docs/rules/",
     status: "verified"
   },
   {
@@ -1305,7 +1289,7 @@ var PORTABILITY = [
     mcp: "~/.openclaw/openclaw.json (mcp.servers)",
     stranded: "gateway and channels, SOUL/IDENTITY bootstrap files, ClawHub",
     note: "Takes the shared .agents path but is the only project whose docs name a rival directory in order to reject it: Codex's $CODEX_HOME/skills is explicitly not an OpenClaw skill root.",
-    url: "https://docs.openclaw.ai/tools/skills",
+    url: "https://docs.openclaw.ai/concepts/agent-workspace",
     status: "verified"
   },
   {
@@ -1319,7 +1303,7 @@ var PORTABILITY = [
     mcp: ".vscode/mcp.json (VS Code) · repo settings (cloud agent)",
     stranded: "copilot-setup-steps.yml, agent firewall, org instruction settings",
     note: "Five skill roots across three vendors' namespaces, and it reads AGENTS.md, CLAUDE.md and GEMINI.md as well. One caveat that is easy to miss: for code review the directory name itself matters, so a skill folder needs a review-ish name to be picked up.",
-    url: "https://docs.github.com/en/copilot/concepts/agents/about-agent-skills",
+    url: "https://docs.github.com/en/copilot/how-tos/configure-custom-instructions/add-repository-instructions",
     status: "verified"
   },
   {
@@ -1347,7 +1331,7 @@ var PORTABILITY = [
     mcp: "<data>/mcp_config.json (mcpServers — the Claude Desktop shape)",
     stranded: "assistants as the instruction unit, smart tool routing, mcpSettings restart backoff, per-tool disable",
     note: "Reads nothing of anyone else's, in either direction — no runtime read and no import wizard either. MCP is the one thing that travels, and it travels well, since the file is the familiar mcpServers shape. One footgun when pasting a block in: a server with no \"active\" key counts as active, so every server in a pasted config starts on next launch. And because Jan's client does tools only, a server whose value is MCP prompts or resources contributes nothing here.",
-    url: "https://jan.ai/docs/desktop/mcp",
+    url: "https://www.jan.ai/docs/desktop/assistants",
     status: "verified"
   }
 ];
@@ -2314,8 +2298,8 @@ function alphaHarnessOrder(rows){
     return null;
   }).filter(Boolean);
 }
-function badge(cls, label){
-  return '<span class="mech m-' + esc(cls) + '"><i></i>' + esc(label) + '</span>';
+function badge(cls, label, noIcon){
+  return '<span class="mech m-' + esc(cls) + (noIcon ? ' no-dia' : '') + '">' + (noIcon ? '' : '<i></i>') + esc(label) + '</span>';
 }
 function legendFrom(map, host){
   var el = document.getElementById(host);
@@ -2541,7 +2525,6 @@ function renderInfraCaps(){
 // and the third is the one that varies most, because a quota that fails closed,
 // a credit balance and a seven-day clock all read as "free" until they don't.
 function renderInfraFree(){
-  legendFrom(FREE, 'freeLegend');
   var host = document.getElementById('infraFree');
   if (!host) return;
   var rows = infraRows();
@@ -2553,7 +2536,7 @@ function renderInfraFree(){
     rows.map(function(r){
       var f = r.free || {};
       var cells =
-        '<td>' + (f.card ? badge(f.card, FREE[f.card].label) : '<span class="dash">—</span>') + '</td>' +
+        '<td>' + (f.card ? badge(f.card, FREE[f.card].label, true) : '<span class="dash">—</span>') + '</td>' +
         '<td><span class="note">' + esc(f.gets || '—') + '</span></td>' +
         '<td><span class="note">' + esc(f.stops || '—') + '</span></td>';
       return infraRowShell(r, cells);
@@ -2564,31 +2547,12 @@ function renderInfra(){
   renderInfraFilter();
   renderInfraCaps();
   renderInfraFree();
-  // Two vocabularies on the second table: how far it reaches, and whether you can stop it.
-  // LOCK is the only vocabulary that earns a colour here. `mcp` is "official"
-  // for all eleven rows and `reach` is "full" for ten of them, so as columns
-  // they were 22 diamonds carrying almost no information — both are stated
-  // once in the lede and kept in the detail panel instead. What replaces them
-  // is the prose those badges were summarising: the actual destructive calls.
-  legendFrom(LOCK, 'infraLegend');
-  var host = document.getElementById('infraMatrix');
-  if (!host) return;
-  var rows = infraRows();
-  if (!rows.length){ host.innerHTML = '<p class="pm-empty">No service matches what you picked above.</p>'; return; }
-  host.innerHTML = '<table><thead><tr><th class="pm-tool-h">Service</th>' +
-    ['What it can break', 'Safe target', 'Brake'].map(function(h){
-      return '<th><span class="chd">' + esc(h) + '</span></th>';
-    }).join('') + '</tr></thead><tbody>' +
-    rows.map(function(r){
-      var cells =
-        '<td><span class="note">' + esc(r.reachDetail || '—') + '</span></td>' +
-        '<td><span class="note">' + esc(r.isolation || '—') + '</span></td>' +
-        '<td>' + badge(r.lock, LOCK[r.lock].label) +
-          (r.guardrails ? '<span class="loc">' + esc(r.guardrails) + '</span>' : '') + '</td>';
-      return infraRowShell(r, cells);
-    }).join('') + '</tbody></table>';
-
-  renderInfraDetail(rows);
+  // The third question — what it can break — no longer gets its own table.
+  // `mcp` is "official" for all eleven rows and `reach` is "full" for ten of
+  // them, so as columns they carried almost no information; the actual
+  // destructive calls, isolation notes and brake now live only in the detail
+  // panel below, one row at a time.
+  renderInfraDetail(infraRows());
 }
 function renderInfraDetail(rows){
   var sel = null;
@@ -2615,7 +2579,7 @@ function renderInfraDetail(rows){
     ]) +
     (sel.free ? '<div class="dsec">Starting for free</div>' +
       dgrid([
-        ['Card up front', badge(sel.free.card, FREE[sel.free.card].label)],
+        ['Card up front', badge(sel.free.card, FREE[sel.free.card].label, true)],
         ['What $0 gets you', esc(sel.free.gets)],
         ['Where it stops', esc(sel.free.stops)]
       ]) +
