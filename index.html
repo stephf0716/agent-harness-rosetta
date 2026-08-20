@@ -468,23 +468,9 @@
 
 <p class="pm-foot">a free tier is not the same shape everywhere: some are quotas that fail closed, some are credit that runs down, and one is a trial with a clock on it — the third column is where each one ends</p>
 
-<div class="rule-h">
-<h2>…and what it can break</h2>
-<p class="sub">Same rows, the other half of the question. Your repo is version-controlled — a dropped database and a bought domain are not.</p>
-</div>
-
-<nav class="legend" aria-label="Reach legend" id="infraLegend"></nav>
-
-<div class="matrix-shell pm-shell">
-<div class="matrix-scroll">
-<div id="infraMatrix"></div>
-</div>
-<div class="hint"><span class="scrollnote">← scroll → on mobile · </span>tap a row for its MCP server, CLI and the rest of the scoping detail</div>
-</div>
+<p class="pm-foot">tap any row above for its MCP server, riskiest operations, CLI and the rest of the scoping detail — reach is full control nearly everywhere, so a read-only mode or a narrowed token is the only thing actually limiting an agent</p>
 
 <div class="pm-detail" id="infraDetail"></div>
-
-<p class="pm-foot">the brake is the column that discriminates — reach is full control nearly everywhere, so a read-only mode or a narrowed token is the only thing actually limiting an agent</p>
 
 </main>
 
@@ -2564,31 +2550,12 @@ function renderInfra(){
   renderInfraFilter();
   renderInfraCaps();
   renderInfraFree();
-  // Two vocabularies on the second table: how far it reaches, and whether you can stop it.
-  // LOCK is the only vocabulary that earns a colour here. `mcp` is "official"
-  // for all eleven rows and `reach` is "full" for ten of them, so as columns
-  // they were 22 diamonds carrying almost no information — both are stated
-  // once in the lede and kept in the detail panel instead. What replaces them
-  // is the prose those badges were summarising: the actual destructive calls.
-  legendFrom(LOCK, 'infraLegend');
-  var host = document.getElementById('infraMatrix');
-  if (!host) return;
-  var rows = infraRows();
-  if (!rows.length){ host.innerHTML = '<p class="pm-empty">No service matches what you picked above.</p>'; return; }
-  host.innerHTML = '<table><thead><tr><th class="pm-tool-h">Service</th>' +
-    ['What it can break', 'Safe target', 'Brake'].map(function(h){
-      return '<th><span class="chd">' + esc(h) + '</span></th>';
-    }).join('') + '</tr></thead><tbody>' +
-    rows.map(function(r){
-      var cells =
-        '<td><span class="note">' + esc(r.reachDetail || '—') + '</span></td>' +
-        '<td><span class="note">' + esc(r.isolation || '—') + '</span></td>' +
-        '<td>' + badge(r.lock, LOCK[r.lock].label) +
-          (r.guardrails ? '<span class="loc">' + esc(r.guardrails) + '</span>' : '') + '</td>';
-      return infraRowShell(r, cells);
-    }).join('') + '</tbody></table>';
-
-  renderInfraDetail(rows);
+  // The third question — what it can break — no longer gets its own table.
+  // `mcp` is "official" for all eleven rows and `reach` is "full" for ten of
+  // them, so as columns they carried almost no information; the actual
+  // destructive calls, isolation notes and brake now live only in the detail
+  // panel below, one row at a time.
+  renderInfraDetail(infraRows());
 }
 function renderInfraDetail(rows){
   var sel = null;
