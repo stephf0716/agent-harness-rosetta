@@ -288,7 +288,7 @@
 
 <header class="title">
   <h1>Agent Harness<br><span class="dim">Rosetta Stone</span></h1>
-  <p class="lede">Every agent harness has the same five extension layers — they just use different names for them (and occasionally the <em>same</em> name for different things). <strong>Instructions persist, skills teach, MCP connects, bundles ship, subagents delegate.</strong> Tap any cell for detail.</p>
+  <p class="lede">Every agent harness implements the same five extension layers — only the names differ, and occasionally conflict. <strong>Instructions persist, skills teach, MCP connects, bundles ship, subagents delegate.</strong> Tap any cell for detail.</p>
 </header>
 
 <nav class="legend" aria-label="Concept legend">
@@ -430,7 +430,7 @@
 <header class="title">
   <h1>Infrastructure<br><span class="dim">Your Agent Can Drive</span></h1>
   <p class="lede">The hosts and databases behind a vibe-coded project increasingly ship their own MCP servers, which means your agent can reach production directly. This tab asks three things of each: <strong>what does it give you, how much of it is free, and what can it break?</strong> Start by picking what you're building — a web app, a web app with a database — and the tables narrow to the platforms that cover it. Tap any row for detail.</p>
-  <p class="lede">Two answers are the same everywhere, so they're stated here once instead of in a column: <strong>all thirteen ship an official MCP server</strong>, and all but Render and the two search providers expose full control through it. The question was never whether your agent can reach production — it's what stops it.</p>
+  <p class="lede">Two answers are the same everywhere, so they're stated here once instead of in a column: <strong>all fifteen ship an official MCP server</strong>, and all but Render and the three search providers expose full control through it. The question was never whether your agent can reach production — it's what stops it.</p>
 </header>
 
 <div class="hpick" role="group" aria-label="What you need to build">
@@ -1986,6 +1986,54 @@ var INFRA = [
     guardrails: "API key is the only credential · no write tools exist · no read-only mode needed",
     note: "The extract, crawl, and map tools can pull large volumes of content from a site in a single call, consuming multiple credits and flooding the context window. depth=advanced on search also costs several credits per query. Neither tool writes anything — the only risk is runaway credit spend and context pollution.",
     url: "https://docs.tavily.com/documentation/mcp",
+    status: "verified"
+  },
+  {
+    id: "firecrawl", name: "Firecrawl", kind: "Web scraping / crawl API",
+    provides: "A web scraping and crawling API that returns clean, LLM-ready Markdown from any URL: scrape fetches a single page, crawl walks an entire site, map enumerates URLs, search fetches results with content, and batch scrape handles multiple URLs in parallel. Supports JavaScript-rendered pages, PDF parsing, and structured extraction guided by a schema.",
+    useWhen: "An agent needs to read the full content of specific pages or crawl a site — documentation, competitor sites, any URL that a basic search result snippet doesn't cover. Stronger than Tavily extract when full-fidelity page content or JS rendering is required.",
+    pairs: "Any host. Drop the API key into any backend environment. Also keyless in limited mode via the MCP server.",
+    caps: {
+      search: "Scrape · crawl · map · search"
+    },
+    free: {
+      card: "nocard",
+      gets: "1,000 credits a month on a free account (≈ 1,000 pages scraped), kept indefinitely · keyless mode available without an account",
+      stops: "Past the monthly limit, requests return a 402 · no automatic upgrade · credits do not roll over on free/hobby plans",
+      freeUrl: "https://firecrawl.dev/pricing"
+    },
+    mcp: "official", mcpDetail: "firecrawl-mcp · stdio · API key (optional — keyless mode available) · tools: scrape, crawl, map, search, batch_scrape, extract, deep_research",
+    cli: "no first-party CLI · API key via environment variable · keyless mode supported",
+    reach: "read", reachDetail: "read-only by nature — scraped page content and crawl results, no write surface",
+    isolation: "Inherently read-only — no state to corrupt",
+    lock: "none",
+    guardrails: "API key is optional in keyless mode · no write tools exist · crawl can walk an arbitrarily large site — set maxDepth and limit in the tool call",
+    note: "Crawl jobs are asynchronous — the agent must poll for status. Unconstrained crawls can consume many credits and flood the context window with raw content; always set a page limit. The deep_research tool chains multiple scrapes autonomously and can use several credits per call.",
+    url: "https://docs.firecrawl.dev/mcp-server",
+    status: "verified"
+  },
+  {
+    id: "brave-search", name: "Brave Search", kind: "Web search API",
+    provides: "A privacy-focused search API backed by Brave's independent web index (not a Google or Bing reseller). Returns web, news, image, video, and local search results, plus an AI-powered summarizer endpoint that generates grounded answers with citations.",
+    useWhen: "An agent needs live web results from an independent index with no tracker-based personalisation. The summarizer endpoint is useful when a grounded one-paragraph answer is preferable to a list of links.",
+    pairs: "Any host. Drop the API key into any backend environment.",
+    caps: {
+      search: "Web · news · image · video · local · AI summarizer"
+    },
+    free: {
+      card: "part",
+      gets: "$5 in free credits per month (~1,000 web search queries) · credits auto-renew · no card required to start",
+      stops: "Credits exhausted, requests return a 429 · additional queries billed at $5 per 1,000 · AI summarizer endpoint billed separately",
+      freeUrl: "https://brave.com/search/api/"
+    },
+    mcp: "official", mcpDetail: "brave-search-mcp-server (@brave/brave-search-mcp-server) · stdio and HTTP · API key · ~6 tools: brave_web_search, brave_local_search, brave_image_search, brave_video_search, brave_news_search, brave_summarizer",
+    cli: "no first-party CLI · API key via environment variable",
+    reach: "read", reachDetail: "read-only by nature — search results and AI summaries, no write surface",
+    isolation: "Inherently read-only — no state to corrupt",
+    lock: "none",
+    guardrails: "API key is the only credential · no write tools exist · summarizer endpoint costs extra credits per call",
+    note: "Brave Search uses its own independent index, so result quality may differ from Google or Bing for niche queries. The local search tool requires a location parameter and draws from Brave's POI data, which can be sparser than Google Maps in some regions.",
+    url: "https://brave.com/search/api/",
     status: "verified"
   }
 ];
