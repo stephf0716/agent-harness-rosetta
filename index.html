@@ -430,7 +430,7 @@
 <header class="title">
   <h1>Infrastructure<br><span class="dim">Your Agent Can Drive</span></h1>
   <p class="lede">The hosts and databases behind a vibe-coded project increasingly ship their own MCP servers, which means your agent can reach production directly. This tab asks three things of each: <strong>what does it give you, how much of it is free, and what can it break?</strong> Start by picking what you're building — a web app, a web app with a database — and the tables narrow to the platforms that cover it. Tap any row for detail.</p>
-  <p class="lede">Two answers are the same everywhere, so they're stated here once instead of in a column: <strong>all eleven ship an official MCP server</strong>, and all but Render expose full control through it. The question was never whether your agent can reach production — it's what stops it.</p>
+  <p class="lede">Two answers are the same everywhere, so they're stated here once instead of in a column: <strong>all thirteen ship an official MCP server</strong>, and all but Render and the two search providers expose full control through it. The question was never whether your agent can reach production — it's what stops it.</p>
 </header>
 
 <div class="hpick" role="group" aria-label="What you need to build">
@@ -1609,7 +1609,8 @@ var CAPS = [
   { id: "kv",    label: "Cache / key-value",  short: "cache" },
   { id: "files", label: "File storage",       short: "file storage" },
   { id: "auth",  label: "User auth",          short: "user auth" },
-  { id: "jobs",  label: "Cron / background",  short: "cron jobs" }
+  { id: "jobs",  label: "Cron / background",  short: "cron jobs" },
+  { id: "search", label: "Web search",        short: "web search" }
 ];
 
 // A row's `caps` entry is the product name, as a plain string when the platform
@@ -1937,6 +1938,54 @@ var INFRA = [
     guardrails: "OAuth grants none / read-only / full, per organisation or per database",
     note: "Hosted and properly scoped: consent is per database and you pick none, read-only or full, with a separate insights-only endpoint that strips both query tools. Write access runs arbitrary DML and DDL, though a no-WHERE UPDATE or DELETE and TRUNCATE are refused. Note that list_invoices hands billing data to the agent.",
     url: "https://planetscale.com/docs/connect/mcp",
+    status: "verified"
+  },
+  {
+    id: "exa", name: "Exa", kind: "Web search API",
+    provides: "AI-native web search with neural (meaning-based) and keyword modes, a contents API that fetches and returns full page bodies, a find-similar endpoint for URL-based discovery, and a research tool that runs multi-step queries.",
+    useWhen: "An agent needs live web knowledge — current events, documentation, competitor sites — beyond what a model's training covers. Neural mode is strongest when the query describes a concept rather than exact keywords.",
+    pairs: "Any host. Exa is a pure API add-on; wire it into a Vercel, Render, or Railway backend with one environment variable.",
+    caps: {
+      search: "Neural + keyword search · contents API"
+    },
+    free: {
+      card: "nocard",
+      gets: "1,000 searches a month on a free account, kept indefinitely",
+      stops: "Past the monthly limit, requests return a 402 · no automatic upgrade",
+      freeUrl: "https://exa.ai/pricing"
+    },
+    mcp: "official", mcpDetail: "exa-mcp-server · stdio · API key · ~5 tools: search, find_similar, get_contents, answer, research",
+    cli: "no first-party CLI · API key via environment variable",
+    reach: "read", reachDetail: "read-only by nature — search results and fetched page contents, no write surface",
+    isolation: "Inherently read-only — no state to corrupt",
+    lock: "none",
+    guardrails: "API key is the only credential · no write tools exist · no read-only mode needed",
+    note: "The get_contents tool fetches and returns live page bodies verbatim, which can dump large amounts of raw HTML or Markdown into the agent's context window. The research tool chains multiple searches autonomously and can consume several API credits per call.",
+    url: "https://docs.exa.ai/reference/getting-started-with-exa-mcp",
+    status: "verified"
+  },
+  {
+    id: "tavily", name: "Tavily", kind: "Web search API",
+    provides: "A search API built for LLM agents: search returns structured, pre-filtered results optimised for grounding, while extract pulls clean content from specific URLs, crawl walks a site, and map lists its URLs.",
+    useWhen: "An agent needs grounded, citation-ready web results with less noise than a raw search engine. Extract and crawl are useful when the agent needs to read a specific site rather than search across the open web.",
+    pairs: "Any host. Drop the API key into any backend environment. Tavily is also a built-in tool in LangChain and several agent frameworks.",
+    caps: {
+      search: "Search · extract · crawl · map"
+    },
+    free: {
+      card: "nocard",
+      gets: "1,000 API credits a month on a free account, kept indefinitely",
+      stops: "Credits run out, requests return an error · depth=advanced or crawl use multiple credits per call",
+      freeUrl: "https://tavily.com/#pricing"
+    },
+    mcp: "official", mcpDetail: "tavily-mcp · stdio · API key · ~4 tools: search, extract, crawl, map",
+    cli: "no first-party CLI · API key via environment variable",
+    reach: "read", reachDetail: "read-only by nature — search results and fetched content, no write surface",
+    isolation: "Inherently read-only — no state to corrupt",
+    lock: "none",
+    guardrails: "API key is the only credential · no write tools exist · no read-only mode needed",
+    note: "The extract, crawl, and map tools can pull large volumes of content from a site in a single call, consuming multiple credits and flooding the context window. depth=advanced on search also costs several credits per query. Neither tool writes anything — the only risk is runaway credit spend and context pollution.",
+    url: "https://docs.tavily.com/documentation/mcp",
     status: "verified"
   }
 ];
