@@ -24,6 +24,7 @@ Defaults already resolve most metadata from the corpus:
 
 - `sourceUrl` defaults to the row or cell `url` (or `freeUrl` for free-tier claims)
 - `checkedAt` defaults to `PROVENANCE.defaultCheckedAt`
+- `corpusUpdatedAt` is optional, but when present it records the corpus refresh date that `checkedAt` must not predate
 - `sourcePublisher` defaults from the hostname map, falling back to the hostname itself
 - `evidenceLevel` defaults to `primary-docs`, unless the claim is already marked `partial` / `unverified`
 
@@ -31,7 +32,7 @@ Defaults already resolve most metadata from the corpus:
 
 1. Edit the claim text in `index.html`.
 2. Keep or replace the matching `url` / `freeUrl`.
-3. Update `PROVENANCE.defaultCheckedAt` if you re-verified a broad pass, or add a per-claim `checkedAt` override for a one-off fix.
+3. Update `PROVENANCE.defaultCheckedAt` if you re-verified a broad pass, or add a per-claim `checkedAt` override for a one-off fix. Do not assign a date earlier than the claim's corpus refresh; record `corpusUpdatedAt` alongside the override when that date is known.
 4. Add or adjust a `PROVENANCE.claims[...]` override when:
    - the publisher needs a clearer label
    - the source is secondary rather than primary docs

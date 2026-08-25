@@ -16,6 +16,10 @@ function isHttpsUrl(value) {
   }
 }
 
+function isOnOrAfter(left, right) {
+  return left >= right;
+}
+
 const data = loadIndexContext();
 const provenance = data.PROVENANCE;
 
@@ -37,10 +41,19 @@ for (const claimId of Object.keys(provenance.claims || {})) {
 
 for (const claim of resolvedClaims) {
   const meta = claim.provenance;
+  const override = (provenance.claims && provenance.claims[claim.id]) || {};
   assert.ok(isHttpsUrl(meta.sourceUrl), `${claim.id} needs a valid HTTPS source URL`);
   assert.ok(isIsoDate(meta.checkedAt), `${claim.id} needs an ISO checked-at date`);
   assert.ok(provenance.evidenceLevels.includes(meta.evidenceLevel), `${claim.id} has an unknown evidence level`);
   assert.ok(meta.sourceTitle || meta.sourcePublisher, `${claim.id} needs a source title or publisher`);
+
+  if (override.corpusUpdatedAt) {
+    assert.ok(isIsoDate(override.corpusUpdatedAt), `${claim.id} needs an ISO corpus-updated date`);
+    assert.ok(
+      isOnOrAfter(meta.checkedAt, override.corpusUpdatedAt),
+      `${claim.id} checkedAt cannot predate its recorded corpus update`
+    );
+  }
 
   if (claim.status) {
     assert.ok(
