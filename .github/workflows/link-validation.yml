@@ -5,6 +5,9 @@ on:
   schedule:
     - cron: '23 6 * * 1'
 
+permissions:
+  contents: read
+
 jobs:
   links:
     runs-on: ubuntu-latest
