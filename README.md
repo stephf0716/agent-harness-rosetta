@@ -8,7 +8,7 @@ A dependency-free, interactive reference for comparing AI developer tools.
 
 Use it to see how agent harnesses name and organize their extension layers, which credentials different tools accept, what configuration is portable, what actions run without approval, and how much infrastructure access an agent can receive.
 
-Everything runs from a single `index.html` file—no framework, package manager, or build step.
+Everything still renders from a single `index.html` file—no framework or build step. The repository now also includes a minimal Node-based verification layer for deterministic tests and optional link checks.
 
 ## What it covers
 
@@ -36,6 +36,20 @@ On Windows, use `start index.html`. On Linux, use `xdg-open index.html`.
 
 JavaScript must be enabled. The only external assets are Google Fonts.
 
+## Verification workflow
+
+The site remains static, but the comparison corpus now has lightweight maintenance tooling:
+
+```bash
+npm test
+npm run check:links
+```
+
+- `npm test` runs deterministic corpus and UI-safety checks only. It does **not** touch the network, so it is safe for normal local work and CI.
+- `npm run check:links` validates deduplicated external source URLs with retries and `HEAD` → `GET` fallback. Because vendor docs can rate-limit, block bots, or require auth, run it separately from the deterministic test path.
+
+For a concise maintainer guide, see [`docs/verification.md`](./docs/verification.md).
+
 ## Using the reference
 
 - Switch among the five tabs; each tab has a stable URL hash.
@@ -51,6 +65,11 @@ Theme and filter selections are saved in `localStorage` when available. The inte
 | File | Purpose |
 | --- | --- |
 | `index.html` | Application, styles, data, and rendering logic |
+| `package.json` | Minimal Node scripts for deterministic tests and link validation |
+| `tests/` | Deterministic Node assertions for the current UI/data contract and provenance invariants |
+| `scripts/` | Shared corpus loaders plus the optional external link checker |
+| `docs/verification.md` | Maintainer workflow for updating claims and provenance |
+| `.github/workflows/` | Deterministic CI plus separate scheduled/manual link validation |
 | `social-preview.png` | Repository and README preview image |
 | `vercel.json` | Static Vercel configuration and response headers |
 | `.vercelignore` | Deployment allowlist; only the site and Vercel config are published |
@@ -60,12 +79,13 @@ Theme and filter selections are saved in `localStorage` when available. The inte
 The data model also lives in `index.html`:
 
 - `BUILD` holds the displayed version and fact-check dates.
+- `PROVENANCE` resolves source metadata for validation tooling while leaving the existing UI-facing `url`, `status`, and `freeStatus` fields intact.
 - `HARNESSES` and `LAYERS` drive the harness comparison.
 - `CREDENTIALS`, `TOOLS`, and `MECH` drive the provider matrix.
 - `PORTABILITY` and `PERMISSIONS` drive their corresponding tabs.
 - `INFRA` drives the capability, free-tier, and blast-radius tables.
 
-A missing harness-layer entry throws instead of silently degrading. Research records can be marked `verified`, `partial`, or `unverified`; caveats for anything short of verified appear in the detail view.
+A missing harness-layer entry throws instead of silently degrading. Research records can be marked `verified`, `partial`, or `unverified`; caveats for anything short of verified appear in the detail view. Provenance metadata resolves those existing statuses into the explicit evidence labels `primary-docs`, `secondary`, `partial`, and `unknown`.
 
 ## Accuracy and scope
 
@@ -75,6 +95,8 @@ Provider support, product names, permissions, pricing, and free tiers change qui
 
 Corrections are welcome. When reporting one, please include the affected row or cell, a primary-source URL, and the date you verified it.
 
+Current migration scope: the new provenance tooling wraps the existing corpus and reports explicit `partial` / `unknown` gaps without inventing stronger sources. Most claims inherit provenance from their existing `url` / `freeUrl` fields; only the already-known gaps currently need per-claim notes, so maintainers can migrate the corpus incrementally instead of rewriting every record at once.
+
 ## Deployment
 
 The repository is configured as a static Vercel site:
@@ -83,6 +105,11 @@ The repository is configured as a static Vercel site:
 - Other branches receive preview deployments.
 - There is no build command; Vercel serves the repository root.
 - `.vercelignore` allowlists `index.html` and `vercel.json`, keeping notes and tooling files out of deployments.
+
+GitHub Actions handles verification separately:
+
+- `deterministic-checks` runs `npm test` on pushes to `main` and on pull requests.
+- `link-validation` runs `npm run check:links` on a weekly schedule and on manual dispatch, so routine CI stays deterministic.
 
 ## License
 
