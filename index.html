@@ -1602,7 +1602,6 @@ var FREE = {
 // capability column, `short` names the filter chip.
 var CAPS = [
   { id: "site",  label: "Web app hosting",   short: "web app" },
-  { id: "fn",    label: "Serverless functions", short: "functions" },
   { id: "run",   label: "Always-on servers",  short: "a server" },
   { id: "db",    label: "Managed database",   short: "database" },
   { id: "kv",    label: "Cache / key-value",  short: "cache" },
@@ -1632,7 +1631,6 @@ var INFRA = [
     pairs: "A Marketplace database — vercel install neon (or supabase, or upstash) provisions one and writes its connection string into the project's environment variables.",
     caps: {
       site:  "Any JS framework",
-      fn:    "Functions · Middleware",
       db:    { name: "Neon · Supabase · Upstash", via: "marketplace" },
       kv:    { name: "Upstash Redis", via: "marketplace" },
       files: "Vercel Blob",
@@ -1661,7 +1659,6 @@ var INFRA = [
     useWhen: "You want a real Postgres with a fork-per-branch workflow. Everything past the database is beta, single-region and not recommended for production, so plan to host the front end elsewhere.",
     pairs: "Any front-end host. It's the default Postgres on the Vercel Marketplace, and Netlify DB is Neon underneath.",
     caps: {
-      fn:    { name: "Neon Functions", via: "beta" },
       db:    "Postgres",
       files: { name: "Object Storage", via: "beta" },
       auth:  "Managed Better Auth"
@@ -1717,7 +1714,6 @@ var INFRA = [
     useWhen: "You want users, files and realtime without writing a server — the most complete backend here for someone who isn't running one.",
     pairs: "A front-end host — Vercel, Netlify or Cloudflare. Supabase does not serve your site.",
     caps: {
-      fn:    "Edge Functions (Deno)",
       db:    "Postgres",
       files: "Storage (S3-compatible)",
       auth:  "Supabase Auth + RLS",
@@ -1746,7 +1742,6 @@ var INFRA = [
     pairs: "Self-contained, with a caveat worth knowing: its databases are open-source images Railway deploys from templates, not a managed service with an SLA behind it.",
     caps: {
       site:  "Any repo or image",
-      fn:    "Functions (single-file Bun)",
       run:   "Services + Volumes",
       db:    { name: "Postgres · MySQL · Mongo", via: "template" },
       kv:    { name: "Redis", via: "template" },
@@ -1776,7 +1771,6 @@ var INFRA = [
     pairs: "Self-contained for most sites. Netlify DB is Neon underneath, so Neon's console and branching are there when you outgrow the one-command setup.",
     caps: {
       site:  "Sites + Deploy Previews",
-      fn:    "Functions · Edge Functions",
       db:    "Netlify DB (Neon)",
       kv:    "Netlify Blobs",
       files: "Netlify Blobs",
@@ -1836,7 +1830,6 @@ var INFRA = [
     pairs: "Nothing, usually. If the data has to stay in Postgres elsewhere, Hyperdrive pools and caches that connection from a Worker.",
     caps: {
       site:  "Workers static assets",
-      fn:    "Workers",
       run:   { name: "Containers", via: "paid" },
       db:    "D1 (SQLite)",
       kv:    "Workers KV · Durable Objects",
@@ -1865,7 +1858,6 @@ var INFRA = [
     useWhen: "The app is live-updating — chat, presence, collaboration — and you'd rather write TypeScript than SQL and websocket plumbing.",
     pairs: "A front-end host. Convex documents deploying the UI to Vercel or Netlify and pointing it at a Convex deployment.",
     caps: {
-      fn:    "Queries · Mutations · Actions",
       db:    "Reactive document store",
       files: "File storage",
       auth:  "Convex Auth · Clerk · Auth0",
