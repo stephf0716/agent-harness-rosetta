@@ -486,6 +486,117 @@
 // Edit the build stamp here only — the masthead and footer both render from it.
 var BUILD = { version: "v22", compiled: "july 2026", updated: "19 aug 2026" };
 
+// Provenance is intentionally incremental: existing rows and cells keep their
+// current `url`, `status` and `freeStatus` fields, while this metadata block
+// resolves those into a documented source record for validation tooling. Most
+// claims inherit `defaultCheckedAt`, reuse the entry's own URL, and derive the
+// publisher from the hostname. Add a per-claim override only when the default
+// is not descriptive enough or a claim needs a tighter note or evidence level.
+var PROVENANCE = {
+  defaultCheckedAt: "2026-08-19",
+  evidenceLevels: ["primary-docs", "secondary", "partial", "unknown"],
+  publishers: {
+    "antigravity.google": "Google",
+    "brave.com": "Brave",
+    "code.claude.com": "Anthropic",
+    "cursor.com": "Cursor",
+    "developers.cloudflare.com": "Cloudflare",
+    "developers.openai.com": "OpenAI",
+    "docs.anythingllm.com": "AnythingLLM",
+    "docs.claude.com": "Anthropic",
+    "docs.cline.bot": "Cline",
+    "docs.convex.dev": "Convex",
+    "docs.exa.ai": "Exa",
+    "docs.firecrawl.dev": "Firecrawl",
+    "docs.github.com": "GitHub",
+    "docs.netlify.com": "Netlify",
+    "docs.openclaw.ai": "OpenClaw",
+    "docs.osaurus.ai": "Osaurus",
+    "docs.railway.com": "Railway",
+    "docs.tavily.com": "Tavily",
+    "docs.x.ai": "xAI",
+    "exa.ai": "Exa",
+    "firecrawl.dev": "Firecrawl",
+    "fly.io": "Fly.io",
+    "geminicli.com": "Gemini CLI",
+    "github.com": "GitHub",
+    "goose-docs.ai": "Goose",
+    "hermes-agent.nousresearch.com": "Nous Research",
+    "jan.ai": "Jan",
+    "kilocode.ai": "Kilo Code",
+    "learn.chatgpt.com": "OpenAI",
+    "neon.com": "Neon",
+    "opencode.ai": "OpenCode",
+    "pi.dev": "Pi",
+    "planetscale.com": "PlanetScale",
+    "render.com": "Render",
+    "supabase.com": "Supabase",
+    "tavily.com": "Tavily",
+    "upstash.com": "Upstash",
+    "vercel.com": "Vercel",
+    "www.convex.dev": "Convex",
+    "www.jan.ai": "Jan",
+    "www.netlify.com": "Netlify",
+    "zed.dev": "Zed"
+  },
+  defaultNotes: {
+    partial: "This claim is only partially backed by directly accessible source material; keep the corpus note/status until a stronger primary source is attached.",
+    unknown: "No directly accessible source has been attached yet; keep the claim marked unknown until one is recorded."
+  },
+  claims: {
+    "portability/cursor": {
+      claimNote: "Cursor has no public docs repository; this row remains partial until the public docs cover the exact runtime-reading behavior described here."
+    },
+    "permissions/grok": {
+      claimNote: "The public docs do not fully spell out the headless fallback noted in this row, so the claim remains partial."
+    },
+    "permissions/cursor": {
+      claimNote: "Cursor's public run-mode docs cover the high-level modes but not every qualifier in this row, so the claim remains partial."
+    },
+    "permissions/goose": {
+      claimNote: "Goose documents the permission surface unevenly across pages; keep this row partial until the remaining qualifiers are primary-sourced."
+    },
+    "infra/netlify": {
+      claimNote: "The MCP docs are primary, but the bridged CLI blast-radius claim remains partial until Netlify documents the end-to-end destructive path in one place."
+    },
+    "infra/upstash": {
+      claimNote: "Upstash's MCP and pricing documentation remain incomplete enough that this row stays partial pending a clearer primary description."
+    },
+    "infra/exa": {
+      checkedAt: "2026-08-25",
+      corpusUpdatedAt: "2026-08-25"
+    },
+    "infra-free/exa": {
+      checkedAt: "2026-08-25",
+      corpusUpdatedAt: "2026-08-25"
+    },
+    "infra/tavily": {
+      checkedAt: "2026-08-25",
+      corpusUpdatedAt: "2026-08-25"
+    },
+    "infra-free/tavily": {
+      checkedAt: "2026-08-25",
+      corpusUpdatedAt: "2026-08-25"
+    },
+    "infra/firecrawl": {
+      checkedAt: "2026-08-25",
+      corpusUpdatedAt: "2026-08-25"
+    },
+    "infra-free/firecrawl": {
+      checkedAt: "2026-08-25",
+      corpusUpdatedAt: "2026-08-25"
+    },
+    "infra/brave-search": {
+      checkedAt: "2026-08-25",
+      corpusUpdatedAt: "2026-08-25"
+    },
+    "infra-free/brave-search": {
+      checkedAt: "2026-08-25",
+      corpusUpdatedAt: "2026-08-25"
+    }
+  }
+};
+
 // The tab bar renders from this: one entry per reference, in display order.
 // `hash` is the public deep link (#harnesses, #providers, …) — don't rename
 // existing ones, they're shared. Each needs a <main id="panel-<id>">.
