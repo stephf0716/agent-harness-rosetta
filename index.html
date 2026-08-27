@@ -2436,7 +2436,7 @@ function openCard(id, updateHash){
   if(!el) return;
   el.open = true;
   // an explicit behavior overrides the stylesheet's reduced-motion rule, so ask
-  var still = window.matchMedia && matchMedia('(prefers-reduced-motion: reduce)').matches;
+  var still = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
   el.scrollIntoView({behavior: still ? 'auto' : 'smooth', block:'start'});
   // land focus on the card so it is announced, not merely scrolled to
   var head = el.querySelector('summary');
@@ -2558,10 +2558,11 @@ function harnessName(id){
   for (var i = 0; i < HARNESSES.length; i++){ if (HARNESSES[i].id === id) return HARNESSES[i].label; }
   return id;
 }
-// Portability and permissions read tool-by-tool rather than column-by-column,
-// so they sort alphabetically by short name (same order as the harness
-// picker chips) instead of matching the matrix's column order. Filtering
-// through HARNESSES first means an unknown id is just dropped, not shown.
+// Portability and permissions list one harness per row, so they follow HARNESSES
+// directly — that array is alphabetised once at load, which is what keeps these
+// tables, the matrix and the picker chips in the same order. Filtering through
+// it also drops a row whose id is not a harness, so the test suite asserts no
+// row is orphaned that way.
 function alphaHarnessOrder(rows){
   return HARNESSES.map(function(h){
     for (var i = 0; i < rows.length; i++){ if (rows[i].id === h.id) return rows[i]; }
