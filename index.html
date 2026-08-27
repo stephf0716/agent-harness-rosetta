@@ -147,6 +147,8 @@
   .lay-h .cq{display:block;color:var(--faint);font-size:12px;font-weight:400;margin-top:3px;text-transform:none;letter-spacing:normal}
   .term{font-family:'IBM Plex Mono',monospace;font-size:13px;font-weight:600;color:var(--text)}
   .loc{display:block;font-family:'IBM Plex Mono',monospace;font-size:11px;color:var(--faint);margin-top:5px;word-break:break-word}
+  /* A hairline divider is unambiguous at cell scale, unlike an interpunct. */
+  .loc-sep{display:inline-block;height:.86em;border-left:1px solid currentColor;margin:0 .58em;vertical-align:-.12em;opacity:.65}
   .note{display:block;font-size:12.5px;color:var(--muted);margin-top:5px}
   .warn{color:var(--c-instr)}
   /* inline trap marker: the note prose it used to introduce now lives in the
@@ -2198,6 +2200,9 @@ function savePrefs(){
 function esc(s){
   return String(s).replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;").replace(/"/g,"&quot;");
 }
+function cellMeta(s){
+  return esc(s).replace(/ · /g, '<span class="loc-sep" role="separator" aria-label="next item"></span>');
+}
 
 (function(){
   var saved = loadPrefs();
@@ -2326,7 +2331,7 @@ function renderHarnessPicker(){
 function hMatrixCell(cell){
   var html = cell.term == null ? '<span class="dash">—</span>' : '<span class="term">' + esc(cell.term) + '</span>';
   if (cell.warn) html += ' <span class="wmark" role="img" aria-label="terminology trap — see the layer card">⚠</span>';
-  if (cell.loc) html += '<span class="loc">' + esc(cell.loc) + '</span>';
+  if (cell.loc) html += '<span class="loc">' + cellMeta(cell.loc) + '</span>';
   return html;
 }
 // Harnesses are rows and the five layers are columns, matching the other
@@ -2583,7 +2588,7 @@ function renderPortability(){
       var cells = PORT_COLS.map(function(c){
         var cell = r.cells[c.id] || { m: 'no' };
         var html = cell.m === 'no' ? '<span class="dash">—</span>' : badge(cell.m, PORT_MECH[cell.m].label);
-        if (cell.loc) html += '<span class="loc">' + esc(cell.loc) + '</span>';
+        if (cell.loc) html += '<span class="loc">' + cellMeta(cell.loc) + '</span>';
         return '<td>' + html + '</td>';
       }).join('') + '<td><span class="note">' + esc(r.stranded || '—') + '</span></td>';
       return rowShell(r.id, portState.detail === r.id, 'portSelect', cells);
@@ -2617,7 +2622,7 @@ function permCell(r, c){
   var sub = c.sub ? r[c.sub] : null;
   var head = c.vocab ? badge(v, map[v].label)
                      : '<span class="cap">' + esc(map[v].label) + '</span>';
-  return head + (sub ? '<span class="loc">' + esc(sub) + '</span>' : '');
+  return head + (sub ? '<span class="loc">' + cellMeta(sub) + '</span>' : '');
 }
 function renderPermissions(){
   // One vocabulary, one legend. The sandbox column reads as plain text and the
@@ -2638,7 +2643,7 @@ function renderPermissions(){
   rows.forEach(function(r){ if (r.id === permState.detail) sel = r; });
   detailPanel('permDetail', sel, 'permissions & autonomy', sel ? dgrid([
     ['Out of the box', sel.auto && AUTO[sel.auto]
-      ? badge(sel.auto, AUTO[sel.auto].label) + '<span class="loc">' + esc(sel.dflt) + '</span>'
+      ? badge(sel.auto, AUTO[sel.auto].label) + '<span class="loc">' + cellMeta(sel.dflt) + '</span>'
       : esc(sel.dflt)],
     ['Approval granularity', esc(sel.approval)],
     // the column shows the SBX label, so `sandbox` carries only the mechanism —
