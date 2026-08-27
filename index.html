@@ -544,8 +544,33 @@ var PROVENANCE = {
     unknown: "No directly accessible source has been attached yet; keep the claim marked unknown until one is recorded."
   },
   claims: {
+    "tool/hermes": {
+      checkedAt: "2026-08-26"
+    },
+    "layer/c-instr/hermes": {
+      checkedAt: "2026-08-26"
+    },
+    "layer/c-skill/hermes": {
+      checkedAt: "2026-08-26"
+    },
+    "layer/c-mcp/hermes": {
+      checkedAt: "2026-08-26"
+    },
+    "layer/c-bundle/hermes": {
+      checkedAt: "2026-08-26"
+    },
+    "portability/hermes": {
+      checkedAt: "2026-08-26"
+    },
+    "permissions/hermes": {
+      checkedAt: "2026-08-26"
+    },
+    "layer/c-instr/cursor": {
+      checkedAt: "2026-08-26"
+    },
     "portability/cursor": {
-      claimNote: "Cursor has no public docs repository; this row remains partial until the public docs cover the exact runtime-reading behavior described here."
+      checkedAt: "2026-08-26",
+      claimNote: "Cursor's public Rules docs cover the current project-rule and AGENTS.md behavior; compatibility behavior for older and foreign instruction files remains only partially documented."
     },
     "permissions/grok": {
       claimNote: "The public docs do not fully spell out the headless fallback noted in this row, so the claim remains partial."
@@ -683,8 +708,8 @@ var TOOLS = [
   {
     id: "hermes", name: "Hermes Agent", kind: "Desktop + CLI",
     support: { chatgpt: "oauth", gemini: "apikey", grok: "oauth", claude_sub: "oauth", copilot: "oauth", openrouter: "apikey" },
-    note: "The most open-handed tool on this shelf — around 38 providers. Codex, Copilot, MiniMax, SuperGrok, and Nous Portal sign-in (device-code works over SSH); other keys directly; local Ollama/vLLM; Bedrock/Azure too. The Claude path reuses Claude Code credentials but now requires Claude Max plus purchased extra-usage credits — it bills per token instead of drawing on your plan allowance, and Pro can't use it at all.",
-    url: "https://hermes-agent.nousresearch.com/docs"
+    note: "The most open-handed tool on this shelf — 40 first-class providers plus custom endpoints. Codex, Copilot, MiniMax, SuperGrok, and Nous Portal sign-in (device-code works over SSH); other keys directly; local Ollama/vLLM; Bedrock/Azure too. The Claude path reuses Claude Code credentials but now requires Claude Max plus purchased extra-usage credits — it bills per token instead of drawing on your plan allowance, and Pro can't use it at all.",
+    url: "https://hermes-agent.nousresearch.com/docs/integrations/providers"
   },
   {
     id: "kilocode", name: "Kilo Code", kind: "IDE + CLI",
@@ -813,9 +838,9 @@ var LAYERS = [
       },
       cursor: {
         term: "Rules",
-        loc: ".cursor/rules/ · was .cursorrules · also reads AGENTS.md",
-        note: "path-scoped or always-on",
-        desc: "A <code>.cursor/rules/</code> directory of rule files (successor to the single .cursorrules) — each rule can be always-on, path-scoped, or attached on demand. Cursor also reads root and nested <code>AGENTS.md</code>.",
+        loc: "Project: .cursor/rules/*.mdc · AGENTS.md (root + nested)",
+        note: "Rules: always, relevant, path-scoped, or manual",
+        desc: "Cursor has two documented project-instruction formats. Structured Project Rules are <code>.mdc</code> files in <code>.cursor/rules/</code>, applied always, by relevance, by path, or when named manually. For simpler plain-Markdown guidance, use <code>AGENTS.md</code> in the project root or nested directories; nested files combine and the more specific guidance takes precedence.",
         url: "https://cursor.com/docs/rules"
       },
       opencode: {
@@ -1046,9 +1071,10 @@ var LAYERS = [
   {
     id: "c-bundle", num: "L4", hue: "bundle",
     name: "Bundles", question: "shareable packages",
-    oneliner: "Package everything above into one installable unit",
+    oneliner: "One installable package that distributes a complete agent setup",
     body: [
-      "<p>Once you have skills, MCP servers, and commands that work together, bundles let you ship the whole setup as one install — mainly a team-distribution mechanism. If you're working solo, you rarely need this layer: just write skills and add MCP servers directly.</p>",
+      "<p><strong>L4 is a distribution wrapper, not a new runtime capability.</strong> Its contents — instructions, skills, MCP configuration, hooks, agents, or commands — can usually exist on their own in the lower layers. A bundle gives that set a name, a source, and often a manifest/version so someone can install, update, or remove it as one unit. The product name is usually <em>plugin</em>, but some call it an extension or package.</p>",
+      "<p>Use L4 when a workflow needs to travel intact between projects or people: install one package instead of copying five separate folders and config blocks. For a small personal setup, adding a skill or MCP server directly is usually simpler. A bundle is also <strong>not</strong> a subagent or an automation run — it is the packaging that can carry their definitions.</p>",
       "<p><strong>Important asymmetries:</strong> Claude, Codex, Goose, Grok Build, Cursor, and Copilot expose declarative plugin bundles, though their payloads differ. Gemini calls the same layer an <em>extension</em>; Pi calls it a <em>package</em>. Hermes plugins are executable Python extensions that can also carry skills and data. OpenClaw imports several external bundle formats while keeping native code plugins separate. Osaurus maps imported Claude-plugin contents into native skills, schedules, commands, MCP providers, and shared context.</p>"
     ],
     cells: {
@@ -1588,13 +1614,13 @@ var PERMISSIONS = [
   },
   {
     id: "hermes", auto: "mixed",
-    edit: "free", editq: "writes, web and MCP", shell: "ask", shellq: "LLM triage decides", sbx: "optin",
-    dflt: "Shell is gated by LLM triage; writes, web and MCP never ask",
+    edit: "free", editq: "writes, web + trusted MCP", shell: "ask", shellq: "LLM triage decides", sbx: "optin",
+    dflt: "Shell is gated by LLM triage; writes and web never ask; untrusted MCP writes prompt",
     approval: "smart / manual / off · once, session or always · allowlist + deny globs",
     sandbox: "terminal.backend docker, ssh or modal",
     config: "~/.hermes/config.yaml (approvals.*, command_allowlist) · --yolo, -z",
     headless: "-z forces yolo mode · scheduled runs use approvals.cron_mode (deny)",
-    note: "Approvals cover shell and nothing else — file writes, web, browser and MCP calls never prompt, and blocked writes just error with no override. Enabling a container backend switches prompting off entirely, on the theory that the container is the boundary.",
+    note: "Approvals cover dangerous shell commands; file writes never prompt but protected or safe-root paths hard-block with no chat override. Web calls never prompt. MCP is prompt-free by default, but write-capable tools from a server marked untrusted require approval.",
     url: "https://hermes-agent.nousresearch.com/docs/user-guide/security",
     status: "verified"
   },
@@ -2056,14 +2082,14 @@ var INFRA = [
       stops: "Past the monthly limit, requests return a 402 · no automatic upgrade",
       freeUrl: "https://exa.ai/pricing"
     },
-    mcp: "official", mcpDetail: "exa-mcp-server · stdio · API key · ~5 tools: search, find_similar, get_contents, answer, research",
+    mcp: "official", mcpDetail: "hosted mcp.exa.ai/mcp · free plan; optional API key · search/fetch + advanced search and agent-run",
     cli: "no first-party CLI · API key via environment variable",
     reach: "read", reachDetail: "read-only by nature — search results and fetched page contents, no write surface",
     isolation: "Inherently read-only — no state to corrupt",
     lock: "none",
     guardrails: "API key is the only credential · no write tools exist · no read-only mode needed",
-    note: "The get_contents tool fetches and returns live page bodies verbatim, which can dump large amounts of raw HTML or Markdown into the agent's context window. The research tool chains multiple searches autonomously and can consume several API credits per call.",
-    url: "https://docs.exa.ai/reference/getting-started-with-exa-mcp",
+    note: "The web-fetch tool returns full live pages as clean Markdown, which can still put large bodies into an agent's context window. The agent-run tool performs multi-step research, list building, enrichment, and structured-output work.",
+    url: "https://docs.exa.ai/docs/reference/exa-mcp",
     status: "verified"
   },
   {
