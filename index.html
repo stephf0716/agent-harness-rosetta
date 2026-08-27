@@ -125,6 +125,7 @@
      new row, and the column count is fixed by the five-layer thesis. */
   .matrix-shell{border:1px solid var(--line);border-radius:4px;background:var(--surface);overflow:hidden}
   .matrix-scroll{overflow-x:auto;-webkit-overflow-scrolling:touch}
+  .matrix-scroll:focus-visible{outline:2px solid var(--text);outline-offset:-2px}
   table{border-collapse:separate;border-spacing:0;width:100%;min-width:0}
   /* six columns: harness name + five layers. Fits the 1140px wrap on desktop
      with no horizontal scroll; the floor keeps cells readable on mobile.
@@ -147,14 +148,18 @@
   .lay-h .cq{display:block;color:var(--faint);font-size:12px;font-weight:400;margin-top:3px;text-transform:none;letter-spacing:normal}
   .term{font-family:'IBM Plex Mono',monospace;font-size:13px;font-weight:600;color:var(--text)}
   .loc{display:block;font-family:'IBM Plex Mono',monospace;font-size:11px;color:var(--faint);margin-top:5px;word-break:break-word}
-  /* A hairline divider is unambiguous at cell scale, unlike an interpunct. */
-  .loc-sep{display:inline-block;height:.86em;border-left:1px solid currentColor;margin:0 .58em;vertical-align:-.12em;opacity:.65}
+  /* A hairline divider is unambiguous at cell scale, unlike an interpunct. It
+     rides on the item's own border, so a wrap can only break at the space
+     after it — the bar never ends up hanging at the start of a line. */
+  .loc-i:not(:last-child){border-right:1px solid color-mix(in srgb,currentColor 75%,transparent);padding-right:.5em}
+  .sr-only{position:absolute;width:1px;height:1px;overflow:hidden;clip-path:inset(50%);white-space:nowrap}
   .note{display:block;font-size:12.5px;color:var(--muted);margin-top:5px}
+  .card .body a.slink, .mcp-sec a.slink{color:inherit;text-decoration:underline;text-underline-offset:2px}
   .warn{color:var(--c-instr)}
   /* inline trap marker: the note prose it used to introduce now lives in the
      layer card's tile, so the glyph has to carry the signal on its own */
   .wmark{font-size:12px;color:var(--c-instr)}
-  td.lay{cursor:pointer;transition:background .12s}
+  td.lay{transition:background .12s}
   tbody tr:hover td{background:var(--surface2)}
   .hint{font-size:11.5px;color:var(--faint);padding:9px 16px;border-top:1px solid var(--line);font-family:'IBM Plex Mono',monospace}
 
@@ -290,7 +295,7 @@
 
 <header class="title">
   <h1>Agent Harness<br><span class="dim">Rosetta Stone</span></h1>
-  <p class="lede">Every agent harness implements the same five extension layers — only the names differ, and occasionally conflict. <strong>Instructions persist, skills teach, MCP connects, bundles ship, subagents delegate.</strong> Tap any cell for detail.</p>
+  <p class="lede">Every agent harness implements the same five extension layers — only the names differ, and occasionally conflict. <strong>Instructions persist, skills teach, MCP connects, bundles ship, subagents delegate.</strong> Tap a layer heading for detail.</p>
 </header>
 
 <nav class="legend" aria-label="Concept legend">
@@ -307,10 +312,10 @@
 </div>
 
 <div class="matrix-shell">
-<div class="matrix-scroll">
+<div class="matrix-scroll" tabindex="0" role="region" aria-label="Harness layers matrix, scroll horizontally">
 <div id="hMatrix"></div>
 </div>
-<div class="hint"><span class="scrollnote">← scroll → on mobile · </span>tap any cell for the full explanation · use the picker to focus one harness</div>
+<div class="hint"><span class="scrollnote">← scroll → on mobile · </span>tap a column header for the full explanation · use the picker to focus one harness</div>
 </div>
 
 <div class="rule-h">
@@ -332,7 +337,7 @@
 
 <section class="mcp-sec r-mcp">
   <div class="rule-h hue"><h2>The layer underneath: MCP</h2></div>
-  <p>The <strong>Model Context Protocol</strong> (open standard, released by Anthropic in Nov 2024) is the shared plumbing for the "tool access" row — a JSON-RPC protocol where a server publishes tools any compatible agent can discover and call. This is why the ecosystem interoperates: a Goose <em>extension</em>, a Claude <em>connector</em>, a Hermes MCP entry, and an MCP server inside a Codex <em>plugin</em> can be the exact same server. Osaurus demonstrates the two-way nature of the standard: it consumes remote MCP servers <em>and</em> exposes its own local tools as an MCP server that other harnesses can connect to — so your Osaurus toolbox can serve Claude Desktop. Skills (SKILL.md / agentskills.io) and instruction files (AGENTS.md) are similarly portable open standards. The names are vendor branding; the files and protocols underneath increasingly are not.</p>
+  <p>The <strong><a class="slink" href="https://modelcontextprotocol.io/" target="_blank" rel="noopener noreferrer">Model Context Protocol</a></strong> (open standard, released by Anthropic in Nov 2024) is the shared plumbing for the "tool access" row — a JSON-RPC protocol where a server publishes tools any compatible agent can discover and call. This is why the ecosystem interoperates: a Goose <em>extension</em>, a Claude <em>connector</em>, a Hermes MCP entry, and an MCP server inside a Codex <em>plugin</em> can be the exact same server. Osaurus demonstrates the two-way nature of the standard: it consumes remote MCP servers <em>and</em> exposes its own local tools as an MCP server that other harnesses can connect to — so your Osaurus toolbox can serve Claude Desktop. Skills (SKILL.md / agentskills.io) and instruction files (AGENTS.md) are similarly portable open standards. The names are vendor branding; the files and protocols underneath increasingly are not.</p>
 </section>
 
 <div class="rule-h">
@@ -340,9 +345,9 @@
 <p class="sub">Start from what you're trying to change, not from the feature name.</p>
 </div>
 <div class="decide">
-  <div class="d r-instr"><div class="want">"Follow these rules in this project, every time"</div><div class="use">Instructions</div><div class="how">CLAUDE.md · AGENTS.md · SOUL.md · .goosehints</div></div>
+  <div class="d r-instr"><div class="want">"Follow these rules in this project, every time"</div><div class="use">Instructions</div><div class="how"><span class="loc-i">CLAUDE.md</span> <span class="loc-i">AGENTS.md</span> <span class="loc-i">SOUL.md</span> <span class="loc-i">.goosehints</span></div></div>
   <div class="d r-skill"><div class="want">"Do this kind of task my way, when it comes up"</div><div class="use">Skill</div><div class="how">SKILL.md folder</div></div>
-  <div class="d r-mcp"><div class="want">"Read/act on my email, files, tickets, database…"</div><div class="use">MCP server</div><div class="how">Connector · Extension · app</div></div>
+  <div class="d r-mcp"><div class="want">"Read/act on my email, files, tickets, database…"</div><div class="use">MCP server</div><div class="how"><span class="loc-i">Connector</span> <span class="loc-i">Extension</span> <span class="loc-i">app</span></div></div>
   <div class="d r-bundle"><div class="want">"Give my whole team this setup in one install"</div><div class="use">Plugin / Extension / Package</div><div class="how">bundle of all the above</div></div>
   <div class="d r-agent"><div class="want">"Split this into parallel or isolated work"</div><div class="use">Subagents</div><div class="how">delegated agent instances</div></div>
 </div>
@@ -371,7 +376,7 @@
 </div>
 
 <div class="matrix-shell pm-shell">
-<div class="matrix-scroll">
+<div class="matrix-scroll" tabindex="0" role="region" aria-label="Provider compatibility matrix, scroll horizontally">
 <div id="pmMatrix"></div>
 </div>
 <div class="hint"><span class="scrollnote">← scroll → on mobile · </span>tap a row for connection details · toggle credentials to filter columns</div>
@@ -393,7 +398,7 @@
 <nav class="legend" aria-label="Portability legend" id="portLegend"></nav>
 
 <div class="matrix-shell pm-shell">
-<div class="matrix-scroll">
+<div class="matrix-scroll" tabindex="0" role="region" aria-label="Portability matrix, scroll horizontally">
 <div id="portMatrix"></div>
 </div>
 <div class="hint"><span class="scrollnote">← scroll → on mobile · </span>tap a row for exact paths and what doesn't port</div>
@@ -415,7 +420,7 @@
 <nav class="legend" aria-label="Autonomy legend" id="permLegend"></nav>
 
 <div class="matrix-shell pm-shell">
-<div class="matrix-scroll">
+<div class="matrix-scroll" tabindex="0" role="region" aria-label="Permissions matrix, scroll horizontally">
 <div id="permMatrix"></div>
 </div>
 <div class="hint"><span class="scrollnote">← scroll → on mobile · </span>tap a row for the full picture and provider docs</div>
@@ -445,7 +450,7 @@
 </div>
 
 <div class="matrix-shell pm-shell">
-<div class="matrix-scroll">
+<div class="matrix-scroll" tabindex="0" role="region" aria-label="Infrastructure capability matrix, scroll horizontally">
 <div id="infraCaps"></div>
 </div>
 <div class="hint"><span class="scrollnote">← scroll → on mobile · </span>a dash means the platform has no first-party answer — you'd bring your own</div>
@@ -459,7 +464,7 @@
 </div>
 
 <div class="matrix-shell pm-shell">
-<div class="matrix-scroll">
+<div class="matrix-scroll" tabindex="0" role="region" aria-label="Infrastructure free-tier matrix, scroll horizontally">
 <div id="infraFree"></div>
 </div>
 <div class="hint"><span class="scrollnote">← scroll → on mobile · </span>allowances are per month unless the cell says otherwise</div>
@@ -573,6 +578,30 @@ var PROVENANCE = {
     "portability/cursor": {
       checkedAt: "2026-08-26",
       claimNote: "Cursor's public Rules docs cover the current project-rule and AGENTS.md behavior; compatibility behavior for older and foreign instruction files remains only partially documented."
+    },
+    "portability/pi": {
+      checkedAt: "2026-08-26",
+      claimNote: "Context-file behavior is primary; the skill directories in this row come from Pi's skills docs page."
+    },
+    "permissions/pi": {
+      checkedAt: "2026-08-26",
+      claimNote: "The trust model is primary; the \"runs with all permissions by default\" default and the three isolation options come from Pi's containerization docs page."
+    },
+    "layer/c-mcp/copilot": {
+      checkedAt: "2026-08-26",
+      claimNote: "The surfaces come from the MCP concept page; the CLI and repository config paths come from GitHub's Copilot CLI MCP docs."
+    },
+    "layer/c-agent/copilot": {
+      checkedAt: "2026-08-26",
+      claimNote: "Subagent behavior comes from the CLI custom-agents concept page; the profile paths come from GitHub's create-custom-agents-for-CLI page and the --agent flag from the CLI command reference."
+    },
+    "layer/c-agent/openclaw": {
+      checkedAt: "2026-08-26"
+    },
+    "layer/c-bundle/openclaw": {
+      checkedAt: "2026-08-26",
+      evidenceLevel: "partial",
+      claimNote: "Imported hooks run only in OpenClaw's own HOOK.md plus handler layout; a Claude hooks.json is recognized but not executed, so the bare \"hooks\" payload is an approximation."
     },
     "permissions/grok": {
       claimNote: "The public docs do not fully spell out the headless fallback noted in this row, so the claim remains partial."
@@ -771,17 +800,17 @@ var CLOSED = { antigravity: 1, chatgpt: 1, claude: 1, cursor: 1, copilot: 1 };
 var HARNESSES = [
   { id: "claude",   label: "Claude",          short: "Claude" },
   { id: "codex",    label: "Codex / ChatGPT", short: "Codex" },
-  { id: "goose",    label: "Goose",           short: "Goose" },
-  { id: "hermes",   label: "Hermes Agent",    short: "Hermes" },
-  { id: "osaurus",  label: "Osaurus",         short: "Osaurus" },
-  { id: "gemini",   label: "Gemini CLI",      short: "Gemini", tile: "Gemini CLI" },
-  { id: "grok",     label: "Grok Build",      short: "Grok",   tile: "Grok Build" },
+  { id: "copilot",  label: "GitHub Copilot",  short: "GitHub", tile: "GitHub Copilot" },
   { id: "cursor",   label: "Cursor",          short: "Cursor" },
-  { id: "opencode", label: "OpenCode",        short: "OpenCode" },
+  { id: "gemini",   label: "Gemini CLI",      short: "Gemini", tile: "Gemini CLI" },
+  { id: "goose",    label: "Goose",           short: "Goose" },
+  { id: "grok",     label: "Grok Build",      short: "Grok",   tile: "Grok Build" },
+  { id: "hermes",   label: "Hermes Agent",    short: "Hermes" },
   { id: "openclaw", label: "OpenClaw",        short: "OpenClaw" },
-  { id: "copilot",  label: "GitHub Copilot",  short: "Copilot" },
-  { id: "zed",      label: "Zed",             short: "Zed" },
-  { id: "pi",       label: "Pi",              short: "Pi" }
+  { id: "opencode", label: "OpenCode",        short: "OpenCode" },
+  { id: "osaurus",  label: "Osaurus",         short: "Osaurus" },
+  { id: "pi",       label: "Pi",              short: "Pi" },
+  { id: "zed",      label: "Zed",             short: "Zed" }
 ];
 
 var LAYERS = [
@@ -790,31 +819,32 @@ var LAYERS = [
     name: "Instructions", question: "persistent rules",
     oneliner: "Persistent rules the agent reads every session",
     body: [
-      "<p>A plain markdown file that travels with your project (or lives in your home directory) and gets loaded before the agent starts work. Use it for the rules that apply <strong>every time</strong>: code conventions, \"always run tests before committing,\" what to never touch. Keep it short — long instruction files get truncated or ignored; push detail into skills instead.</p>"
+      "<p>A plain markdown file that travels with your project (or lives in your home directory) and gets loaded before the agent starts work. Use it for the rules that apply <strong>every time</strong>: code conventions, \"always run tests before committing,\" what to never touch. Keep it short — long instruction files get truncated or ignored; push detail into skills instead. The vendor-neutral name for this file is <a class=\"slink\" href=\"https://agents.md\" target=\"_blank\" rel=\"noopener noreferrer\">AGENTS.md</a>, an open format most of the harnesses here read — some as their primary instruction file, some alongside their own.</p>",
+      "<p>Reading the instruction cells: a plain list means every one of those files loads and the contents combine. An arrow (<code>A → B</code>) means the harness picks <strong>one</strong> — it takes the first match and ignores the rest.</p>"
     ],
     cells: {
       claude: {
         term: "CLAUDE.md",
-        loc: "~/.claude/CLAUDE.md · repo root · .claude/CLAUDE.md · nested directories",
+        loc: "~/.claude/CLAUDE.md · cwd and its ancestors · .claude/CLAUDE.md · nested directories",
         desc: "Claude Code concatenates <code>CLAUDE.md</code> and <code>CLAUDE.local.md</code> files from the filesystem root through the working directory; closer instructions appear later. Nested files below the working directory load when Claude accesses those directories.",
         url: "https://code.claude.com/docs/en/memory"
       },
       codex: {
         term: "AGENTS.md",
-        loc: "~/.codex/AGENTS.md · repo root → cwd · AGENTS.override.md",
+        loc: "~/.codex/AGENTS.md · repo root through cwd · AGENTS.override.md → AGENTS.md",
         desc: "Codex selects at most one instruction file per directory, preferring <code>AGENTS.override.md</code>, and concatenates guidance from the project root to the working directory so closer files take precedence.",
         url: "https://learn.chatgpt.com/docs/agent-configuration/agents-md"
       },
       goose: {
         term: "AGENTS.md + .goosehints",
-        loc: "~/.config/goose/ · repo root → working directory · nested directories",
+        loc: "~/.config/goose/ · repo root through cwd · nested directories",
         desc: "By default goose loads both <code>AGENTS.md</code> and <code>.goosehints</code>, combining global and project files from the working-directory hierarchy. Additional nested files load when goose accesses those directories.",
         url: "https://goose-docs.ai/docs/guides/context-engineering/using-goosehints"
       },
       hermes: {
         term: "SOUL.md + project context",
         loc: "$HERMES_HOME/SOUL.md · .hermes.md / HERMES.md → AGENTS.override.md → AGENTS.md → CLAUDE.md → .cursorrules",
-        note: "SOUL.md always loads; one project context type wins, while AGENTS.md chains",
+        note: "AGENTS.md chains while one project context type wins",
         desc: "<code>SOUL.md</code> is the global identity file for the active Hermes instance. Separately, Hermes selects the highest-priority project context type; <code>AGENTS.md</code> files merge from the git root to the working directory, with deeper files taking precedence and subdirectory context discovered progressively.",
         url: "https://hermes-agent.nousresearch.com/docs/user-guide/features/context-files"
       },
@@ -826,55 +856,51 @@ var LAYERS = [
       },
       gemini: {
         term: "GEMINI.md",
-        loc: "~/.gemini/GEMINI.md · workspace and ancestor directories · JIT subdirectories",
-        note: "all discovered context files concatenate",
+        loc: "~/.gemini/GEMINI.md · cwd and ancestors to the trusted root · nested directories",
         desc: "Gemini CLI loads and concatenates global, workspace/ancestor, and just-in-time subdirectory context files. <code>GEMINI.md</code> is the default; <code>AGENTS.md</code> is supported when <code>context.fileName</code> is configured to include it.",
         url: "https://geminicli.com/docs/cli/gemini-md"
       },
       grok: {
         term: "AGENTS.md + CLAUDE.md",
-        loc: "~/.grok/ → repo root → cwd · .grok/rules/",
-        note: "every match concatenates — no first-match-wins",
+        loc: "~/.grok/ · repo root through cwd · .grok/rules/",
         desc: "Per directory it reads any of <code>AGENTS.md</code>, <code>Agents.md</code>, <code>AGENT.md</code>, <code>CLAUDE.md</code>, <code>Claude.md</code> and <code>CLAUDE.local.md</code>, plus every <code>*.md</code> in a <code>.grok/rules/</code> directory — with <code>.claude/rules/</code> and <code>.cursor/rules/</code> read for compatibility. Global rules in <code>~/.grok/</code> load first, then every directory from the repo root down to the working directory, deeper files winning on conflict. Unlike Hermes or Zed, nothing is picked as a single winner: all matches concatenate, and <code>.gitignore</code>d files are skipped so a <code>CLAUDE.local.md</code> stays personal.",
         url: "https://docs.x.ai/build/features/project-rules"
       },
       cursor: {
         term: "Rules",
-        loc: "Project: .cursor/rules/*.mdc · AGENTS.md (root + nested)",
-        note: "Rules: always, relevant, path-scoped, or manual",
+        loc: ".cursor/rules/*.mdc · AGENTS.md · nested directories",
         desc: "Cursor has two documented project-instruction formats. Structured Project Rules are <code>.mdc</code> files in <code>.cursor/rules/</code>, applied always, by relevance, by path, or when named manually. For simpler plain-Markdown guidance, use <code>AGENTS.md</code> in the project root or nested directories; nested files combine and the more specific guidance takes precedence.",
         url: "https://cursor.com/docs/rules"
       },
       opencode: {
         term: "AGENTS.md",
-        loc: "AGENTS.md · ~/.config/opencode/AGENTS.md · CLAUDE.md fallback · opencode.json instructions",
+        loc: "~/.config/opencode/AGENTS.md · AGENTS.md → CLAUDE.md · opencode.json instructions",
         note: "first matching AGENTS.md/CLAUDE.md wins per category",
         desc: "Uses project and global <code>AGENTS.md</code>, with corresponding <code>CLAUDE.md</code> fallbacks. Additional local globs or remote instruction URLs can be declared in <code>opencode.json</code> and are combined with the selected rule files.",
         url: "https://opencode.ai/docs/rules"
       },
       openclaw: {
         term: "AGENTS.md + SOUL.md",
-        loc: "~/.openclaw/workspace · configurable per agent",
+        loc: "~/.openclaw/workspace/ · configurable per agent",
         desc: "Workspace files loaded every session: <code>AGENTS.md</code> contains operating instructions, while <code>SOUL.md</code> defines persona, tone, and boundaries.",
         url: "https://docs.openclaw.ai/concepts/agent-workspace"
       },
       copilot: {
         term: "Custom instructions",
         loc: ".github/copilot-instructions.md · .github/instructions/*.instructions.md · AGENTS.md / CLAUDE.md / GEMINI.md",
-        note: "supported instruction types vary by Copilot surface",
         desc: "Repository-wide and path-specific instructions use dedicated files under <code>.github/</code>. Agent-capable surfaces can also read standard agent instruction files, but exact support differs across the cloud agent, code review, CLI, and IDEs.",
         url: "https://docs.github.com/en/copilot/reference/custom-instructions-support"
       },
       zed: {
         term: "Instructions (AGENTS.md)",
-        loc: "project root · ~/.config/zed/AGENTS.md",
-        note: "nine project filenames accepted; the first match loads",
+        loc: "~/.config/zed/AGENTS.md · first of nine project filenames",
         desc: "Personal instructions use <code>~/.config/zed/AGENTS.md</code>. For the current project, Zed loads the first matching file from nine supported filenames; project instructions override conflicting personal instructions.",
         url: "https://zed.dev/docs/ai/instructions"
       },
       pi: {
         term: "Context + system-prompt files",
-        loc: "~/.pi/agent/AGENTS.md · cwd + parents · SYSTEM.md + APPEND_SYSTEM.md",
+        loc: "~/.pi/agent/AGENTS.md · cwd and its ancestors · SYSTEM.md · APPEND_SYSTEM.md",
+        note: "SYSTEM.md replaces the system prompt rather than combining; APPEND_SYSTEM.md adds to it",
         desc: "Pi layers global and project <code>AGENTS.md</code> or <code>CLAUDE.md</code> while walking upward from the working directory; same-directory <code>AGENTS.override.md</code> replaces the ordinary context file. Global or project <code>SYSTEM.md</code> replaces the default system prompt, while <code>APPEND_SYSTEM.md</code> appends to it.",
         url: "https://pi.dev/docs/latest/usage#context-files"
       }
@@ -886,89 +912,90 @@ var LAYERS = [
     oneliner: "Reusable know-how, loaded only when relevant",
     body: [
       "<p>A folder containing a <code>SKILL.md</code> file (instructions + YAML frontmatter) plus optional scripts, references, and templates. The key trick is <strong>progressive disclosure</strong>: the agent sees only each skill's name and description up front, and loads the full instructions only when the task matches. That's why fifty installed skills don't blow up your context window. Skills teach <em>how</em> to do something — a review checklist, a document format, a deployment procedure. They make no network calls and need no credentials.</p>",
-      "<p>This is the layer where the ecosystem has genuinely converged: the same SKILL.md format is an open standard (Agent Skills / agentskills.io) shared across vendors, with large cross-harness registries — and every harness on this page now supports it. Several now read each other's directories outright, so one skills folder can serve multiple tools.</p>"
+      "<p>This is the layer where the ecosystem has genuinely converged: the same SKILL.md format is an open standard (Agent Skills / <a class=\"slink\" href=\"https://agentskills.io/home\" target=\"_blank\" rel=\"noopener noreferrer\">agentskills.io</a>) shared across vendors, with large cross-harness registries — and every harness on this page now supports it. Several now read each other's directories outright, so one skills folder can serve multiple tools.</p>",
+      "<p>Reading the skill cells: each one lists the directories that harness discovers skills in, project scope first. <code>SKILL.md</code> is the file in every one of them, so it isn't repeated row by row.</p>"
     ],
     cells: {
       claude: {
         term: "Skills",
-        loc: "SKILL.md · .claude/skills/ · ~/.claude/skills/",
+        loc: ".claude/skills/ · ~/.claude/skills/",
         desc: "Project and personal skills in Claude Code load automatically when relevant or can be invoked directly. Cowork and cloud sessions use skills enabled for the user’s claude.ai account rather than reading the machine’s personal directory.",
         url: "https://code.claude.com/docs/en/skills"
       },
       codex: {
         term: "Skills",
-        loc: "SKILL.md · ~/.agents/skills/ · $skill-name",
+        loc: ".agents/skills/ · ~/.agents/skills/",
+        note: "invoke with $skill-name · $skill-installer pulls from registries",
         desc: "Same SKILL.md standard. ~/.agents/skills/ (personal) or .agents/skills/ (repo). Invoke with $skill-name or implicitly; $skill-installer pulls from registries.",
         url: "https://learn.chatgpt.com/docs/build-skills"
       },
       goose: {
         term: "Skills",
-        loc: "SKILL.md · ~/.agents/skills/ · .agents/skills/ · installed plugins",
+        loc: ".agents/skills/ · ~/.agents/skills/",
+        note: "installed plugins can carry skills too",
         desc: "Reusable instructions and supporting files discovered by the built-in Skills platform extension. goose indexes names and descriptions at session start, then loads full instructions when a request matches or the user explicitly selects a skill.",
         url: "https://goose-docs.ai/docs/guides/context-engineering/using-skills"
       },
       hermes: {
         term: "Skills",
-        loc: "SKILL.md · ~/.hermes/skills/ · Skills Hub",
-        note: "also self-generated from experience; Curator prunes stale ones",
+        loc: "~/.hermes/skills/",
         desc: "Same format, plus Hermes's signature move: it <em>writes its own skills from experience</em> (\"procedural memory\") and a background Curator archives stale ones. Huge public Skills Hub; install via <code>hermes skills install</code>.",
         url: "https://hermes-agent.nousresearch.com/docs/user-guide/features/skills"
       },
       osaurus: {
         term: "Skills",
-        loc: "~/.osaurus/skills/{skill-name}/SKILL.md · shared library",
+        loc: "~/.osaurus/skills/",
         note: "capabilities_discover / capabilities_load · requires Auto tool mode",
         desc: "Osaurus follows the Agent Skills format and keeps skills in a universal library available to every custom agent. Sessions receive a capabilities manifest, then discover and load matching full instructions on demand; <code>/skill-name</code> provides deterministic one-message invocation.",
         url: "https://docs.osaurus.ai/skills"
       },
       gemini: {
         term: "Agent Skills",
-        loc: "~/.gemini/skills/ · ~/.agents/skills/ · .gemini/skills/ · .agents/skills/",
+        loc: ".gemini/skills/ · .agents/skills/ · ~/.gemini/skills/ · ~/.agents/skills/",
         note: "precedence: built-in < extension < user < workspace",
         desc: "Gemini CLI discovers Agent Skills from built-ins, extensions, user directories, and workspace directories. Higher-precedence skills shadow same-named lower tiers; skills can be managed with the skills commands.",
         url: "https://geminicli.com/docs/cli/using-agent-skills"
       },
       grok: {
         term: "Skills",
-        loc: "SKILL.md · .grok/skills/ · ~/.grok/skills/ · /slash form",
+        loc: ".grok/skills/ · ~/.grok/skills/",
         desc: "Same <code>SKILL.md</code> standard with YAML frontmatter, discovered from project and user Grok directories, enabled plugin skill roots, configured extra paths, <code>~/.agents/skills/</code>, and Claude-compatible directories. User-invocable skills also surface as slash commands.",
         url: "https://docs.x.ai/build/features/skills-plugins-marketplaces#skills"
       },
       cursor: {
         term: "Skills",
-        loc: ".cursor/skills/ · .agents/skills/ · user equivalents · Claude/Codex paths",
+        loc: ".cursor/skills/ · ~/.cursor/skills/ · .agents/skills/ · ~/.agents/skills/",
         desc: "Supports Agent Skills <code>SKILL.md</code> with progressive loading and slash-command invocation. Cursor discovers project and user skills in Cursor and neutral directories, reads Claude and Codex compatibility paths, and scopes nested project skills by directory.",
         url: "https://cursor.com/docs/skills"
       },
       opencode: {
         term: "Skills",
-        loc: ".opencode/skills/ · .agents/skills/ · .claude/skills/ · global equivalents",
-        desc: "Agent Skills-compatible <code>SKILL.md</code> folders load on demand through the native skill tool. OpenCode walks project directories to the worktree for native, neutral, and Claude-compatible skill roots and also reads their global equivalents.",
+        loc: ".opencode/skills/ · .agents/skills/ · .claude/skills/ · ~/.config/opencode/skills/ · ~/.agents/skills/ · ~/.claude/skills/",
+        desc: "Agent Skills-compatible <code>SKILL.md</code> folders load on demand through the native skill tool. OpenCode walks up from the working directory to the git worktree for native, neutral, and Claude-compatible skill roots, and reads the matching global roots under the home directory.",
         url: "https://opencode.ai/docs/skills"
       },
       openclaw: {
         term: "Skills",
-        loc: "<workspace>/skills · <workspace>/.agents/skills · ~/.agents/skills · ~/.openclaw/skills · ClawHub",
+        loc: "<workspace>/skills/ · <workspace>/.agents/skills/ · ~/.agents/skills/ · ~/.openclaw/skills/",
         desc: "Uses Agent Skills <code>SKILL.md</code> across workspace, project, personal, managed, bundled, extra, and plugin-provided roots with documented precedence. ClawHub is the public registry for installation, updates, and verification.",
         url: "https://docs.openclaw.ai/tools/skills"
       },
       copilot: {
         term: "Skills",
-        loc: ".github/skills · .claude/skills · .agents/skills · ~/.copilot/skills · ~/.agents/skills",
-        note: "cloud agent, code review, CLI, app, VS Code, and JetBrains",
+        loc: ".github/skills/ · .claude/skills/ · .agents/skills/ · ~/.copilot/skills/ · ~/.agents/skills/",
         desc: "Uses the open Agent Skills format at project or personal scope. Supported surfaces include the cloud agent, code review, CLI, Copilot app, and agent mode in VS Code and JetBrains IDEs.",
         url: "https://docs.github.com/en/copilot/concepts/agents/about-agent-skills"
       },
       zed: {
         term: "Skills",
-        loc: "~/.agents/skills · <project>/.agents/skills",
+        loc: "<project>/.agents/skills/ · ~/.agents/skills/",
         note: "the neutral .agents path — it does not read .claude/skills",
         desc: "Native SKILL.md with progressive disclosure: name and description sit in the catalog, and the body loads on demand through a built-in <code>skill</code> tool. Project skills require a trusted worktree, and a project-local skill shadows a global one on a name collision. These apply to Zed's own agent — an external ACP agent brings its own skill system instead.",
         url: "https://zed.dev/docs/ai/skills"
       },
       pi: {
         term: "Agent Skills",
-        loc: "~/.pi/agent/skills · ~/.agents/skills · .pi/skills · ancestor .agents/skills",
+        loc: ".pi/skills/ · ancestor .agents/skills/ · ~/.pi/agent/skills/ · ~/.agents/skills/",
         note: "project skills require trust; configured, packaged, and CLI paths also work",
         desc: "Agent Skills-compatible resources are indexed by name and description at startup, with full instructions and supporting files loaded on demand. Pi discovers <code>SKILL.md</code> directories and valid standalone skill Markdown files.",
         url: "https://pi.dev/docs/latest/skills#locations"
@@ -980,18 +1007,19 @@ var LAYERS = [
     name: "Tool access", question: "external systems",
     oneliner: "Connections to external systems — all MCP underneath",
     body: [
-      "<p>This is where the naming confusion is worst, because several harnesses give MCP servers a friendlier product name. An <strong>MCP server</strong> is a process (local or remote) that publishes callable tools — read email, query a database, create a Jira ticket — over a standard protocol. Unlike skills, these <em>do</em> reach external systems, use real credentials (usually OAuth acting as you), and consume meaningful context per connected server. Install only what you use.</p>"
+      "<p>This is where the naming confusion is worst, because several harnesses give MCP servers a friendlier product name. An <strong>MCP server</strong> is a process (local or remote) that publishes callable tools — read email, query a database, create a Jira ticket — over a standard protocol. Unlike skills, these <em>do</em> reach external systems, use real credentials (usually OAuth acting as you), and consume meaningful context per connected server. Install only what you use.</p>",
+      "<p>Reading the tool-access cells: each one names where a server gets declared — a config file, or the command that manages them. Three are exceptions worth knowing: Goose has no separate MCP config because every extension already is a server, Pi has no client in core at all, and Osaurus adds servers through its Tools Registry rather than a file.</p>"
     ],
     cells: {
       claude: {
         term: "MCP servers / Connectors",
-        loc: "claude mcp · .mcp.json · Anthropic Directory",
+        loc: ".mcp.json · claude mcp",
         desc: "Claude Code connects directly to local or remote MCP servers. The Anthropic Directory lists reviewed connectors that use the same MCP infrastructure and can be added to Claude Code.",
         url: "https://code.claude.com/docs/en/mcp"
       },
       codex: {
         term: "MCP servers",
-        loc: "~/.codex/config.toml · .codex/config.toml · plugins in ChatGPT web",
+        loc: "~/.codex/config.toml · .codex/config.toml",
         desc: "Codex clients connect directly to MCP servers through shared <code>config.toml</code> configuration, and installed plugins can bundle MCP servers. ChatGPT web uses remote MCP-backed tools supplied by plugins and connectors.",
         url: "https://learn.chatgpt.com/docs/extend/mcp"
       },
@@ -1004,65 +1032,65 @@ var LAYERS = [
       hermes: {
         term: "MCP servers + Plugins",
         pterm: "MCP + Plugins",
-        loc: "hermes mcp · ~/.hermes/plugins/ · .hermes/plugins/ · pip entry points",
+        loc: "hermes mcp",
         note: "⚠ “plugin” = executable code extension; third-party plugins are opt-in",
         warn: true,
-        desc: "Hermes connects to local stdio and remote HTTP MCP servers, including OAuth-backed servers. Separately, a plugin directory with <code>plugin.yaml</code> and Python can register tools, hooks, commands, integrations, and bundled skills.",
+        desc: "Hermes connects to local stdio and remote HTTP MCP servers, including OAuth-backed servers. Separately, a plugin directory with <code>plugin.yaml</code> and Python — under <code>~/.hermes/plugins/</code>, <code>.hermes/plugins/</code>, or a pip entry point — can register tools, hooks, commands, integrations, and bundled skills.",
         url: "https://hermes-agent.nousresearch.com/docs/user-guide/features/plugins"
       },
       osaurus: {
         term: "Plugins + MCP",
-        loc: "native plugins · Tools Registry · remote MCP providers",
+        loc: "Tools Registry",
         note: "MCP both directions: server and client",
         desc: "Osaurus combines built-in tools, native registry plugins, and tools aggregated from remote MCP providers. Its tools are exposed over MCP to compatible clients, while its MCP client connects to HTTP or SSE servers and registers their tools locally.",
         url: "https://docs.osaurus.ai/tools"
       },
       gemini: {
         term: "MCP servers",
-        loc: "settings.json mcpServers · or supplied by extensions",
+        loc: "settings.json mcpServers",
         desc: "Gemini CLI connects to MCP servers configured under <code>mcpServers</code> in <code>settings.json</code>. Extensions can also provide MCP configuration, which local settings may override or restrict.",
         url: "https://geminicli.com/docs/tools/mcp-server"
       },
       grok: {
         term: "MCP servers",
-        loc: "~/.grok/config.toml · project .grok/config.toml · grok mcp add",
+        loc: "~/.grok/config.toml · project .grok/config.toml · grok mcp",
         desc: "Servers live in user or project <code>[mcp_servers.&lt;name&gt;]</code> tables or are managed with <code>grok mcp</code>. Project configuration can override a same-named user server. Local stdio and remote HTTP, OAuth credentials, and compatible Claude/Cursor MCP files are supported.",
         url: "https://docs.x.ai/build/features/mcp-servers"
       },
       cursor: {
         term: "MCP servers",
-        loc: ".cursor/mcp.json · ~/.cursor/mcp.json · Customize / Cursor Marketplace",
+        loc: ".cursor/mcp.json · ~/.cursor/mcp.json",
         desc: "Custom local and remote servers use project or global <code>mcp.json</code>. Official plugin-backed servers support one-click installation from Customize and the Cursor Marketplace; community servers remain available through cursor.directory.",
         url: "https://cursor.com/docs/mcp"
       },
       opencode: {
         term: "MCP servers",
-        loc: "opencode.json · local + remote",
+        loc: "opencode.json",
         desc: "Local and remote servers configured in opencode.json.",
         url: "https://opencode.ai/docs/mcp-servers"
       },
       openclaw: {
         term: "Built-in tools + MCP servers",
-        loc: "mcp.servers · Settings → MCP · openclaw mcp",
+        loc: "mcp.servers · openclaw mcp",
         desc: "Ships built-in tools and a native MCP client. Local stdio and remote Streamable HTTP or SSE servers use <code>mcp.servers</code>, Settings → MCP, or <code>openclaw mcp</code>; exposed tools remain subject to tool policy.",
         url: "https://docs.openclaw.ai/tools/mcp"
       },
       copilot: {
         term: "MCP servers",
-        loc: "IDEs · Copilot CLI · Copilot app · cloud agent",
-        desc: "MCP works across major Copilot surfaces. Copilot CLI supports local and remote servers and includes GitHub MCP; repository-level MCP configuration can also be shared with GitHub-hosted surfaces.",
+        loc: "~/.copilot/mcp-config.json · .mcp.json · .github/mcp.json",
+        desc: "MCP works across major Copilot surfaces — the IDEs, Copilot CLI, the Copilot app, and the cloud agent. The CLI stores servers in <code>~/.copilot/mcp-config.json</code> and also walks up from the working directory reading <code>.mcp.json</code> and <code>.github/mcp.json</code>, which take precedence; the IDEs use <code>.vscode/mcp.json</code> or their own <code>mcp.json</code>. The CLI supports local and remote servers and includes GitHub MCP.",
         url: "https://docs.github.com/en/copilot/concepts/context/mcp"
       },
       zed: {
         term: "MCP servers",
-        loc: "settings.json · context_servers",
+        loc: "settings.json context_servers",
         note: "the UI says \"MCP Servers\", the settings key says context_servers",
         desc: "stdio and remote HTTP transports, with MCP OAuth prompted automatically when no <code>Authorization</code> header is set. Tools and prompts only — resources, sampling and elicitation are unsupported. Servers can ship as Zed extensions, though that route is slated for deprecation in favour of the official MCP registry.",
         url: "https://zed.dev/docs/ai/mcp"
       },
       pi: {
         term: "Built-in tools + Extensions",
-        loc: "built-in tools · ~/.pi/agent/extensions · .pi/extensions",
+        loc: "~/.pi/agent/extensions/ · .pi/extensions/",
         note: "no built-in MCP client — use an extension or package",
         warn: true,
         desc: "Core Pi provides file, search, and shell tools; extensions register additional model-callable tools. MCP is intentionally absent from core and must be implemented by an extension, which a Pi package may distribute.",
@@ -1077,45 +1105,45 @@ var LAYERS = [
     body: [
       "<p><strong>L4 is a distribution wrapper, not a new runtime capability.</strong> Its contents — instructions, skills, MCP configuration, hooks, agents, or commands — can usually exist on their own in the lower layers. A bundle gives that set a name, a source, and often a manifest/version so someone can install, update, or remove it as one unit. The product name is usually <em>plugin</em>, but some call it an extension or package.</p>",
       "<p>Use L4 when a workflow needs to travel intact between projects or people: install one package instead of copying five separate folders and config blocks. For a small personal setup, adding a skill or MCP server directly is usually simpler. A bundle is also <strong>not</strong> a subagent or an automation run — it is the packaging that can carry their definitions.</p>",
-      "<p><strong>Important asymmetries:</strong> Claude, Codex, Goose, Grok Build, Cursor, and Copilot expose declarative plugin bundles, though their payloads differ. Gemini calls the same layer an <em>extension</em>; Pi calls it a <em>package</em>. Hermes plugins are executable Python extensions that can also carry skills and data. OpenClaw imports several external bundle formats while keeping native code plugins separate. Osaurus maps imported Claude-plugin contents into native skills, schedules, commands, MCP providers, and shared context.</p>"
+      "<p><strong>Important asymmetries:</strong> Claude, Codex, Goose, Grok Build, Cursor, and Copilot expose declarative plugin bundles, though their payloads differ. Gemini calls the same layer an <em>extension</em>; Pi calls it a <em>package</em>. Hermes plugins are executable Python extensions that can also carry skills and data. OpenClaw imports several external bundle formats while keeping native code plugins separate. Osaurus maps imported Claude-plugin contents into native skills, schedules, commands, MCP providers, and shared context.</p>",
+      "<p>Reading the bundle cells: each one lists what a bundle can carry, written in the same order every row so two harnesses can be compared item by item. Manifest filenames and install locations are in the tiles below.</p>"
     ],
     cells: {
       claude: {
         term: "Plugins",
-        loc: ".claude-plugin/plugin.json · skills + agents + hooks + MCP servers",
-        desc: "A self-contained plugin can bundle skills, agents, hooks, and MCP servers for sharing through plugin marketplaces or direct loading in Claude Code.",
+        loc: "skills + agents + hooks + MCP",
+        desc: "A self-contained plugin declares itself in <code>.claude-plugin/plugin.json</code> and can bundle skills, agents, hooks, and MCP servers for sharing through plugin marketplaces or direct loading in Claude Code.",
         url: "https://code.claude.com/docs/en/plugins"
       },
       codex: {
         term: "Plugins",
-        loc: "skills + connectors + MCP servers · universal plugin directory",
+        loc: "skills + hooks + MCP + connectors + browser extensions + schedules",
         desc: "Plugins bundle skills, connectors, or both, and can include MCP servers, browser extensions, hooks, and scheduled-task templates. ChatGPT and Codex share a universal public plugin directory.",
         url: "https://learn.chatgpt.com/docs/plugins"
       },
       goose: {
         term: "Plugins",
-        loc: "plugin.json · ~/.agents/plugins/ · .agents/plugins/",
-        desc: "Installable packages that bundle reusable skills, hooks, or both. goose supports Open Plugins and Gemini-extension formats and can install or update git-backed plugins.",
+        loc: "skills + hooks",
+        desc: "Installable packages, declared in <code>plugin.json</code>, that bundle reusable skills, hooks, or both. goose supports Open Plugins and Gemini-extension formats and can install or update git-backed plugins from <code>~/.agents/plugins/</code> or <code>.agents/plugins/</code>.",
         url: "https://goose-docs.ai/docs/guides/context-engineering/plugins"
       },
       hermes: {
         term: "Plugins",
-        loc: "plugin.yaml + Python · GitHub, pip, user or project directories",
+        loc: "skills + hooks + commands + tools",
         note: "⚠ executable code packages, not purely declarative bundles",
         warn: true,
-        desc: "Installable Hermes plugins package executable Python extensions that can add tools, hooks, slash and CLI commands, platform or provider integrations, and bundled skills. They install from GitHub, Python entry points, or user and trusted project directories.",
+        desc: "Installable Hermes plugins, declared in <code>plugin.yaml</code>, package executable Python extensions that can add tools, hooks, slash and CLI commands, platform or provider integrations, and bundled skills. They install from GitHub, Python entry points, or user and trusted project directories.",
         url: "https://hermes-agent.nousresearch.com/docs/user-guide/features/plugins"
       },
       osaurus: {
         term: "Claude plugin imports",
-        loc: "GitHub repo · skills + schedules + commands + MCP + shared context",
-        note: "imported, updated, and uninstalled as one tagged unit",
+        loc: "skills + MCP + commands + schedules + context",
         desc: "Osaurus imports full Claude plugins from GitHub. Skills, scheduled agents, slash commands, HTTP/SSE MCP providers, and shared <code>CLAUDE.md</code> context are mapped into Osaurus and managed together as one installable unit.",
         url: "https://docs.osaurus.ai/claude-plugins"
       },
       gemini: {
         term: "Extensions",
-        loc: "prompts + MCP + commands + themes + hooks + subagents + skills",
+        loc: "skills + agents + hooks + MCP + commands + prompts + themes",
         note: "⚠ “extension” = installable bundle, not an MCP server",
         warn: true,
         desc: "Gemini CLI extensions package prompts, MCP servers, custom commands, themes, hooks, subagents, and Agent Skills into installable units available from GitHub, local paths, or the extension gallery.",
@@ -1123,52 +1151,50 @@ var LAYERS = [
       },
       grok: {
         term: "Plugins",
-        loc: ".grok/plugins/ · ~/.grok/plugins/ · marketplaces",
-        note: "reads Claude Code's plugins and marketplaces as they are",
+        loc: "skills + agents + hooks + MCP + LSP",
         desc: "A plugin adds skills, agents, hooks, MCP servers <em>and</em> LSP servers — Claude's payload plus a language server. Loaded from <code>./.grok/plugins/</code>, <code>~/.grok/plugins/</code> and marketplace installs under <code>~/.grok/plugins/marketplaces/</code>, with sources in <code>[[marketplace.sources]]</code> and <code>known_marketplaces.json</code>; <code>grok plugin install</code> and friends manage them. The unusual part is at the other end: it reads Claude Code's plugins and marketplaces directly, which no other harness here does at the bundle layer.",
         url: "https://docs.x.ai/build/features/skills-plugins-marketplaces#plugins"
       },
       cursor: {
         term: "Plugins",
-        loc: "plugin.json · .cursor-plugin/plugin.json · marketplaces",
-        note: "portable Agent Plugins and Cursor-specific Cursor Plugins",
-        desc: "Plugins package rules, skills, agents, commands, MCP servers, and hooks into distributable bundles. Portable Agent Plugins use root <code>plugin.json</code>; Cursor Plugins use <code>.cursor-plugin/plugin.json</code> for additional Cursor-specific components.",
+        loc: "skills + agents + hooks + MCP + commands + rules",
+        desc: "Plugins package rules, skills, agents, commands, MCP servers, and hooks into distributable bundles. Portable Agent Plugins use root <code>plugin.json</code>; Cursor Plugins use <code>.cursor-plugin/plugin.json</code> for additional Cursor-specific components. Both install from plugin marketplaces.",
         url: "https://cursor.com/docs/plugins"
       },
       opencode: {
         term: "Plugins",
-        loc: ".opencode/plugins/ · ~/.config/opencode/plugins/ · npm packages",
+        loc: "hooks (JS/TS code)",
         note: "⚠ executable JS/TS extensions, not declarative agent bundles", warn: true,
-        desc: "OpenCode plugins are JavaScript or TypeScript modules that hook runtime events and can add behavior or integrations. They load from project or global plugin directories, or install automatically from npm packages declared in <code>opencode.json</code>. Unlike the other L4 entries, they are executable extension packages rather than bundles of skills, agents, and MCP configuration.",
+        desc: "OpenCode plugins are JavaScript or TypeScript modules that hook runtime events and can add behavior or integrations. They load from <code>.opencode/plugins/</code> or <code>~/.config/opencode/plugins/</code>, or install automatically from npm packages declared in <code>opencode.json</code>. Unlike the other L4 entries, they are executable extension packages rather than bundles of skills, agents, and MCP configuration.",
         url: "https://opencode.ai/docs/plugins"
       },
       openclaw: {
         term: "Plugin bundles",
-        loc: "plugin.json · .codex-plugin/ · .claude-plugin/ · .cursor-plugin/",
+        loc: "skills + hooks + MCP + LSP",
         note: "⚠ content bundles; native OpenClaw plugins remain code extensions",
         warn: true,
-        desc: "Installs bundles from Agent Plugins and from Codex, Claude, and Cursor formats, mapping supported content into native skills, hooks, MCP tools, and LSP defaults. Bundles have a narrower trust boundary than native OpenClaw plugins.",
+        desc: "Installs bundles from Agent Plugins (<code>plugin.json</code>) and from the <code>.codex-plugin/</code>, <code>.claude-plugin/</code>, and <code>.cursor-plugin/</code> formats, mapping supported content into native skills, hooks, MCP tools, and LSP defaults. Bundles have a narrower trust boundary than native OpenClaw plugins.",
         url: "https://docs.openclaw.ai/plugins/bundles"
       },
       copilot: {
         term: "Plugins",
-        loc: "plugin.json · agents/ · skills/ · hooks/ · MCP/LSP config",
+        loc: "skills + agents + hooks + MCP + LSP",
         note: "not the retired Copilot Extensions GitHub Apps",
-        desc: "Installable bundles for Copilot CLI and the cloud agent. A plugin can package custom agents, skills, hooks, MCP and LSP server configuration, and install from a marketplace, repository, or local path.",
+        desc: "Installable bundles for Copilot CLI and the cloud agent. A plugin, declared in <code>plugin.json</code>, can package custom agents, skills, hooks, MCP and LSP server configuration, and install from a marketplace, repository, or local path.",
         url: "https://docs.github.com/en/copilot/concepts/agents/about-plugins"
       },
       zed: {
         term: "Extensions",
-        loc: "extension.toml · languages, debuggers, themes, snippets, MCP servers",
+        loc: "MCP + languages + debuggers + themes + icon themes + snippets",
         note: "editor bundle, not a general agent bundle",
         warn: true,
-        desc: "An editor-extension bundle that can provide languages, debuggers, themes, icon themes, snippets, and MCP servers. It has no documented skill or instruction payload, so MCP servers are its agent-facing layer.",
+        desc: "An editor-extension bundle, declared in <code>extension.toml</code>, that can provide languages, debuggers, themes, icon themes, snippets, and MCP servers. It has no documented skill or instruction payload, so MCP servers are its agent-facing layer.",
         url: "https://zed.dev/docs/extensions/developing-extensions"
       },
       pi: {
         term: "Pi Packages",
-        loc: "npm · git · local paths · pi install / remove / update",
-        desc: "Shareable packages bundle extensions, skills, prompt templates, and themes. Conventional directories work automatically, while <code>package.json</code> can declare custom Pi resource paths.",
+        loc: "skills + extensions + prompts + themes",
+        desc: "Shareable packages bundle extensions, skills, prompt templates, and themes. Conventional directories work automatically, while <code>package.json</code> can declare custom Pi resource paths. Packages install from npm, git, or local paths with <code>pi install / remove / update</code>.",
         url: "https://pi.dev/docs/latest/packages"
       }
     }
@@ -1178,7 +1204,8 @@ var LAYERS = [
     name: "Delegation", question: "parallel workers",
     oneliner: "Spin up specialized workers, often in parallel",
     body: [
-      "<p>Subagents are independent agent instances the main agent can hand tasks to — each with its own context window, and often its own tool access and instructions. Useful for parallelizing (review three files at once) or isolating noisy work (a research subagent digests 50 pages and returns a summary, keeping the main context clean).</p>"
+      "<p>Subagents are independent agent instances the main agent can hand tasks to — each with its own context window, and often its own tool access and instructions. Useful for parallelizing (review three files at once) or isolating noisy work (a research subagent digests 50 pages and returns a summary, keeping the main context clean).</p>",
+      "<p>Reading the delegation cells: each one shows where an agent is defined, the tool that spawns one, or both — whichever a harness actually has. Several define agents as files with no dedicated spawn tool; a few have no agent files at all and only a tool.</p>"
     ],
     cells: {
       claude: {
@@ -1189,20 +1216,20 @@ var LAYERS = [
       },
       codex: {
         term: "Subagents",
-        loc: ".codex/agents/*.toml · ~/.codex/agents/*.toml · parallel agent threads",
+        loc: ".codex/agents/*.toml · ~/.codex/agents/*.toml",
         desc: "Codex can spawn built-in or custom subagents in parallel and collect their results in the parent thread. Custom agents are TOML configuration files with a name, description, and developer instructions.",
         url: "https://learn.chatgpt.com/docs/agent-configuration/subagents"
       },
       goose: {
         term: "Subagents",
-        loc: "Summon delegate tool · direct prompts or recipes",
+        loc: "Summon delegate tool",
         note: "autonomous spawning requires autonomous permission mode",
         desc: "goose spawns temporary isolated subagents from direct prompts or reusable recipes and can execute them sequentially or in parallel. Subagents inherit parent extensions by default, but their extension access can be restricted.",
         url: "https://goose-docs.ai/docs/guides/context-engineering/subagents"
       },
       hermes: {
         term: "Subagents",
-        loc: "delegate_task · isolated context + terminal · + cron for scheduled runs",
+        loc: "delegate_task",
         desc: "The <code>delegate_task</code> tool spawns children with isolated context, restricted toolsets, and their own terminal sessions; background subagents can fan out in parallel. Built-in cron covers the scheduled/unattended case.",
         url: "https://hermes-agent.nousresearch.com/docs/user-guide/features/delegation"
       },
@@ -1222,13 +1249,13 @@ var LAYERS = [
       },
       grok: {
         term: "Subagents",
-        loc: ".grok/agents/ · ~/.grok/agents/ · personas",
+        loc: ".grok/agents/ · ~/.grok/agents/",
         desc: "Independent child sessions handle tasks in parallel and return a summary to the parent. Built-ins include <code>general-purpose</code>, read-only <code>explore</code>, and planning-only <code>plan</code>; custom types and behavioral personas can be defined at project or user scope.",
         url: "https://docs.x.ai/build/features/subagents"
       },
       cursor: {
         term: "Subagents",
-        loc: ".cursor/agents/ · ~/.cursor/agents/ · foreground or background",
+        loc: ".cursor/agents/ · ~/.cursor/agents/",
         note: "also reads .claude/agents/ and .codex/agents/",
         desc: "Specialized child agents with isolated context and configurable prompts, tools, and models. They can run in the foreground or background, execute in parallel, and are available in the editor, CLI, and Cloud Agents.",
         url: "https://cursor.com/docs/subagents"
@@ -1236,20 +1263,22 @@ var LAYERS = [
       opencode: {
         term: "Agents",
         loc: ".opencode/agents/ · ~/.config/opencode/agents/ · opencode.json",
-        note: "primary agents switch with Tab; subagents run through Task or @-mention",
+        note: "Tab switches the primary agent",
         desc: "Primary agents run the main conversation; subagents are invoked through the Task tool or an <code>@</code>-mention. Built-ins include Build, Plan, General, Explore, and Scout; custom agents use JSON config or Markdown files.",
         url: "https://opencode.ai/docs/agents"
       },
       openclaw: {
         term: "Subagents",
-        loc: "isolated sessions for parallel or contained work",
-        desc: "Spawns isolated sessions for parallel or contained tasks.",
+        loc: "agents.entries.* config · sessions_spawn",
+        note: "no agent files — subagents are config entries",
+        desc: "Spawns isolated sessions for parallel or contained tasks. Children start with the <code>sessions_spawn</code> tool, targeting an agent defined under <code>agents.entries.*</code>; <code>agents.defaults.subagents</code> sets the child model, the concurrency cap and how deep spawning may nest.",
         url: "https://docs.openclaw.ai/tools/subagents"
       },
       copilot: {
         term: "Custom agents / subagents",
-        loc: "Copilot CLI · built-in and custom agent profiles",
-        desc: "Copilot CLI can run built-in and custom agents as subagents with separate context windows. It selects built-ins automatically when appropriate, and independent subtasks can run in parallel without cluttering the main context.",
+        loc: ".github/agents/*.agent.md · ~/.copilot/agents/ · copilot --agent",
+        note: "same name in both places — the home directory wins",
+        desc: "Custom agents are Markdown profiles with YAML frontmatter, kept in <code>.github/agents/</code> for a repository or <code>~/.copilot/agents/</code> for yourself, and selected with <code>copilot --agent</code> or the <code>/agent</code> command. Copilot CLI can run built-in and custom agents as subagents with separate context windows. It selects built-ins automatically when appropriate, and independent subtasks can run in parallel without cluttering the main context.",
         url: "https://docs.github.com/en/copilot/concepts/agents/copilot-cli/about-custom-agents#running-agents-as-subagents"
       },
       zed: {
@@ -1260,7 +1289,7 @@ var LAYERS = [
       },
       pi: {
         term: "Subagent example extension",
-        loc: "example source · ~/.pi/agent/agents/*.md · .pi/agents/*.md",
+        loc: "~/.pi/agent/agents/*.md · .pi/agents/*.md",
         note: "not built in or preinstalled — copy the example or use a package",
         warn: true,
         desc: "Pi’s official example extension delegates to specialized agents running as separate Pi processes in single, parallel, and chained modes. User agents load by default; project agents require explicit scope.",
@@ -1459,17 +1488,17 @@ var PORTABILITY = [
     status: "verified"
   },
   {
-    id: "jan",
-    cells: { agents: { m: "no", loc: "assistant.json instead" },
-             skills: { m: "no", loc: "no skills layer" },
-             mcp:    { m: "own", loc: "<data>/mcp_config.json" } },
-    instr: ["<data>/assistants/<id>/assistant.json"],
-    skills: [],
-    foreign: [],
-    mcp: "<data>/mcp_config.json (mcpServers — the Claude Desktop shape)",
-    stranded: "assistants as the instruction unit, smart tool routing, mcpSettings restart backoff, per-tool disable",
-    note: "Reads nothing of anyone else's, in either direction — no runtime read and no import wizard either. MCP is the one thing that travels, and it travels well, since the file is the familiar mcpServers shape. One footgun when pasting a block in: a server with no \"active\" key counts as active, so every server in a pasted config starts on next launch. And because Jan's client does tools only, a server whose value is MCP prompts or resources contributes nothing here.",
-    url: "https://www.jan.ai/docs/desktop/assistants",
+    id: "pi",
+    cells: { agents: { m: "reads", loc: "AGENTS.md or CLAUDE.md, either name" },
+             skills: { m: "reads", loc: "~/.agents/skills · .agents/skills · other vendors' by setting" },
+             mcp:    { m: "no", loc: "no MCP client in core" } },
+    instr: ["AGENTS.md", "CLAUDE.md", "AGENTS.override.md", "~/.pi/agent/AGENTS.md", "~/.pi/agent/CLAUDE.md", ".pi/SYSTEM.md", "APPEND_SYSTEM.md"],
+    skills: [".pi/skills/<name>/SKILL.md", ".agents/skills/<name>/SKILL.md", "~/.pi/agent/skills/<name>/SKILL.md", "~/.agents/skills/<name>/SKILL.md"],
+    foreign: ["CLAUDE.md", ".agents/skills", "~/.agents/skills", "~/.claude/skills (added in settings)", "~/.codex/skills (added in settings)"],
+    mcp: "nothing to port — MCP is not in core, so a server arrives as an extension instead",
+    stranded: "SYSTEM.md and APPEND_SYSTEM.md prompt surgery, trust.json decisions, extensions as the entire tool layer",
+    note: "Takes instructions and skills from almost anywhere: AGENTS.md and CLAUDE.md are interchangeable at every level, walking up from the working directory, and the skills setting can point at ~/.claude/skills or ~/.codex/skills alongside the vendor-neutral .agents/skills. MCP is the gap — core Pi has no client, so an mcpServers block has nowhere to land until an extension provides one. Project-local settings, resources and skills load only after the folder is trusted.",
+    url: "https://pi.dev/docs/latest/usage#context-files",
     status: "verified"
   }
 ];
@@ -1675,15 +1704,15 @@ var PERMISSIONS = [
     status: "verified"
   },
   {
-    id: "jan", auto: "gated",
-    edit: "notool", shell: "notool", sbx: "none",
-    dflt: "No built-in file-edit or shell at all; every MCP tool call prompts",
-    approval: "Per call · \"allow always\" is scoped to one tool in one thread · global allow-all switch",
-    sandbox: "MCP servers are spawned as unrestricted child processes",
-    config: "<data>/settings.json (tool-approval, tool-availability) · mcp_config.json (active, mcpSettings)",
-    headless: "The jan CLI never runs tools · the API server's opt-in \"Execute tools on server\" runs 8 turns unapproved",
-    note: "Gated partly because there is so little to gate: the built-in web and RAG tools are auto-approved and never prompt, and with no file-write or shell tool, MCP is the only way Jan touches anything. Two sharp edges — \"allow always\" is per thread, so the same tool prompts again in a new one, and the Local API Server's server-side tool loop ignores those desktop approvals entirely.",
-    url: "https://jan.ai/docs/desktop/mcp",
+    id: "pi", auto: "open",
+    edit: "free", shell: "free", shellq: "bash and powershell alike", sbx: "optin",
+    dflt: "Runs with all permissions by default — no prompt before an edit or a shell call",
+    approval: "No per-call approval · /trust gates project-local settings, resources and skills, not tool calls",
+    sandbox: "Opt-in only · Gondolin micro-VM extension · plain Docker · OpenShell policy sandbox",
+    config: "~/.pi/agent/trust.json · defaultProjectTrust ask / always / never · pi -e <extension>",
+    headless: "pi -p merges piped stdin · non-interactive skips the trust prompt and follows defaultProjectTrust",
+    note: "The one row here with no gate at all: permission popups are a stated non-goal, so read, write, edit and bash run unannounced. Trust is a separate axis — it decides whether a project's own settings, resources and .agents/skills load, not whether a tool may run. That leaves isolation as the only real brake, and all three documented options are opt-in and hand-configured.",
+    url: "https://pi.dev/docs/latest/usage#design-principles",
     status: "verified"
   }
 ];
@@ -2201,8 +2230,19 @@ function esc(s){
   return String(s).replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;").replace(/"/g,"&quot;");
 }
 function cellMeta(s){
-  return esc(s).replace(/ · /g, '<span class="loc-sep" role="separator" aria-label="next item"></span>');
+  // The divider between items is a border, which a screen reader cannot see, so
+  // every item after the first carries a spoken comma that stays off-screen.
+  return esc(s).split(' \u00b7 ').map(function(part, i){
+    return (i ? '<span class="sr-only">, </span>' : '') + '<span class="loc-i">' + part + '</span>';
+  }).join(' ');
 }
+
+// Every tab lists its rows alphabetically by the label it shows. Sorting here
+// rather than in each array keeps the tabs, the harness picker and the
+// layer-card tiles from drifting apart as rows get added.
+[[HARNESSES, 'label'], [TOOLS, 'name'], [INFRA, 'name']].forEach(function(pair){
+  pair[0].sort(function(a, b){ return a[pair[1]].localeCompare(b[pair[1]]); });
+});
 
 (function(){
   var saved = loadPrefs();
@@ -2318,9 +2358,7 @@ function setHarness(id){ applyHarness(id); savePrefs(); }
 
 /* ---- harness tab rendering ---- */
 function renderHarnessPicker(){
-  var order = [{ id: "all", short: "All" }].concat(HARNESSES.slice().sort(function(a, b){
-    return a.short < b.short ? -1 : a.short > b.short ? 1 : 0;
-  }));
+  var order = [{ id: "all", short: "All" }].concat(HARNESSES);
   document.getElementById('hPickBtns').innerHTML = order.map(function(h){
     return '<button data-hf="' + esc(h.id) + '" aria-pressed="false" onclick="setHarness(\'' + esc(h.id) + '\')">' + esc(h.short) + '</button>';
   }).join('');
@@ -2339,7 +2377,7 @@ function hMatrixCell(cell){
 // card's platform grid agree. The layer hue rides its column header, whose
 // <button> is the keyboard-reachable route to the layer card.
 function renderHarnessMatrix(){
-  var html = '<table><thead><tr><th class="harness-h">Harness</th>' +
+  var html = '<table><caption class="sr-only">Harness layers: each row is a harness, each column one of the five extension layers</caption><thead><tr><th class="harness-h">Harness</th>' +
     LAYERS.map(function(L){
       return '<th class="lay-h r-' + esc(L.hue) + '" scope="col">' +
         '<button class="layjump" onclick="jump(\'' + esc(L.id) + '\')">' +
@@ -2352,7 +2390,7 @@ function renderHarnessMatrix(){
       return '<tr data-h="' + esc(h.id) + '">' +
         '<th class="hname" scope="row">' + esc(h.label) + '</th>' +
         LAYERS.map(function(L){
-          return '<td class="lay r-' + esc(L.hue) + '" onclick="jump(\'' + esc(L.id) + '\')">' +
+          return '<td class="lay r-' + esc(L.hue) + '">' +
             hMatrixCell(L.cells[h.id]) + '</td>';
         }).join('') + '</tr>';
     }).join('') + '</tbody></table>';
@@ -2369,7 +2407,7 @@ function renderLayerCards(){
         var term = cell.pterm || (cell.term == null ? '—' : cell.term);
         // `note` used to live in the matrix cell; it lands here now so the
         // transposed matrix stays scannable without losing any prose.
-        var note = cell.note ? '<div class="note' + (cell.warn ? ' warn' : '') + '">' + esc(cell.note) + '</div>' : '';
+        var note = cell.note ? '<div class="note' + (cell.warn ? ' warn' : '') + '">' + cellMeta(cell.note) + '</div>' : '';
         var ref = '<a class="ref" href="' + esc(cell.url) + '" target="_blank" rel="noopener noreferrer">Reference ↗</a>';
         return '<div class="plat" data-h="' + esc(h.id) + '"><div class="pname">' + esc(h.tile || h.short) + '</div><div class="pterm">' + esc(term) + '</div><div class="pdesc">' + cell.desc + '</div>' + note + ref + '</div>';
       }).join('') +
@@ -2397,7 +2435,12 @@ function openCard(id, updateHash){
   var el = document.getElementById(id);
   if(!el) return;
   el.open = true;
-  el.scrollIntoView({behavior:'smooth', block:'start'});
+  // an explicit behavior overrides the stylesheet's reduced-motion rule, so ask
+  var still = window.matchMedia && matchMedia('(prefers-reduced-motion: reduce)').matches;
+  el.scrollIntoView({behavior: still ? 'auto' : 'smooth', block:'start'});
+  // land focus on the card so it is announced, not merely scrolled to
+  var head = el.querySelector('summary');
+  if (head && head.focus) head.focus({preventScroll:true});
   if (updateHash && window.history && history.replaceState) history.replaceState(null, '', '#' + id);
 }
 function jump(id){ openCard(id, true); }
@@ -2500,7 +2543,7 @@ function pmRenderMatrix(){
   var open = shown.filter(function(t){ return !CLOSED[t.id]; });
   var closed = shown.filter(function(t){ return CLOSED[t.id]; });
   var cols = creds.length + 1;
-  var html = '<table><thead><tr><th class="pm-tool-h">Tool</th>' +
+  var html = '<table><caption class="sr-only">Provider compatibility: each row is a tool, each column a credential you might hold</caption><thead><tr><th class="pm-tool-h">Tool</th>' +
     creds.map(function(c){
       return '<th><span class="chd">' + esc(c.label) + '</span></th>';
     }).join('') + '</tr></thead><tbody>';
@@ -2520,10 +2563,7 @@ function harnessName(id){
 // picker chips) instead of matching the matrix's column order. Filtering
 // through HARNESSES first means an unknown id is just dropped, not shown.
 function alphaHarnessOrder(rows){
-  var order = HARNESSES.slice().sort(function(a, b){
-    return a.short < b.short ? -1 : a.short > b.short ? 1 : 0;
-  });
-  return order.map(function(h){
+  return HARNESSES.map(function(h){
     for (var i = 0; i < rows.length; i++){ if (rows[i].id === h.id) return rows[i]; }
     return null;
   }).filter(Boolean);
@@ -2581,7 +2621,7 @@ function renderPortability(){
   if (!host) return;
   var rows = alphaHarnessOrder(PORTABILITY);
   if (!rows.length){ host.innerHTML = '<p class="pm-empty">No portability data yet.</p>'; return; }
-  host.innerHTML = '<table><thead><tr><th class="pm-tool-h">Tool</th>' +
+  host.innerHTML = '<table><caption class="sr-only">Portability: each row is a harness, each column what transfers to another harness</caption><thead><tr><th class="pm-tool-h">Tool</th>' +
     PORT_COLS.map(function(c){ return '<th><span class="chd">' + esc(c.label) + '</span></th>'; }).join('') +
     '<th><span class="chd">Doesn\'t port</span></th></tr></thead><tbody>' +
     rows.map(function(r){
@@ -2632,7 +2672,7 @@ function renderPermissions(){
   if (!host) return;
   var rows = alphaHarnessOrder(PERMISSIONS);
   if (!rows.length){ host.innerHTML = '<p class="pm-empty">No permissions data yet.</p>'; return; }
-  host.innerHTML = '<table><thead><tr><th class="pm-tool-h">Tool</th>' +
+  host.innerHTML = '<table><caption class="sr-only">Permissions and autonomy: each row is a harness, each column a class of action</caption><thead><tr><th class="pm-tool-h">Tool</th>' +
     PERM_COLS.map(function(c){ return '<th><span class="chd">' + esc(c.label) + '</span></th>'; }).join('') +
     '</tr></thead><tbody>' +
     rows.map(function(r){
@@ -2730,7 +2770,7 @@ function renderInfraCaps(){
     host.innerHTML = '<p class="pm-empty">Nothing here does all of that on its own. That\'s the normal answer past a certain point — the usual shape is a host plus a database. Drop a chip, then read "pairs with" on any row.</p>';
     return;
   }
-  host.innerHTML = '<table><thead><tr><th class="pm-tool-h">Service</th>' +
+  host.innerHTML = '<table><caption class="sr-only">Infrastructure capabilities: each row is a service, each column a capability</caption><thead><tr><th class="pm-tool-h">Service</th>' +
     CAPS.map(function(c){
       return '<th' + (infraState.need[c.id] ? ' class="need"' : '') + '><span class="chd">' + esc(c.label) + '</span></th>';
     }).join('') + '</tr></thead><tbody>' +
@@ -2759,7 +2799,7 @@ function renderInfraFree(){
   if (!host) return;
   var rows = infraRows();
   if (!rows.length){ host.innerHTML = '<p class="pm-empty">No service matches what you picked above.</p>'; return; }
-  host.innerHTML = '<table><thead><tr><th class="pm-tool-h">Service</th>' +
+  host.innerHTML = '<table><caption class="sr-only">Infrastructure free tiers: each row is a service, each column a free allowance</caption><thead><tr><th class="pm-tool-h">Service</th>' +
     ['Card up front', 'What $0 gets you', 'Where it stops'].map(function(h){
       return '<th><span class="chd">' + esc(h) + '</span></th>';
     }).join('') + '</tr></thead><tbody>' +
