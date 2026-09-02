@@ -602,6 +602,10 @@ var PROVENANCE = {
     "layer/c-bundle/copilot": {
       checkedAt: "2026-09-01"
     },
+    "layer/c-bundle/goose": {
+      checkedAt: "2026-09-01",
+      claimNote: "Format support and the skill-namespacing difference come from goose's plugins guide; the Agent Plugins rename is evidenced by open-plugins.com returning a 308 redirect to agent-plugins.org."
+    },
     "portability/copilot": {
       checkedAt: "2026-09-01",
       claimNote: "Instruction and skill paths come from the repository-instructions page; the .claude-plugin manifest and marketplace search order comes from GitHub's Copilot CLI plugin reference."
@@ -1124,7 +1128,8 @@ var LAYERS = [
       "<p><strong>L4 is a distribution wrapper, not a new runtime capability.</strong> Its contents — instructions, skills, MCP configuration, hooks, agents, or commands — can usually exist on their own in the lower layers. A bundle gives that set a name, a source, and often a manifest/version so someone can install, update, or remove it as one unit. The product name is usually <em>plugin</em>, but some call it an extension or package.</p>",
       "<p>Use L4 when a workflow needs to travel intact between projects or people: install one package instead of copying five separate folders and config blocks. For a small personal setup, adding a skill or MCP server directly is usually simpler. A bundle is also <strong>not</strong> a subagent or an automation run — it is the packaging that can carry their definitions.</p>",
       "<p><strong>Important asymmetries:</strong> Claude, Codex, Goose, Grok Build, Cursor, and Copilot expose declarative plugin bundles, though their payloads differ. Gemini calls the same layer an <em>extension</em>; Pi calls it a <em>package</em>. Hermes plugins are executable Python extensions that can also carry skills and data. OpenClaw imports several external bundle formats while keeping native code plugins separate. Osaurus maps imported Claude-plugin contents into native skills, schedules, commands, MCP providers, and shared context.</p>",
-      "<p><strong>This is the layer where reading a rival's format has started:</strong> Grok Build discovers Claude Code's plugins and marketplaces on disk unprompted, and Copilot CLI accepts the same <code>.claude-plugin/</code> manifests once you register the source. Both read the format as written, which is different again from the import-and-map that OpenClaw and Osaurus do. It is the same convergence L2 already went through with SKILL.md, one layer up and several years earlier in its life — no shared standard yet, just one vendor's manifest becoming the one everybody parses.</p>",
+      "<p><strong>This is the layer where reading a rival's format has started:</strong> Grok Build discovers Claude Code's plugins and marketplaces on disk unprompted, Copilot CLI accepts the same <code>.claude-plugin/</code> manifests once you register the source, and Goose reads Gemini's <code>gemini-extension.json</code> out of the neutral <code>.agents/plugins/</code> directory. All three parse the foreign manifest as written, which is different again from the import-and-map that OpenClaw and Osaurus do. What is left to Grok alone is the reach: only it goes into a rival's own directory, while the others meet in a neutral namespace or wait to be pointed at a source.</p>",
+      "<p><strong>A shared standard now exists.</strong> <a class=\"slink\" href=\"https://agent-plugins.org/\" target=\"_blank\" rel=\"noopener noreferrer\">Agent Plugins</a> 1.0.0 defines a vendor-neutral <code>plugin.json</code> carrying Agent Skills and MCP configuration, with a technical steering committee drawn from Amazon, Cursor, Microsoft, OpenAI and Vercel. It was published as <em>Open Plugins</em> and renamed — <code>open-plugins.com</code> now redirects to <code>agent-plugins.org</code> — so docs that still say \"Open Plugins,\" Goose's among them, mean this same format. The asymmetry worth noting: Anthropic is not a participant, though the SKILL.md format inside those plugins is theirs.</p>",
       "<p>Reading the bundle cells: each one lists what a bundle can carry, written in the same order every row so two harnesses can be compared item by item. Manifest filenames and install locations are in the tiles below.</p>"
     ],
     cells: {
@@ -1143,7 +1148,7 @@ var LAYERS = [
       goose: {
         term: "Plugins",
         loc: "skills + hooks",
-        desc: "Installable packages, declared in <code>plugin.json</code>, that bundle reusable skills, hooks, or both. goose supports Open Plugins and Gemini-extension formats and can install or update git-backed plugins from <code>~/.agents/plugins/</code> or <code>.agents/plugins/</code>.",
+        desc: "Installable packages, declared in <code>plugin.json</code>, that bundle reusable skills, hooks, or both. goose supports the Agent Plugins standard — which its docs still call by the former name, Open Plugins — and reads Gemini's <code>gemini-extension.json</code> as written, differing only in that Gemini skills keep their own names while Agent Plugins skills are namespaced. It can install or update git-backed plugins from <code>~/.agents/plugins/</code> or <code>.agents/plugins/</code>.",
         url: "https://goose-docs.ai/docs/guides/context-engineering/plugins"
       },
       hermes: {
