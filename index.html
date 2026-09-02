@@ -885,7 +885,7 @@ var LAYERS = [
       grok: {
         term: "AGENTS.md + CLAUDE.md",
         loc: "~/.grok/ · repo root through cwd · .grok/rules/",
-        desc: "Per directory it reads any of <code>AGENTS.md</code>, <code>Agents.md</code>, <code>AGENT.md</code>, <code>CLAUDE.md</code>, <code>Claude.md</code> and <code>CLAUDE.local.md</code>, plus every <code>*.md</code> in a <code>.grok/rules/</code> directory — with <code>.claude/rules/</code> and <code>.cursor/rules/</code> read for compatibility. Global rules in <code>~/.grok/</code> load first, then every directory from the repo root down to the working directory, deeper files winning on conflict. Unlike Hermes or Zed, nothing is picked as a single winner: all matches concatenate, and <code>.gitignore</code>d files are skipped so a <code>CLAUDE.local.md</code> stays personal.",
+        desc: "Per directory it reads any of <code>AGENTS.md</code>, <code>Agents.md</code>, <code>AGENT.md</code>, <code>CLAUDE.md</code>, <code>Claude.md</code> and <code>CLAUDE.local.md</code>, plus every <code>*.md</code> under <code>.grok/rules/</code>, <code>.claude/rules/</code> or <code>.cursor/rules/</code>. Global <code>~/.grok/</code> rules load first, then each directory from the repo root down to the working directory, deeper files winning. Unlike Hermes or Zed nothing is a single winner — every match concatenates — and <code>.gitignore</code>d files are skipped, so a <code>CLAUDE.local.md</code> stays personal.",
         url: "https://docs.x.ai/build/features/project-rules"
       },
       cursor: {
@@ -1297,7 +1297,7 @@ var LAYERS = [
         term: "Custom agents / subagents",
         loc: ".github/agents/*.agent.md · ~/.copilot/agents/ · copilot --agent",
         note: "same name in both places — the home directory wins",
-        desc: "Custom agents are Markdown profiles with YAML frontmatter, kept in <code>.github/agents/</code> for a repository or <code>~/.copilot/agents/</code> for yourself, and selected with <code>copilot --agent</code> or the <code>/agent</code> command. Copilot CLI can run built-in and custom agents as subagents with separate context windows. It selects built-ins automatically when appropriate, and independent subtasks can run in parallel without cluttering the main context.",
+        desc: "Markdown profiles with YAML frontmatter, kept in <code>.github/agents/</code> per repository or <code>~/.copilot/agents/</code> for yourself, and selected with <code>copilot --agent</code> or <code>/agent</code>. Built-in and custom agents both run as subagents in their own context windows, built-ins chosen automatically, and independent subtasks run in parallel.",
         url: "https://docs.github.com/en/copilot/concepts/agents/copilot-cli/about-custom-agents#running-agents-as-subagents"
       },
       zed: {
