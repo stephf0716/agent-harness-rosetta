@@ -891,7 +891,7 @@ var LAYERS = [
       cursor: {
         term: "Rules",
         loc: ".cursor/rules/*.mdc · AGENTS.md · nested directories",
-        desc: "Cursor has two documented project-instruction formats. Structured Project Rules are <code>.mdc</code> files in <code>.cursor/rules/</code>, applied always, by relevance, by path, or when named manually. For simpler plain-Markdown guidance, use <code>AGENTS.md</code> in the project root or nested directories; nested files combine and the more specific guidance takes precedence.",
+        desc: "Two documented project-instruction formats. Project Rules are <code>.mdc</code> files in <code>.cursor/rules/</code>, applied always, by relevance, by path, or when named manually. For plain Markdown, <code>AGENTS.md</code> in the project root or nested directories; nested files combine, the more specific winning.",
         url: "https://cursor.com/docs/rules"
       },
       opencode: {
@@ -1012,7 +1012,7 @@ var LAYERS = [
         term: "Skills",
         loc: "<project>/.agents/skills/ · ~/.agents/skills/",
         note: "the neutral .agents path — it does not read .claude/skills",
-        desc: "Native SKILL.md with progressive disclosure: name and description sit in the catalog, and the body loads on demand through a built-in <code>skill</code> tool. Project skills require a trusted worktree, and a project-local skill shadows a global one on a name collision. These apply to Zed's own agent — an external ACP agent brings its own skill system instead.",
+        desc: "Native <code>SKILL.md</code> with progressive disclosure: name and description sit in the catalog, the body loads on demand through a built-in <code>skill</code> tool. Project skills need a trusted worktree and shadow same-named global ones. This is Zed's own agent only — an external ACP agent brings its own skill system.",
         url: "https://zed.dev/docs/ai/skills"
       },
       pi: {
@@ -1100,14 +1100,14 @@ var LAYERS = [
       copilot: {
         term: "MCP servers",
         loc: "~/.copilot/mcp-config.json · .mcp.json · .github/mcp.json",
-        desc: "MCP works across major Copilot surfaces — the IDEs, Copilot CLI, the Copilot app, and the cloud agent. The CLI stores servers in <code>~/.copilot/mcp-config.json</code> and also walks up from the working directory reading <code>.mcp.json</code> and <code>.github/mcp.json</code>, which take precedence; the IDEs use <code>.vscode/mcp.json</code> or their own <code>mcp.json</code>. The CLI supports local and remote servers and includes GitHub MCP.",
+        desc: "MCP spans the IDEs, Copilot CLI, the Copilot app, and the cloud agent. The CLI reads <code>~/.copilot/mcp-config.json</code>, then walks up from the working directory for <code>.mcp.json</code> and <code>.github/mcp.json</code>, which take precedence; the IDEs use <code>.vscode/mcp.json</code> or their own. Local and remote servers both work, and GitHub MCP is built in.",
         url: "https://docs.github.com/en/copilot/concepts/context/mcp"
       },
       zed: {
         term: "MCP servers",
         loc: "settings.json context_servers",
         note: "the UI says \"MCP Servers\", the settings key says context_servers",
-        desc: "stdio and remote HTTP transports, with MCP OAuth prompted automatically when no <code>Authorization</code> header is set. Tools and prompts only — resources, sampling and elicitation are unsupported. Servers can ship as Zed extensions, though that route is slated for deprecation in favour of the official MCP registry.",
+        desc: "stdio and remote HTTP, with MCP OAuth prompted automatically when no <code>Authorization</code> header is set. Tools and prompts only — no resources, sampling or elicitation. Servers can ship as Zed extensions, a route slated for deprecation in favour of the official MCP registry.",
         url: "https://zed.dev/docs/ai/mcp"
       },
       pi: {
@@ -1144,7 +1144,7 @@ var LAYERS = [
       goose: {
         term: "Plugins",
         loc: "skills + hooks",
-        desc: "Installable packages, declared in <code>plugin.json</code>, that bundle reusable skills, hooks, or both. goose supports the Agent Plugins standard — which its docs still call by the former name, Open Plugins — and reads Gemini's <code>gemini-extension.json</code> as written, differing only in that Gemini skills keep their own names while Agent Plugins skills are namespaced. It can install or update git-backed plugins from <code>~/.agents/plugins/</code> or <code>.agents/plugins/</code>.",
+        desc: "Installable packages declared in <code>plugin.json</code>, bundling skills, hooks, or both, git-installed and updated under <code>~/.agents/plugins/</code> or <code>.agents/plugins/</code>. It follows the Agent Plugins standard — its docs still say Open Plugins — and reads Gemini's <code>gemini-extension.json</code> as written, differing only in that Agent Plugins skills are namespaced and Gemini's keep their own names.",
         url: "https://goose-docs.ai/docs/guides/context-engineering/plugins"
       },
       hermes: {
@@ -1172,7 +1172,7 @@ var LAYERS = [
       grok: {
         term: "Plugins",
         loc: "skills + agents + hooks + MCP + LSP",
-        desc: "A plugin adds skills, agents, hooks, MCP servers <em>and</em> LSP servers — Claude's payload plus a language server. Loaded from <code>./.grok/plugins/</code>, <code>~/.grok/plugins/</code> and marketplace installs under <code>~/.grok/plugins/marketplaces/</code>, with sources in <code>[[marketplace.sources]]</code> and <code>known_marketplaces.json</code>; <code>grok plugin install</code> and friends manage them. It discovers Claude Code's plugins and marketplaces on disk, unprompted.",
+        desc: "Claude's plugin payload <em>plus</em> a language server. Loaded from <code>./.grok/plugins/</code> and <code>~/.grok/plugins/</code>, with marketplace installs under <code>~/.grok/plugins/marketplaces/</code> and sources in <code>[[marketplace.sources]]</code> or <code>known_marketplaces.json</code>; <code>grok plugin install</code> and friends manage them. It discovers Claude Code's plugins and marketplaces on disk, unprompted.",
         url: "https://docs.x.ai/build/features/skills-plugins-marketplaces#plugins"
       },
       cursor: {
@@ -1185,7 +1185,7 @@ var LAYERS = [
         term: "Plugins",
         loc: "hooks (JS/TS code)",
         note: "⚠ executable JS/TS extensions, not declarative agent bundles", warn: true,
-        desc: "OpenCode plugins are JavaScript or TypeScript modules that hook runtime events and can add behavior or integrations. They load from <code>.opencode/plugins/</code> or <code>~/.config/opencode/plugins/</code>, or install automatically from npm packages declared in <code>opencode.json</code>. Unlike the other L4 entries, they are executable extension packages rather than bundles of skills, agents, and MCP configuration.",
+        desc: "JavaScript or TypeScript modules that hook runtime events to add behavior or integrations. They load from <code>.opencode/plugins/</code> or <code>~/.config/opencode/plugins/</code>, or install automatically from npm packages declared in <code>opencode.json</code> — executable extension packages rather than bundles of skills, agents, and MCP configuration.",
         url: "https://opencode.ai/docs/plugins"
       },
       openclaw: {
@@ -1199,7 +1199,7 @@ var LAYERS = [
       copilot: {
         term: "Plugins",
         loc: "skills + agents + hooks + MCP + LSP",
-        desc: "Installable bundles for Copilot CLI and the cloud agent. A plugin, declared in <code>plugin.json</code>, can package custom agents, skills, hooks, MCP and LSP server configuration, and install from a marketplace, repository, or local path. Its manifest search order also covers the <code>.claude-plugin/</code> plugin and marketplace manifests, so most Claude Code plugins install unmodified once you register the source.",
+        desc: "Installable bundles for Copilot CLI and the cloud agent, declared in <code>plugin.json</code> and installed from a marketplace, repository, or local path. Its manifest search order also covers the <code>.claude-plugin/</code> plugin and marketplace manifests, so most Claude Code plugins install unmodified once you register the source.",
         url: "https://docs.github.com/en/copilot/reference/copilot-cli-reference/cli-plugin-reference"
       },
       zed: {
