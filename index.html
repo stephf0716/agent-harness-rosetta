@@ -575,9 +575,13 @@ var PROVENANCE = {
     "layer/c-instr/cursor": {
       checkedAt: "2026-08-26"
     },
+    "portability/claude": {
+      checkedAt: "2026-09-01",
+      claimNote: "Instruction and skill paths come from the memory docs; the per-session skill resolution and the account-synced Customize configuration come from Claude Code's desktop application page."
+    },
     "portability/cursor": {
-      checkedAt: "2026-08-26",
-      claimNote: "Cursor's public Rules docs cover the current project-rule and AGENTS.md behavior; compatibility behavior for older and foreign instruction files remains only partially documented."
+      checkedAt: "2026-09-01",
+      claimNote: "Cursor's public Rules docs cover the current project-rule and AGENTS.md behavior; compatibility behavior for older and foreign instruction files remains only partially documented. The Customize page and its user/workspace/team scope filter come from Cursor's customize docs; where team-scoped config is stored is not documented anywhere public."
     },
     "portability/pi": {
       checkedAt: "2026-08-26",
@@ -597,6 +601,10 @@ var PROVENANCE = {
     },
     "layer/c-bundle/copilot": {
       checkedAt: "2026-09-01"
+    },
+    "layer/c-bundle/goose": {
+      checkedAt: "2026-09-01",
+      claimNote: "Format support and the skill-namespacing difference come from goose's plugins guide; the Agent Plugins rename is evidenced by open-plugins.com returning a 308 redirect to agent-plugins.org."
     },
     "portability/copilot": {
       checkedAt: "2026-09-01",
@@ -1117,9 +1125,7 @@ var LAYERS = [
     name: "Bundles", question: "shareable packages",
     oneliner: "One installable package that distributes a complete agent setup",
     body: [
-      "<p><strong>L4 is a distribution wrapper, not a new runtime capability.</strong> Its contents — instructions, skills, MCP configuration, hooks, agents, or commands — can usually exist on their own in the lower layers. A bundle gives that set a name, a source, and often a manifest/version so someone can install, update, or remove it as one unit. The product name is usually <em>plugin</em>, but some call it an extension or package.</p>",
-      "<p>Use L4 when a workflow needs to travel intact between projects or people: install one package instead of copying five separate folders and config blocks. For a small personal setup, adding a skill or MCP server directly is usually simpler. A bundle is also <strong>not</strong> a subagent or an automation run — it is the packaging that can carry their definitions.</p>",
-      "<p><strong>Important asymmetries:</strong> Claude, Codex, Goose, Grok Build, Cursor, and Copilot expose declarative plugin bundles, though their payloads differ. Gemini calls the same layer an <em>extension</em>; Pi calls it a <em>package</em>. Hermes plugins are executable Python extensions that can also carry skills and data. OpenClaw imports several external bundle formats while keeping native code plugins separate. Osaurus maps imported Claude-plugin contents into native skills, schedules, commands, MCP providers, and shared context.</p>",
+      "<p><strong>L4 is a distribution wrapper, not a new runtime capability.</strong> Its contents — skills, MCP configuration, hooks, agents, commands — can each exist on their own one layer down; what a bundle adds is a name, a source, and a version, so a whole setup installs and updates as one unit. Use it when a workflow has to travel intact between projects or people, and skip it for a personal setup, where adding a skill or MCP server directly is simpler. The product name is usually <em>plugin</em> — Gemini says <em>extension</em>, Pi says <em>package</em> — and Hermes's and OpenCode's are executable code rather than declarative bundles. There is still no shared format: <a class=\"slink\" href=\"https://agent-plugins.org/\" target=\"_blank\" rel=\"noopener noreferrer\">Agent Plugins</a> 1.0.0 is the candidate standard but only three rows here name it, so bundles do not port, and several harnesses read each other's manifests directly instead.</p>",
       "<p>Reading the bundle cells: each one lists what a bundle can carry, written in the same order every row so two harnesses can be compared item by item. Manifest filenames and install locations are in the tiles below.</p>"
     ],
     cells: {
@@ -1138,7 +1144,7 @@ var LAYERS = [
       goose: {
         term: "Plugins",
         loc: "skills + hooks",
-        desc: "Installable packages, declared in <code>plugin.json</code>, that bundle reusable skills, hooks, or both. goose supports Open Plugins and Gemini-extension formats and can install or update git-backed plugins from <code>~/.agents/plugins/</code> or <code>.agents/plugins/</code>.",
+        desc: "Installable packages, declared in <code>plugin.json</code>, that bundle reusable skills, hooks, or both. goose supports the Agent Plugins standard — which its docs still call by the former name, Open Plugins — and reads Gemini's <code>gemini-extension.json</code> as written, differing only in that Gemini skills keep their own names while Agent Plugins skills are namespaced. It can install or update git-backed plugins from <code>~/.agents/plugins/</code> or <code>.agents/plugins/</code>.",
         url: "https://goose-docs.ai/docs/guides/context-engineering/plugins"
       },
       hermes: {
@@ -1335,14 +1341,14 @@ var PORTABILITY = [
   {
     id: "claude",
     cells: { agents: { m: "no", loc: "CLAUDE.md instead" },
-             skills: { m: "own", loc: ".claude/skills/ · ~/.claude/skills/" },
+             skills: { m: "own", loc: ".claude/skills/ · ~/.claude/skills/ · claude.ai account (Cowork, cloud)" },
              mcp:    { m: "own", loc: ".mcp.json" } },
     instr: ["CLAUDE.md", "CLAUDE.local.md", "~/.claude/CLAUDE.md", ".claude/rules/**/*.md"],
-    skills: [".claude/skills/<name>/SKILL.md", "~/.claude/skills/<name>/SKILL.md"],
+    skills: [".claude/skills/<name>/SKILL.md", "~/.claude/skills/<name>/SKILL.md", "claude.ai account (Cowork and cloud sessions)"],
     foreign: [],
     mcp: ".mcp.json (project) · ~/.claude.json (user)",
-    stranded: "hooks, subagents, output styles, plugin manifests",
-    note: "The holdout. It originated the SKILL.md format and four other harnesses now read .claude/skills, but Claude Code reads nobody else's directory — sharing with it is strictly one-directional. Its /init imports rival rule files once at migration time, which is not the same as reading them at runtime.",
+    stranded: "hooks, subagents, output styles, plugin manifests, the account-synced Customize configuration",
+    note: "The holdout. It originated the SKILL.md format and four other harnesses now read .claude/skills, but Claude Code reads nobody else's directory — sharing with it is strictly one-directional. Its /init imports rival rule files once at migration time, which is not the same as reading them at runtime. Where a skill lives now depends on the session: local sessions read ~/.claude/skills/, an SSH session reads that path on the remote host, and Cowork and cloud sessions load whatever is enabled on your claude.ai account instead. The desktop Customize sidebar manages connectors, skills and plugins from that account configuration rather than from ~/.claude — config held there is outside the reach of a dotfile repo, and of every harness on this page that reads .claude/ off disk.",
     url: "https://code.claude.com/docs/en/memory",
     status: "verified"
   },
@@ -1439,8 +1445,8 @@ var PORTABILITY = [
     skills: [".cursor/skills/", ".claude/skills/", ".codex/skills/", ".agents/skills/"],
     foreign: [".claude/skills/", ".codex/skills/", ".agents/skills/"],
     mcp: ".cursor/mcp.json · ~/.cursor/mcp.json",
-    stranded: "Rules .mdc frontmatter, Team Rules, hooks.json",
-    note: "The most omnivorous reader: Claude's, Codex's and the shared .agents directories all load. Enough so that users have asked for a way to switch it off. Cursor is the one vendor with no public docs repo, so this row rests on secondary sources that agree rather than on primary source.",
+    stranded: "Rules .mdc frontmatter, Team Rules, hooks.json, team- and workspace-scoped Customize entries",
+    note: "The most omnivorous reader: Claude's, Codex's and the shared .agents directories all load. Enough so that users have asked for a way to switch it off. Its Customize page manages plugins, skills, MCPs, subagents, rules, commands and hooks in one place, filterable by whether an entry is installed for you, your workspace, or your team — so the paths in this row describe personal scope only, and a teammate's working setup may include entries that never appear in the repo. Where team-scoped config is stored is not documented. Cursor is the one vendor with no public docs repo, so this row rests on secondary sources that agree rather than on primary source.",
     url: "https://cursor.com/docs/context/rules",
     status: "partial"
   },
