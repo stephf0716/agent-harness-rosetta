@@ -595,6 +595,20 @@ var PROVENANCE = {
       checkedAt: "2026-08-26",
       claimNote: "Subagent behavior comes from the CLI custom-agents concept page; the profile paths come from GitHub's create-custom-agents-for-CLI page and the --agent flag from the CLI command reference."
     },
+    "layer/c-bundle/copilot": {
+      checkedAt: "2026-09-01"
+    },
+    "portability/copilot": {
+      checkedAt: "2026-09-01",
+      claimNote: "Instruction and skill paths come from the repository-instructions page; the .claude-plugin manifest and marketplace search order comes from GitHub's Copilot CLI plugin reference."
+    },
+    "layer/c-bundle/grok": {
+      checkedAt: "2026-09-01"
+    },
+    "portability/grok": {
+      checkedAt: "2026-09-01",
+      claimNote: "Instruction and rule paths come from the project-rules page; the Claude plugin and marketplace discovery behavior comes from xAI's skills-plugins-marketplaces page."
+    },
     "layer/c-agent/openclaw": {
       checkedAt: "2026-08-26"
     },
@@ -1152,7 +1166,7 @@ var LAYERS = [
       grok: {
         term: "Plugins",
         loc: "skills + agents + hooks + MCP + LSP",
-        desc: "A plugin adds skills, agents, hooks, MCP servers <em>and</em> LSP servers — Claude's payload plus a language server. Loaded from <code>./.grok/plugins/</code>, <code>~/.grok/plugins/</code> and marketplace installs under <code>~/.grok/plugins/marketplaces/</code>, with sources in <code>[[marketplace.sources]]</code> and <code>known_marketplaces.json</code>; <code>grok plugin install</code> and friends manage them. The unusual part is at the other end: it reads Claude Code's plugins and marketplaces directly, which no other harness here does at the bundle layer.",
+        desc: "A plugin adds skills, agents, hooks, MCP servers <em>and</em> LSP servers — Claude's payload plus a language server. Loaded from <code>./.grok/plugins/</code>, <code>~/.grok/plugins/</code> and marketplace installs under <code>~/.grok/plugins/marketplaces/</code>, with sources in <code>[[marketplace.sources]]</code> and <code>known_marketplaces.json</code>; <code>grok plugin install</code> and friends manage them. It discovers Claude Code's plugins and marketplaces on disk, unprompted.",
         url: "https://docs.x.ai/build/features/skills-plugins-marketplaces#plugins"
       },
       cursor: {
@@ -1179,9 +1193,8 @@ var LAYERS = [
       copilot: {
         term: "Plugins",
         loc: "skills + agents + hooks + MCP + LSP",
-        note: "not the retired Copilot Extensions GitHub Apps",
-        desc: "Installable bundles for Copilot CLI and the cloud agent. A plugin, declared in <code>plugin.json</code>, can package custom agents, skills, hooks, MCP and LSP server configuration, and install from a marketplace, repository, or local path.",
-        url: "https://docs.github.com/en/copilot/concepts/agents/about-plugins"
+        desc: "Installable bundles for Copilot CLI and the cloud agent. A plugin, declared in <code>plugin.json</code>, can package custom agents, skills, hooks, MCP and LSP server configuration, and install from a marketplace, repository, or local path. Its manifest search order also covers the <code>.claude-plugin/</code> plugin and marketplace manifests, so most Claude Code plugins install unmodified once you register the source.",
+        url: "https://docs.github.com/en/copilot/reference/copilot-cli-reference/cli-plugin-reference"
       },
       zed: {
         term: "Extensions",
@@ -1413,7 +1426,7 @@ var PORTABILITY = [
     foreign: ["CLAUDE.md", "Claude.md", "CLAUDE.local.md", ".claude/rules/", ".cursor/rules/", ".claude/skills/", "~/.agents/skills/", "~/.claude.json", ".cursor/mcp.json", ".mcp.json", "Claude Code plugins + marketplaces"],
     mcp: "~/.grok/config.toml ([mcp_servers.<name>])",
     stranded: "personas, workflows, LSP servers in plugins, config.toml shape, sandbox profiles",
-    note: "The most omnivorous reader here, and the only one that reaches a rival's bundle layer: Claude Code's plugins and marketplaces load as they are, alongside its skills, agents, hooks and instruction files. All of it is runtime discovery with no import step — the distinction that matters in this column. MCP is where it stands alone: every other row writes only its own config, so this is the one \"reads others'\" cell in that column. The asymmetry is the flip side — nothing on this page reads .grok/.",
+    note: "The most omnivorous reader here: Claude Code's plugins and marketplaces load as they are, alongside its skills, agents, hooks and instruction files. All of it is runtime discovery with no import step — the distinction that matters in this column. Grok picks them up unprompted. MCP is where it stands alone: every other row writes only its own config, so this is the one \"reads others'\" cell in that column. The asymmetry is the flip side — nothing on this page reads .grok/.",
     url: "https://docs.x.ai/build/features/project-rules",
     status: "verified"
   },
@@ -1466,10 +1479,10 @@ var PORTABILITY = [
              mcp:    { m: "own", loc: ".vscode/mcp.json" } },
     instr: [".github/copilot-instructions.md", ".github/instructions/**/*.instructions.md", "AGENTS.md", "CLAUDE.md"],
     skills: [".github/skills", ".claude/skills", ".agents/skills", "~/.copilot/skills", "~/.agents/skills"],
-    foreign: [".claude/skills", ".agents/skills", "~/.agents/skills"],
+    foreign: [".claude/skills", ".agents/skills", "~/.agents/skills", ".claude-plugin/plugin.json", ".claude-plugin/marketplace.json"],
     mcp: ".vscode/mcp.json (VS Code) · repo settings (cloud agent)",
     stranded: "copilot-setup-steps.yml, agent firewall, org instruction settings",
-    note: "Five skill roots across three vendors' namespaces, and it reads AGENTS.md, CLAUDE.md and GEMINI.md as well. One caveat that is easy to miss: for code review the directory name itself matters, so a skill folder needs a review-ish name to be picked up.",
+    note: "Five skill roots across three vendors' namespaces, and it reads AGENTS.md, CLAUDE.md and GEMINI.md as well. Claude plugin and marketplace manifests sit in its own search order, read as written with no conversion, though the source must be registered before anything loads. One caveat that is easy to miss: for code review the directory name itself matters, so a skill folder needs a review-ish name to be picked up.",
     url: "https://docs.github.com/en/copilot/how-tos/configure-custom-instructions/add-repository-instructions",
     status: "verified"
   },
