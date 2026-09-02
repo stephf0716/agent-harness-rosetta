@@ -885,7 +885,7 @@ var LAYERS = [
       grok: {
         term: "AGENTS.md + CLAUDE.md",
         loc: "~/.grok/ · repo root through cwd · .grok/rules/",
-        desc: "Per directory it reads any of <code>AGENTS.md</code>, <code>Agents.md</code>, <code>AGENT.md</code>, <code>CLAUDE.md</code>, <code>Claude.md</code> and <code>CLAUDE.local.md</code>, plus every <code>*.md</code> under <code>.grok/rules/</code>, <code>.claude/rules/</code> or <code>.cursor/rules/</code>. Global <code>~/.grok/</code> rules load first, then each directory from the repo root down to the working directory, deeper files winning. Unlike Hermes or Zed nothing is a single winner — every match concatenates — and <code>.gitignore</code>d files are skipped, so a <code>CLAUDE.local.md</code> stays personal.",
+        desc: "Reads any spelling of <code>AGENTS.md</code> or <code>CLAUDE.md</code> per directory — <code>AGENT.md</code>, title-case, and <code>CLAUDE.local.md</code> included — plus every <code>*.md</code> under <code>.grok/rules/</code>, <code>.claude/rules/</code> or <code>.cursor/rules/</code>. Global rules load first, then repo root down to the working directory, deeper files winning. Nothing is a single winner as in Hermes or Zed: every match concatenates, and <code>.gitignore</code>d files are skipped, so a <code>CLAUDE.local.md</code> stays personal.",
         url: "https://docs.x.ai/build/features/project-rules"
       },
       cursor: {
