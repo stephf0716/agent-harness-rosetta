@@ -34,6 +34,21 @@ assert.ok(isIsoDate(provenance.defaultCheckedAt), 'defaultCheckedAt must be an I
 const resolvedClaims = resolveCorpusProvenance(data);
 assert.ok(resolvedClaims.length > 0, 'expected source-backed claims to validate');
 
+// Losing a source must fail validation, not silently remove the claim from it.
+for (const claim of resolvedClaims) {
+  const field = claim.scope === 'infra-free' ? 'freeUrl' : 'url';
+  const originalUrl = claim.entry[field];
+  try {
+    delete claim.entry[field];
+    assert.throws(
+      () => resolveCorpusProvenance(data),
+      { message: `${claim.id} is missing a source URL` }
+    );
+  } finally {
+    claim.entry[field] = originalUrl;
+  }
+}
+
 const knownClaimIds = new Set(resolvedClaims.map(claim => claim.id));
 for (const claimId of Object.keys(provenance.claims || {})) {
   assert.ok(knownClaimIds.has(claimId), `${claimId} is not a known source-backed claim`);

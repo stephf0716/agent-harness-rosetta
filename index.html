@@ -248,7 +248,7 @@
   /* permissions: the per-action verdict is the only badge on that tab, so it is
      the only vocabulary there that spends colour. "No such tool" is neutral
      rather than red — a harness that cannot run shell at all is not a risk. */
-  .m-ask{--mc:var(--m-oauth)} .m-free{--mc:var(--m-restr)} .m-notool{--mc:var(--m-native)}
+  .m-ask,.m-conditional{--mc:var(--m-oauth)} .m-free{--mc:var(--m-restr)} .m-notool{--mc:var(--m-native)}
   .pm-shell td .loc{margin-top:5px}
   /* infrastructure: capability cells, their qualifiers, and the picked columns */
   .pm-shell td .cap{display:block;font-size:12.5px;color:var(--text)}
@@ -328,9 +328,9 @@
 <section class="trap r-instr">
   <div class="rule-h hue"><h2>Terminology traps</h2></div>
   <ul>
-    <li><strong>"Plugin" is the most overloaded word in the ecosystem.</strong> Claude, Codex, Goose, Grok Build, Cursor, and Copilot use it for installable bundles. Hermes and OpenCode use it for executable code extensions. OpenClaw supports both native code plugins and imported content bundles, while Osaurus imports Claude plugins into its own feature set. Check the manifest and payload, not just the name.</li>
+    <li><strong>"Plugin" has several meanings across these tools.</strong> Claude, Codex, Goose, Grok Build, Cursor, and Copilot use it for installable bundles. Hermes and OpenCode use it for executable code extensions. OpenClaw supports both native code plugins and imported content bundles, while Osaurus imports Claude plugins into its own feature set. Check the manifest and payload, not just the name.</li>
     <li><strong>"Extension" flips meaning too.</strong> In Goose, an extension is an MCP server (tool access). In Gemini CLI, an extension is a full agent bundle. In Zed it is an <em>editor</em> bundle that can carry an MCP server but has no documented skill or instruction payload. Do not confuse current Copilot <em>plugins</em> with the retired Copilot Extensions GitHub Apps.</li>
-    <li><strong>"Skills" is the safest word.</strong> Every harness here uses the same Agent Skills / SKILL.md core format. The wrinkles are discovery paths, precedence, trust, and distribution: several tools read Claude-compatible and vendor-neutral <code>.agents/skills</code> directories alongside their own.</li>
+    <li><strong>"Skills" share a core format.</strong> Every harness here uses the same Agent Skills / SKILL.md core format. The wrinkles are discovery paths, precedence, trust, and distribution: several tools read Claude-compatible and vendor-neutral <code>.agents/skills</code> directories alongside their own.</li>
     <li><strong>"Connector" is mostly Claude-speak</strong> for a packaged remote MCP server — though the word shows up generically elsewhere to mean any MCP integration.</li>
   </ul>
 </section>
@@ -428,7 +428,7 @@
 
 <div class="pm-detail" id="permDetail"></div>
 
-<p class="pm-foot">defaults change between releases and are the most consequential cell here — confirm against your installed version, not this table</p>
+<p class="pm-foot">defaults affect what can run without approval and change between releases — confirm against your installed version, not this table</p>
 
 </main>
 
@@ -472,7 +472,7 @@
 
 <p class="pm-foot">a free tier is not the same shape everywhere: some are quotas that fail closed, some are credit that runs down, and one is a trial with a clock on it — the third column is where each one ends</p>
 
-<p class="pm-foot">tap any row above for its MCP server, riskiest operations, CLI and the rest of the scoping detail — reach is full control nearly everywhere, so a read-only mode or a narrowed token is the only thing actually limiting an agent</p>
+<p class="pm-foot">tap any row above for its MCP server, riskiest operations, CLI and the rest of the scoping detail — reach is full control nearly everywhere, so check read-only modes, token scope and approval settings</p>
 
 <div class="pm-detail" id="infraDetail"></div>
 
@@ -629,7 +629,8 @@ var PROVENANCE = {
       claimNote: "The public docs do not fully spell out the headless fallback noted in this row, so the claim remains partial."
     },
     "permissions/cursor": {
-      claimNote: "Cursor's public run-mode docs cover the high-level modes but not every qualifier in this row, so the claim remains partial."
+      checkedAt: "2026-09-04",
+      claimNote: "Auto-review shell behavior and macOS/Linux sandbox support were checked against Cursor's Run Modes docs. Other qualifiers, including the headless behavior, were not re-verified in this pass, so the row remains partial."
     },
     "permissions/goose": {
       claimNote: "Goose documents the permission surface unevenly across pages; keep this row partial until the remaining qualifiers are primary-sourced."
@@ -761,7 +762,7 @@ var TOOLS = [
   {
     id: "hermes", name: "Hermes Agent", kind: "Desktop + CLI",
     support: { chatgpt: "oauth", gemini: "apikey", grok: "oauth", claude_sub: "oauth", copilot: "oauth", openrouter: "apikey" },
-    note: "The most open-handed tool on this shelf — 40 first-class providers plus custom endpoints. Codex, Copilot, MiniMax, SuperGrok, and Nous Portal sign-in (device-code works over SSH); other keys directly; local Ollama/vLLM; Bedrock/Azure too. The Claude path reuses Claude Code credentials but now requires Claude Max plus purchased extra-usage credits — it bills per token instead of drawing on your plan allowance, and Pro can't use it at all.",
+    note: "Supports 40 first-class providers plus custom endpoints. Codex, Copilot, MiniMax, SuperGrok, and Nous Portal sign-in (device-code works over SSH); other keys directly; local Ollama/vLLM; Bedrock/Azure too. The Claude path reuses Claude Code credentials but now requires Claude Max plus purchased extra-usage credits — it bills per token instead of drawing on your plan allowance, and Pro can't use it at all.",
     url: "https://hermes-agent.nousresearch.com/docs/integrations/providers"
   },
   {
@@ -1029,7 +1030,7 @@ var LAYERS = [
     name: "Tool access", question: "external systems",
     oneliner: "Connections to external systems — all MCP underneath",
     body: [
-      "<p>This is where the naming confusion is worst, because several harnesses give MCP servers a friendlier product name. An <strong>MCP server</strong> is a process (local or remote) that publishes callable tools — read email, query a database, create a Jira ticket — over a standard protocol. Unlike skills, these <em>do</em> reach external systems, use real credentials (usually OAuth acting as you), and consume meaningful context per connected server. Install only what you use.</p>",
+      "<p>Several harnesses give MCP servers a different product name. An <strong>MCP server</strong> is a process (local or remote) that publishes callable tools — read email, query a database, create a Jira ticket — over a standard protocol. Unlike skills, these <em>do</em> reach external systems, use real credentials (usually OAuth acting as you), and consume meaningful context per connected server. Install only what you use.</p>",
       "<p>Reading the tool-access cells: each one names where a server gets declared — a config file, or the command that manages them. Three are exceptions worth knowing: Goose has no separate MCP config because every extension already is a server, Pi has no client in core at all, and Osaurus adds servers through its Tools Registry rather than a file.</p>"
     ],
     cells: {
@@ -1348,7 +1349,7 @@ var PORTABILITY = [
     foreign: [],
     mcp: ".mcp.json (project) · ~/.claude.json (user)",
     stranded: "hooks, subagents, output styles, plugin manifests, the account-synced Customize configuration",
-    note: "The holdout. It originated the SKILL.md format and four other harnesses now read .claude/skills, but Claude Code reads nobody else's directory — sharing with it is strictly one-directional. Its /init imports rival rule files once at migration time, which is not the same as reading them at runtime. Where a skill lives now depends on the session: local sessions read ~/.claude/skills/, an SSH session reads that path on the remote host, and Cowork and cloud sessions load whatever is enabled on your claude.ai account instead. The desktop Customize sidebar manages connectors, skills and plugins from that account configuration rather than from ~/.claude — config held there is outside the reach of a dotfile repo, and of every harness on this page that reads .claude/ off disk.",
+    note: "It originated the SKILL.md format and four other harnesses now read .claude/skills, but Claude Code reads nobody else's directory — sharing with it is strictly one-directional. Its /init imports rival rule files once at migration time, which is not the same as reading them at runtime. Where a skill lives now depends on the session: local sessions read ~/.claude/skills/, an SSH session reads that path on the remote host, and Cowork and cloud sessions load whatever is enabled on your claude.ai account instead. The desktop Customize sidebar manages connectors, skills and plugins from that account configuration rather than from ~/.claude — config held there is outside the reach of a dotfile repo, and of every harness on this page that reads .claude/ off disk.",
     url: "https://code.claude.com/docs/en/memory",
     status: "verified"
   },
@@ -1432,7 +1433,7 @@ var PORTABILITY = [
     foreign: ["CLAUDE.md", "Claude.md", "CLAUDE.local.md", ".claude/rules/", ".cursor/rules/", ".claude/skills/", "~/.agents/skills/", "~/.claude.json", ".cursor/mcp.json", ".mcp.json", "Claude Code plugins + marketplaces"],
     mcp: "~/.grok/config.toml ([mcp_servers.<name>])",
     stranded: "personas, workflows, LSP servers in plugins, config.toml shape, sandbox profiles",
-    note: "The most omnivorous reader here: Claude Code's plugins and marketplaces load as they are, alongside its skills, agents, hooks and instruction files. All of it is runtime discovery with no import step — the distinction that matters in this column. Grok picks them up unprompted. MCP is where it stands alone: every other row writes only its own config, so this is the one \"reads others'\" cell in that column. The asymmetry is the flip side — nothing on this page reads .grok/.",
+    note: "Claude Code's plugins and marketplaces load as they are, alongside its skills, agents, hooks and instruction files. All of it is runtime discovery with no import step — the distinction that matters in this column. Grok picks them up unprompted. MCP configuration can also be discovered from other harnesses. The asymmetry is the flip side — nothing on this page reads .grok/.",
     url: "https://docs.x.ai/build/features/project-rules",
     status: "verified"
   },
@@ -1446,7 +1447,7 @@ var PORTABILITY = [
     foreign: [".claude/skills/", ".codex/skills/", ".agents/skills/"],
     mcp: ".cursor/mcp.json · ~/.cursor/mcp.json",
     stranded: "Rules .mdc frontmatter, Team Rules, hooks.json, team- and workspace-scoped Customize entries",
-    note: "The most omnivorous reader: Claude's, Codex's and the shared .agents directories all load. Enough so that users have asked for a way to switch it off. Its Customize page manages plugins, skills, MCPs, subagents, rules, commands and hooks in one place, filterable by whether an entry is installed for you, your workspace, or your team — so the paths in this row describe personal scope only, and a teammate's working setup may include entries that never appear in the repo. Where team-scoped config is stored is not documented. Cursor is the one vendor with no public docs repo, so this row rests on secondary sources that agree rather than on primary source.",
+    note: "Claude's, Codex's and the shared .agents directories all load. Its Customize page manages plugins, skills, MCPs, subagents, rules, commands and hooks in one place, filterable by whether an entry is installed for you, your workspace, or your team — so the paths in this row describe personal scope only, and a teammate's working setup may include entries that never appear in the repo. Where team-scoped config is stored is not documented. Some compatibility details in this row rely on secondary sources; see the partial evidence status.",
     url: "https://cursor.com/docs/context/rules",
     status: "partial"
   },
@@ -1474,7 +1475,7 @@ var PORTABILITY = [
     foreign: ["<workspace>/.agents/skills", "~/.agents/skills"],
     mcp: "~/.openclaw/openclaw.json (mcp.servers)",
     stranded: "gateway and channels, SOUL/IDENTITY bootstrap files, ClawHub",
-    note: "Takes the shared .agents path but is the only project whose docs name a rival directory in order to reject it: Codex's $CODEX_HOME/skills is explicitly not an OpenClaw skill root.",
+    note: "Takes the shared .agents path; Codex's $CODEX_HOME/skills is explicitly not an OpenClaw skill root.",
     url: "https://docs.openclaw.ai/concepts/agent-workspace",
     status: "verified"
   },
@@ -1502,7 +1503,7 @@ var PORTABILITY = [
     foreign: [".cursorrules", ".windsurfrules", ".clinerules", ".github/copilot-instructions.md", "AGENT.md", "CLAUDE.md", "GEMINI.md", ".agents/skills", "~/.agents/skills"],
     mcp: "settings.json (context_servers) · per-server objects match mcpServers",
     stranded: "extension capability grants, create_thread worktree spawning, profiles as an axis separate from permissions",
-    note: "The widest reader here — nine instruction filenames, read live every session rather than imported once. But only the first match loads, and the rival names sort ahead of Zed's own AGENTS.md, so a repo carrying .cursorrules gets that and its AGENTS.md is silently ignored. Skills arrive via the vendor-neutral .agents/skills; it does not read .claude/skills. An MCP config travels by renaming the wrapper key — the per-server objects are wire-identical to mcpServers.",
+    note: "Recognizes nine instruction filenames, read live every session rather than imported once. But only the first match loads, and the rival names sort ahead of Zed's own AGENTS.md, so a repo carrying .cursorrules gets that and its AGENTS.md is silently ignored. Skills arrive via the vendor-neutral .agents/skills; it does not read .claude/skills. An MCP config travels by renaming the wrapper key — the per-server objects are wire-identical to mcpServers.",
     url: "https://zed.dev/docs/ai/instructions",
     status: "verified"
   },
@@ -1516,7 +1517,7 @@ var PORTABILITY = [
     foreign: ["CLAUDE.md", ".agents/skills", "~/.agents/skills", "~/.claude/skills (added in settings)", "~/.codex/skills (added in settings)"],
     mcp: "nothing to port — MCP is not in core, so a server arrives as an extension instead",
     stranded: "SYSTEM.md and APPEND_SYSTEM.md prompt surgery, trust.json decisions, extensions as the entire tool layer",
-    note: "Takes instructions and skills from almost anywhere: AGENTS.md and CLAUDE.md are interchangeable at every level, walking up from the working directory, and the skills setting can point at ~/.claude/skills or ~/.codex/skills alongside the vendor-neutral .agents/skills. MCP is the gap — core Pi has no client, so an mcpServers block has nowhere to land until an extension provides one. Project-local settings, resources and skills load only after the folder is trusted.",
+    note: "Supports several instruction and skill locations: AGENTS.md and CLAUDE.md are interchangeable at every level, walking up from the working directory, and the skills setting can point at ~/.claude/skills or ~/.codex/skills alongside the vendor-neutral .agents/skills. MCP is the gap — core Pi has no client, so an mcpServers block has nowhere to land until an extension provides one. Project-local settings, resources and skills load only after the folder is trusted.",
     url: "https://pi.dev/docs/latest/usage#context-files",
     status: "verified"
   }
@@ -1540,12 +1541,13 @@ var AUTO = {
 
 // The two actions that actually change something, split out of `auto` because
 // the summary hides real differences — Cursor, Hermes and Osaurus all write to
-// your disk unprompted but stop at the terminal, which one word can't say. Both
+// your disk unprompted but apply different shell approval rules. Both
 // are our reading of the researched default, not a vendor label. `notool` means
 // the harness ships no such tool at all, a different answer from "does it
-// freely".
+// freely". `conditional` means a call may run without a human prompt or require approval.
 var ACT = {
   ask:    { label: "Asks first" },
+  conditional: { label: "May ask" },
   free:   { label: "No prompt" },
   notool: { label: "No such tool" }
 };
@@ -1610,7 +1612,7 @@ var PERMISSIONS = [
     sandbox: "-s for Docker, Podman or macOS sandbox-exec",
     config: "~/.gemini/settings.json · ~/.gemini/policies/*.toml",
     headless: "gemini -p turns an ask into a deny — needs yolo or allow rules",
-    note: "The most configurable here: a TOML policy engine sets allow, deny or ask per tool name and command prefix with priorities, and a deny also hides the tool from the model entirely. Note that yolo cannot be set as the default from settings, only per invocation.",
+    note: "A TOML policy engine sets allow, deny or ask per tool name and command prefix with priorities, and a deny also hides the tool from the model entirely. Note that yolo cannot be set as the default from settings, only per invocation.",
     url: "https://github.com/google-gemini/gemini-cli/blob/main/docs/reference/policy-engine.md",
     status: "verified"
   },
@@ -1622,19 +1624,19 @@ var PERMISSIONS = [
     sandbox: "Landlock on Linux, Seatbelt on macOS · files and network · --sandbox workspace",
     config: "~/.grok/config.toml [ui] permission_mode · --allow / --deny · GROK_SANDBOX",
     headless: "grok -p · --always-approve (alias --yolo) auto-approves · enterprise dontAsk modes can be locked",
-    note: "Ask covers both actions, which is the stricter half of this table. Auto puts a classifier in front of the safe calls and Always-approve skips prompts, but deny rules and PreToolUse hooks survive both — deny always wins over allow. The sandbox is a separate axis and stays off until you ask for it. One quiet strength: a project .grok/config.toml can carry only MCP servers, plugins and permission rules, so a cloned repo can't widen the rest of your config. What the docs don't say is what an unapproved call does under -p — it names no default, so treat headless runs as needing an explicit --allow or --always-approve.",
+    note: "Ask covers both actions. Auto puts a classifier in front of the safe calls and Always-approve skips prompts, but deny rules and PreToolUse hooks survive both — deny always wins over allow. The sandbox is a separate axis and stays off until you ask for it. A project .grok/config.toml can carry only MCP servers, plugins and permission rules, so a cloned repo can't widen the rest of your config. What the docs don't say is what an unapproved call does under -p — it names no default, so treat headless runs as needing an explicit --allow or --always-approve.",
     url: "https://docs.x.ai/build/features/permissions",
     status: "partial"
   },
   {
     id: "cursor", auto: "mixed",
-    edit: "free", editq: "workspace files", shell: "ask", shellq: "terminal commands", sbx: "on",
-    dflt: "Reads and edits workspace files freely; terminal commands ask",
+    edit: "free", editq: "workspace files", shell: "conditional", shellq: "Auto-review may run without a prompt", sbx: "on",
+    dflt: "Reads and edits workspace files freely; Auto-review runs allowlisted, sandboxed or classifier-approved shell calls without prompting",
     approval: "Run modes: Auto-review (default), Allowlist, Run Everything",
-    sandbox: "macOS only · cloud agents in isolated VMs",
+    sandbox: "macOS Seatbelt · Linux Landlock / bubblewrap fallback · cloud agents in isolated VMs",
     config: ".cursor/permissions.json · sandbox.json · hooks.json",
     headless: "cursor-agent -p · --force applies file changes without confirming",
-    note: "Auto-review became the default in 2026: allowlisted calls run, sandboxable calls run sandboxed, and everything else goes to a classifier. Cursor's own docs are unusually frank that run modes and allowlists are best-effort guardrails rather than a hard security boundary.",
+    note: "In Auto-review, allowlisted calls run immediately, other shell commands run sandboxed when possible, and remaining calls go to a classifier. The classifier can allow a call, request another approach, or require approval. Separate protections and team settings can also require approval. Local sandboxing supports macOS and Linux. Auto-review is not a security boundary; the classifier can make mistakes. Cloud agents use dedicated machines and do not use local Run Modes.",
     url: "https://cursor.com/docs/agent/security/run-modes",
     status: "partial"
   },
@@ -1646,7 +1648,7 @@ var PERMISSIONS = [
     sandbox: "/sandbox · the cloud agent runs in an ephemeral Actions VM",
     config: "~/.copilot/settings.json · permissions-config.json",
     headless: "copilot -p --allow-tool / --allow-all-tools · cloud agent never prompts",
-    note: "Two very different postures under one name. The CLI prompts; the cloud agent never does, gating instead on a draft PR and an explicit approve-and-run click behind an egress firewall. An admin setting can disable bypass mode outright, which is rare among these tools.",
+    note: "Two very different postures under one name. The CLI prompts; the cloud agent never does, gating instead on a draft PR and an explicit approve-and-run click behind an egress firewall. An admin setting can disable bypass mode outright.",
     url: "https://docs.github.com/en/copilot/how-tos/copilot-cli/use-copilot-cli/allowing-tools",
     status: "verified"
   },
@@ -1706,7 +1708,7 @@ var PERMISSIONS = [
     sandbox: "Docker, SSH or OpenShell per agent",
     config: "~/.openclaw/openclaw.json — tools.exec.*, tools.*, agents.*.sandbox.*",
     headless: "Always-on gateway daemon · askFallback=deny when no approver answers",
-    note: "The most autonomous here: no sandbox, no allowlist, no prompt out of the box — and a heartbeat wakes it every 30 minutes by default. Every approval mechanism is opt-in hardening; `openclaw exec-policy preset cautious` is the one-command fix. Inbound senders are gated separately and do fail closed.",
+    note: "No sandbox, no allowlist, no prompt out of the box — and a heartbeat wakes it every 30 minutes by default. Every approval mechanism is opt-in hardening; `openclaw exec-policy preset cautious` is the one-command fix. Inbound senders are gated separately and do fail closed.",
     url: "https://docs.openclaw.ai/tools/permission-modes",
     status: "verified"
   },
@@ -1730,7 +1732,7 @@ var PERMISSIONS = [
     sandbox: "Opt-in only · Gondolin micro-VM extension · plain Docker · OpenShell policy sandbox",
     config: "~/.pi/agent/trust.json · defaultProjectTrust ask / always / never · pi -e <extension>",
     headless: "pi -p merges piped stdin · non-interactive skips the trust prompt and follows defaultProjectTrust",
-    note: "The one row here with no gate at all: permission popups are a stated non-goal, so read, write, edit and bash run unannounced. Trust is a separate axis — it decides whether a project's own settings, resources and .agents/skills load, not whether a tool may run. That leaves isolation as the only real brake, and all three documented options are opt-in and hand-configured.",
+    note: "Permission popups are a stated non-goal, so read, write, edit and bash run unannounced. Trust is a separate axis — it decides whether a project's own settings, resources and .agents/skills load, not whether a tool may run. Isolation can limit tool access; all three documented options are opt-in and hand-configured.",
     url: "https://pi.dev/docs/latest/usage#design-principles",
     status: "verified"
   }
@@ -1836,7 +1838,7 @@ var INFRA = [
     isolation: "Preview deployments per branch · no first-party database to corrupt",
     lock: "none",
     guardrails: "OAuth per-team consent · purchases need a billing role · no read-only mode",
-    note: "The only platform here whose MCP server can charge a credit card. buy_pro, buy_credits, buy_addon and buy_domain hit the team's payment method immediately and are non-refundable. A quote step precedes them, but confirming is just a second tool call the agent makes itself — and vercel buy --yes skips the prompt entirely.",
+    note: "Its MCP server includes purchase tools. buy_pro, buy_credits, buy_addon and buy_domain hit the team's payment method immediately and are non-refundable. A quote step precedes them, but confirming is just a second tool call the agent makes itself — and vercel buy --yes skips the prompt entirely.",
     url: "https://vercel.com/docs/agent-resources/vercel-mcp/tools",
     status: "verified"
   },
@@ -1862,7 +1864,7 @@ var INFRA = [
     isolation: "Instant database branching — a branch per task, reset_from_parent to undo",
     lock: "readonly",
     guardrails: "?readonly=true or an OAuth read scope · ?projectId= and ?category= narrowing",
-    note: "The best guardrails of any database here: read-only mode also forces run_sql down to read-only queries, and project and category scoping are URL parameters needing no re-auth. The catch is that the default full-access grant still includes delete_project, so the safe configuration is one you have to choose.",
+    note: "Read-only mode also forces run_sql down to read-only queries, and project and category scoping are URL parameters needing no re-auth. The catch is that the default full-access grant still includes delete_project, so the safe configuration is one you have to choose.",
     url: "https://neon.com/docs/ai/neon-mcp-server",
     status: "verified"
   },
@@ -1870,7 +1872,7 @@ var INFRA = [
     id: "render", name: "Render", kind: "Hosting + Postgres",
     provides: "A conventional PaaS: static sites, always-on web services, private services, background workers and cron jobs, with managed Postgres and Key Value reachable over one private network.",
     useWhen: "You have an ordinary server process — Rails, Django, Express — and want the database beside it rather than split across two vendors.",
-    pairs: "Nothing, for a standard web app; it's the shortest path from repo to app-plus-database here. Bring your own S3-compatible bucket if you need file uploads.",
+    pairs: "Can host an app and its database together. Bring your own S3-compatible bucket if you need file uploads.",
     caps: {
       site: "Static Sites · Web Services",
       run:  "Web / private services",
@@ -1891,14 +1893,14 @@ var INFRA = [
     isolation: "Preview Environments and Service Previews, destroyed when the PR closes",
     lock: "none",
     guardrails: "API keys reach every workspace the account can · no read-only mode",
-    note: "The most conservative tool surface in the table and the only one not marked full control: no delete tool of any kind, read-only SQL, and update calls that refuse and hand back a dashboard link instead. Its weak spot is credentials rather than tools — one API key reaches every workspace the account belongs to.",
+    note: "No delete tool of any kind, read-only SQL, and update calls that refuse and hand back a dashboard link instead. Its weak spot is credentials rather than tools — one API key reaches every workspace the account belongs to.",
     url: "https://render.com/docs/mcp-server",
     status: "verified"
   },
   {
     id: "supabase", name: "Supabase", kind: "Postgres + backend",
     provides: "A backend built around Postgres: auto-generated REST and GraphQL APIs, auth wired to row-level security, S3-compatible file storage, realtime subscriptions, Deno edge functions, cron and queues.",
-    useWhen: "You want users, files and realtime without writing a server — the most complete backend here for someone who isn't running one.",
+    useWhen: "You want users, files and realtime without writing a server.",
     pairs: "A front-end host — Vercel, Netlify or Cloudflare. Supabase does not serve your site.",
     caps: {
       db:    "Postgres",
@@ -1946,7 +1948,7 @@ var INFRA = [
     reach: "full", reachDetail: "remove_service, remove_volume, remove_bucket, delete_domain",
     isolation: "PR Environments, ephemeral per pull request · create_environment",
     lock: "scoped",
-    guardrails: "Project tokens bind to a single environment — the strongest scoping here",
+    guardrails: "Project tokens bind to a single environment",
     note: "Worth correcting a widely repeated claim: Railway's launch messaging said destructive tools were deliberately excluded, and that is no longer true. The server moved into the CLI and now ships 47 tools including remove_service, remove_volume and remove_bucket — and remove_volume destroys persistent data.",
     url: "https://docs.railway.com/cli/mcp",
     status: "verified"
@@ -2006,13 +2008,13 @@ var INFRA = [
     isolation: "Separate staging apps or orgs · PR review apps",
     lock: "scoped",
     guardrails: "fly tokens create readonly / deploy, app-scoped — but the MCP server has no read-only mode",
-    note: "The widest blast radius here. Its MCP server is flyctl itself: tools are registered by iterating the command list with no read-only filter, no allowlist and no confirmation gate. fly-machine-exec is arbitrary shell in a running production container. Fly marks it experimental and tells you to require confirmation yourself — nothing in the code does.",
+    note: "Its MCP server is flyctl itself: tools are registered by iterating the command list with no read-only filter, no allowlist and no confirmation gate. fly-machine-exec is arbitrary shell in a running production container. Fly marks it experimental and tells you to require confirmation yourself — nothing in the code does.",
     url: "https://fly.io/docs/mcp/flyctl-server/",
     status: "verified"
   },
   {
     id: "cloudflare", name: "Cloudflare", kind: "Edge / Workers",
-    provides: "The most complete single-vendor stack here: Workers that serve static assets and run your code, D1 for SQL, KV and Durable Objects for state, R2 for files, Queues, Containers and cron triggers.",
+    provides: "Workers that serve static assets and run your code, D1 for SQL, KV and Durable Objects for state, R2 for files, Queues, Containers and cron triggers.",
     useWhen: "You want the whole app on one platform at the edge, and can build on D1's SQLite rather than holding out for Postgres.",
     pairs: "Nothing, usually. If the data has to stay in Postgres elsewhere, Hyperdrive pools and caches that connection from a Worker.",
     caps: {
@@ -2035,7 +2037,7 @@ var INFRA = [
     isolation: "wrangler dev on local workerd · versions · deploy --temporary",
     lock: "readonly",
     guardrails: "Connect only the read-only servers · scoped API tokens · throwaway preview account",
-    note: "The model everyone else should copy: observability, logpush, GraphQL and audit-log servers are read-only endpoints, while a separate bindings server holds everything destructive. Because they are distinct URLs, \"don't connect the dangerous one\" is an enforceable control rather than a request. Its deploy --temporary provisions a throwaway account so an agent can ship with no credentials at all.",
+    note: "Observability, logpush, GraphQL and audit-log servers are read-only endpoints, while a separate bindings server holds everything destructive. Because they are distinct URLs, \"don't connect the dangerous one\" is an enforceable control rather than a request. Its deploy --temporary provisions a throwaway account so an agent can ship with no credentials at all.",
     url: "https://github.com/cloudflare/mcp-server-cloudflare",
     status: "verified"
   },
@@ -2063,7 +2065,7 @@ var INFRA = [
     isolation: "A dev deployment per agent · local backend · preview deploys",
     lock: "readonly",
     guardrails: "Production blocked unless you pass --dangerously-enable-production-deployments",
-    note: "The only one of these that treats \"agent pointed at production\" as the default threat. Prod blocks PII reads, env vars and writes out of the box, and unlocking it requires a flag named --dangerously-enable-production-deployments. It also documents giving each agent its own isolated dev deployment.",
+    note: "Prod blocks PII reads, env vars and writes out of the box, and unlocking it requires a flag named --dangerously-enable-production-deployments. It also documents giving each agent its own isolated dev deployment.",
     url: "https://docs.convex.dev/ai/convex-mcp-server",
     status: "verified"
   },
@@ -2089,7 +2091,7 @@ var INFRA = [
     isolation: "No branching or preview · only a community local emulator",
     lock: "readonly",
     guardrails: "A read-only API key disables every mutating tool at startup",
-    note: "Its read-only API key is the strongest single switch in this table: enforced when the server starts rather than by prompting, disabling every state-modifying tool. The catch is the other column — no first-party non-prod environment exists at all, so there is nowhere safe to point an agent.",
+    note: "Its read-only API key disables every state-modifying tool when the server starts, without relying on prompts. The catch is the other column — no first-party non-prod environment exists at all, so there is nowhere safe to point an agent.",
     url: "https://upstash.com/docs/agent-resources/mcp",
     status: "partial"
   },
@@ -2114,14 +2116,14 @@ var INFRA = [
     isolation: "Database branches + deploy requests · branch-scoped OAuth",
     lock: "readonly",
     guardrails: "OAuth grants none / read-only / full, per organisation or per database",
-    note: "Hosted and properly scoped: consent is per database and you pick none, read-only or full, with a separate insights-only endpoint that strips both query tools. Write access runs arbitrary DML and DDL, though a no-WHERE UPDATE or DELETE and TRUNCATE are refused. Note that list_invoices hands billing data to the agent.",
+    note: "Hosted with scope controls: consent is per database and you pick none, read-only or full, with a separate insights-only endpoint that strips both query tools. Write access runs arbitrary DML and DDL, though a no-WHERE UPDATE or DELETE and TRUNCATE are refused. Note that list_invoices hands billing data to the agent.",
     url: "https://planetscale.com/docs/connect/mcp",
     status: "verified"
   },
   {
     id: "exa", name: "Exa", kind: "Web search API",
     provides: "AI-native web search with neural (meaning-based) and keyword modes, a contents API that fetches and returns full page bodies, a find-similar endpoint for URL-based discovery, and a research tool that runs multi-step queries.",
-    useWhen: "An agent needs live web knowledge — current events, documentation, competitor sites — beyond what a model's training covers. Neural mode is strongest when the query describes a concept rather than exact keywords.",
+    useWhen: "An agent needs live web knowledge — current events, documentation, competitor sites — beyond what a model's training covers. Neural mode searches by concept rather than exact keywords.",
     pairs: "Any host. Exa is a pure API add-on; wire it into a Vercel, Render, or Railway backend with one environment variable.",
     caps: {
       search: "Neural + keyword search · contents API"
@@ -2162,7 +2164,7 @@ var INFRA = [
     isolation: "Inherently read-only — no state to corrupt",
     lock: "none",
     guardrails: "API key is the only credential · no write tools exist · no read-only mode needed",
-    note: "The extract, crawl, and map tools can pull large volumes of content from a site in a single call, consuming multiple credits and flooding the context window. depth=advanced on search also costs several credits per query. Neither tool writes anything — the only risk is runaway credit spend and context pollution.",
+    note: "The extract, crawl, and map tools can pull large volumes of content from a site in a single call, consuming multiple credits and flooding the context window. depth=advanced on search also costs several credits per query. Neither tool writes anything; large calls can increase credit spend and fill the context window.",
     url: "https://docs.tavily.com/documentation/mcp",
     status: "verified"
   },

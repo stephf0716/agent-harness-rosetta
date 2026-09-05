@@ -19,7 +19,10 @@ function loadIndexContext() {
 }
 
 function pushClaim(claims, claim) {
-  if (!claim.url) return;
+  assert.ok(
+    typeof claim.url === 'string' && claim.url.trim().length > 0,
+    `${claim.id} is missing a source URL`
+  );
   claims.push(claim);
 }
 
@@ -77,7 +80,7 @@ function collectSourceClaims(data = loadIndexContext()) {
       entry: row
     });
 
-    if (row.free && row.free.freeUrl) {
+    if (row.free) {
       pushClaim(claims, {
         id: `infra-free/${row.id}`,
         scope: 'infra-free',
