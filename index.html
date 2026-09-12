@@ -332,6 +332,7 @@
     <li><strong>"Extension" flips meaning too.</strong> In Goose, an extension is an MCP server (tool access). In Gemini CLI, an extension is a full agent bundle. In Zed it is an <em>editor</em> bundle that can carry an MCP server but has no documented skill or instruction payload. Do not confuse current Copilot <em>plugins</em> with the retired Copilot Extensions GitHub Apps.</li>
     <li><strong>"Skills" share a core format.</strong> Every harness here uses the same Agent Skills / SKILL.md core format. The wrinkles are discovery paths, precedence, trust, and distribution: several tools read Claude-compatible and vendor-neutral <code>.agents/skills</code> directories alongside their own.</li>
     <li><strong>"Connector" is mostly Claude-speak</strong> for a packaged remote MCP server — though the word shows up generically elsewhere to mean any MCP integration.</li>
+    <li><strong>"Bot" is not a subagent.</strong> A bot is a named teammate that stays. Hermes Bot Mode is a roster over profiles; Osaurus Agents are saved configs; Grok Bot is a separate always-on product from Grok Build. This column is a throwaway worker: spawn, return a summary, done.</li>
   </ul>
 </section>
 
@@ -510,6 +511,7 @@ var PROVENANCE = {
     "developers.cloudflare.com": "Cloudflare",
     "developers.openai.com": "OpenAI",
     "docs.anythingllm.com": "AnythingLLM",
+    "docs.browserbase.com": "Browserbase",
     "docs.claude.com": "Anthropic",
     "docs.cline.bot": "Cline",
     "docs.convex.dev": "Convex",
@@ -565,6 +567,11 @@ var PROVENANCE = {
     },
     "layer/c-bundle/hermes": {
       checkedAt: "2026-08-26"
+    },
+    "layer/c-agent/hermes": {
+      checkedAt: "2026-09-11",
+      corpusUpdatedAt: "2026-09-11",
+      claimNote: "The cell remains the delegation docs. Bot Mode is a profile roster, not this layer; that distinction is documented on Hermes's Bot Mode page."
     },
     "portability/hermes": {
       checkedAt: "2026-08-26"
@@ -672,6 +679,14 @@ var PROVENANCE = {
     "infra-free/brave-search": {
       checkedAt: "2026-08-25",
       corpusUpdatedAt: "2026-08-25"
+    },
+    "infra/browserbase": {
+      checkedAt: "2026-09-09",
+      corpusUpdatedAt: "2026-09-09"
+    },
+    "infra-free/browserbase": {
+      checkedAt: "2026-09-09",
+      corpusUpdatedAt: "2026-09-09"
     }
   }
 };
@@ -1250,6 +1265,7 @@ var LAYERS = [
       hermes: {
         term: "Subagents",
         loc: "delegate_task",
+        note: "Bot Mode is a named-profile roster, not this layer",
         desc: "The <code>delegate_task</code> tool spawns children with isolated context, restricted toolsets, and their own terminal sessions; background subagents can fan out in parallel. Built-in cron covers the scheduled/unattended case.",
         url: "https://hermes-agent.nousresearch.com/docs/user-guide/features/delegation"
       },
@@ -1797,7 +1813,7 @@ var CAPS = [
   { id: "files", label: "File storage",       short: "file storage" },
   { id: "auth",  label: "User auth",          short: "user auth" },
   { id: "jobs",  label: "Cron / background",  short: "cron jobs" },
-  { id: "search", label: "Web search",        short: "web search" }
+  { id: "search", label: "Web tools",         short: "web tools" }
 ];
 
 // A row's `caps` entry is the product name, as a plain string when the platform
@@ -2214,6 +2230,30 @@ var INFRA = [
     guardrails: "API key is the only credential · no write tools exist · summarizer endpoint costs extra credits per call",
     note: "Brave Search uses its own independent index, so result quality may differ from Google or Bing for niche queries. The local search tool requires a location parameter and draws from Brave's POI data, which can be sparser than Google Maps in some regions.",
     url: "https://brave.com/search/api/",
+    status: "verified"
+  },
+  {
+    id: "browserbase", name: "Browserbase", kind: "Cloud browser API",
+    provides: "Cloud browser infrastructure for agents: managed headless Chromium sessions driven over Playwright, Puppeteer, Selenium or the Stagehand SDK, with live view, session recording, stealth proxies, CAPTCHA solving, file downloads and persistent Contexts. Also exposes Search, Fetch and Extract APIs.",
+    useWhen: "An agent has to operate a real browser — log in, fill forms, click through JS-heavy or bot-protected sites, download files — rather than just read fetched HTML. Stagehand adds natural-language act, observe and extract on top.",
+    pairs: "Any host. It's a pure API add-on — drop the API key into any backend, or point an MCP client at the hosted server. It serves no site and runs no database of its own.",
+    caps: {
+      search: "Cloud browsers · Stagehand · Search/Fetch API"
+    },
+    free: {
+      card: "nocard",
+      gets: "1 browser hour a month, 3 concurrent browsers, 15 min per session, 3 Agent calls, 1,000 Search + 1,000 Fetch calls",
+      stops: "No captcha solving or proxies on Free · hour overage is N/A on Free (paid plans continue at overage rates) · Developer $20 unlocks proxies, Startup $99",
+      freeUrl: "https://docs.browserbase.com/account/billing/plans"
+    },
+    mcp: "official", mcpDetail: "hosted mcp.browserbase.com/mcp · API key as query param, or local npx @browserbasehq/mcp · API key + Gemini key · 6 tools: start, end, navigate, act, observe, extract",
+    cli: "no first-party CLI · hosted MCP is API key only · local env BROWSERBASE_API_KEY + GEMINI_API_KEY · SDKs for Playwright, Puppeteer, Selenium and Stagehand",
+    reach: "full", reachDetail: "act runs arbitrary page actions · sessionId reattaches a browser · local --contextId persists cookies across runs",
+    isolation: "Every session is an isolated, ephemeral cloud browser, torn down on end — nothing persists unless you reuse a sessionId or attach a Context",
+    lock: "none",
+    guardrails: "API key is the only credential · no read-only mode — a cloud browser can do anything a user can on the open web",
+    note: "The distinctive risk is not your infrastructure — sessions are ephemeral and there is nothing on Browserbase's side to delete — it is the open web. The act tool performs real actions in a real browser, and a reused session or Context can carry logged-in cookies across runs, so an agent can transact on any site whose session you have saved. The reference MCP repo was archived in July 2026; Browserbase now steers you to the hosted server.",
+    url: "https://docs.browserbase.com/integrations/mcp/introduction",
     status: "verified"
   }
 ];

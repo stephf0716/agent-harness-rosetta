@@ -91,6 +91,12 @@ for (const [key, expected] of Object.entries(currentTerms)) {
   assert.equal(layers.find(layer => layer.id === layerId).cells[harnessId].term, expected, `${key} terminology is stale`);
 }
 
+const hermesDelegation = layers.find(layer => layer.id === 'c-agent').cells.hermes;
+assert.equal(hermesDelegation.term, 'Subagents', 'Hermes L5 must stay the spawn tool, not Bot Mode');
+assert.match(hermesDelegation.note || '', /Bot Mode/, 'Hermes L5 must disambiguate Bot Mode from subagents');
+assert.match(hermesDelegation.desc, /delegate_task/, 'Hermes L5 must still name the spawn tool');
+assert.match(html, /"Bot" is not a subagent/, 'terminology traps must distinguish bots from L5 workers');
+
 assert.match(html, /class="ref"[^>]*href="' \+ esc\(cell\.url\)/, 'layer explanations must render a reference link');
 assert.match(html, /target="_blank"/, 'reference links should open without replacing the comparison');
 assert.match(html, /rel="noopener noreferrer"/, 'external reference links need safe rel attributes');
