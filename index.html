@@ -560,7 +560,12 @@ var PROVENANCE = {
       checkedAt: "2026-08-26"
     },
     "layer/c-skill/hermes": {
-      checkedAt: "2026-08-26"
+      checkedAt: "2026-09-22",
+      corpusUpdatedAt: "2026-09-22"
+    },
+    "layer/c-skill/claude": {
+      checkedAt: "2026-09-22",
+      corpusUpdatedAt: "2026-09-22"
     },
     "layer/c-mcp/hermes": {
       checkedAt: "2026-08-26"
@@ -583,8 +588,9 @@ var PROVENANCE = {
       checkedAt: "2026-08-26"
     },
     "portability/claude": {
-      checkedAt: "2026-09-01",
-      claimNote: "Instruction and skill paths come from the memory docs; the per-session skill resolution and the account-synced Customize configuration come from Claude Code's desktop application page."
+      checkedAt: "2026-09-22",
+      corpusUpdatedAt: "2026-09-22",
+      claimNote: "Instruction and skill paths come from the memory docs; the symlink rule and the reserved synced folder come from Claude Code's skills page; the per-session skill resolution and the account-synced Customize configuration come from Claude Code's desktop application page."
     },
     "portability/cursor": {
       checkedAt: "2026-09-01",
@@ -957,6 +963,7 @@ var LAYERS = [
       claude: {
         term: "Skills",
         loc: ".claude/skills/ · ~/.claude/skills/",
+        note: "does not read .agents/skills · symlink a skill folder into ~/.claude/skills to share it",
         desc: "Project and personal skills in Claude Code load automatically when relevant or can be invoked directly. Cowork and cloud sessions use skills enabled for the user’s claude.ai account rather than reading the machine’s personal directory.",
         url: "https://code.claude.com/docs/en/skills"
       },
@@ -977,6 +984,7 @@ var LAYERS = [
       hermes: {
         term: "Skills",
         loc: "~/.hermes/skills/",
+        note: "foreign folders such as ~/.agents/skills load only if listed in skills.external_dirs",
         desc: "Same format, plus Hermes's signature move: it <em>writes its own skills from experience</em> (\"procedural memory\") and a background Curator archives stale ones. Huge public Skills Hub; install via <code>hermes skills install</code>.",
         url: "https://hermes-agent.nousresearch.com/docs/user-guide/features/skills"
       },
@@ -1365,7 +1373,7 @@ var PORTABILITY = [
     foreign: [],
     mcp: ".mcp.json (project) · ~/.claude.json (user)",
     stranded: "hooks, subagents, output styles, plugin manifests, the account-synced Customize configuration",
-    note: "It originated the SKILL.md format and four other harnesses now read .claude/skills, but Claude Code reads nobody else's directory — sharing with it is strictly one-directional. Its /init imports rival rule files once at migration time, which is not the same as reading them at runtime. Where a skill lives now depends on the session: local sessions read ~/.claude/skills/, an SSH session reads that path on the remote host, and Cowork and cloud sessions load whatever is enabled on your claude.ai account instead. The desktop Customize sidebar manages connectors, skills and plugins from that account configuration rather than from ~/.claude — config held there is outside the reach of a dotfile repo, and of every harness on this page that reads .claude/ off disk.",
+    note: "It originated the SKILL.md format and five other harnesses read .claude/skills by default (Copilot, Cursor, OpenCode, goose and Grok), but Claude Code reads nobody else's directory, not even the neutral .agents/skills — sharing with it is strictly one-directional. The documented workaround is a symlink: a skill folder in ~/.claude/skills can point anywhere on disk, and a target reached from several locations loads once. Keep the real folder in ~/.agents/skills and link it in. Don't name a skill folder synced; Claude Code reserves ~/.claude/skills/synced/. Its /init imports rival rule files once at migration time, which is not the same as reading them at runtime. Where a skill lives now depends on the session: local sessions read ~/.claude/skills/, an SSH session reads that path on the remote host, and Cowork and cloud sessions load whatever is enabled on your claude.ai account instead. The desktop Customize sidebar manages connectors, skills and plugins from that account configuration rather than from ~/.claude — config held there is outside the reach of a dotfile repo, and of every harness on this page that reads .claude/ off disk.",
     url: "https://code.claude.com/docs/en/memory",
     status: "verified"
   },
