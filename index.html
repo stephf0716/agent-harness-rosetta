@@ -235,6 +235,10 @@
   .mech{font-family:'IBM Plex Mono',monospace;font-size:12px;font-weight:600;display:inline-flex;align-items:center;gap:7px;color:var(--mc);white-space:nowrap}
   .mech i{width:8px;height:8px;border-radius:1px;background:var(--mc);transform:rotate(45deg);flex:none}
   .mech.m-restricted{border-bottom:1px dashed var(--mc);padding-bottom:1px}
+  #pmMatrix th:not(:first-child),#pmMatrix td:not(:first-child){min-width:124px}
+  .pm-connections{display:flex;flex-direction:column;align-items:flex-start;gap:10px}
+  .pm-connection{display:flex;flex-direction:column;align-items:flex-start;gap:2px}
+  .pm-via{font-size:11.5px;line-height:1.35;color:var(--muted);padding-left:15px;max-width:126px;overflow-wrap:anywhere}
   .m-apikey{--mc:var(--m-key)} .m-oauth{--mc:var(--m-oauth)} .m-native{--mc:var(--m-native)} .m-restricted{--mc:var(--m-restr)}
   /* portability + autonomy badges reuse the same diamond, different hues */
   .m-own{--mc:var(--m-native)} .m-reads{--mc:var(--c-mcp)}
@@ -360,7 +364,7 @@
 
 <header class="title">
   <h1>Provider<br><span class="dim">Compatibility Matrix</span></h1>
-  <p class="lede">Each row is an AI developer tool; each column is a credential you might hold. Every cell records <strong>how that credential connects</strong> — an API key, a subscription sign-in, a built-in first-party path, or not at all. Select the credentials you have, and tap any row for connection details and provider docs.</p>
+  <p class="lede">Each row is an AI developer tool; each column is a credential you might hold. Every cell records <strong>how that credential connects</strong> — an API key, a subscription sign-in, a built-in first-party path, or not at all. Multiple methods are listed together; “via” names the agent handling the connection. Select the credentials you have, and tap any row for connection details and provider docs.</p>
 </header>
 
 <nav class="legend" aria-label="Connection type legend" id="pmLegend"></nav>
@@ -488,7 +492,9 @@
 <script>
 // ---------------------------------------------------------------------------
 // Provider matrix data. Each tool's `support` maps a credential id to a
-// connection type in MECH. Edit TOOLS/CREDENTIALS/MECH here; the UI renders
+// MECH id, a { method, via } connection, or an array of either for multiple
+// methods. `via` names the agent handling an indirect connection.
+// Edit TOOLS/CREDENTIALS/MECH here; the UI renders
 // from these constants. CLOSED lists the tool ids grouped as closed source.
 // ---------------------------------------------------------------------------
 // Edit the build stamp here only — the masthead and footer both render from it.
@@ -533,6 +539,7 @@ var PROVENANCE = {
     "hermes-agent.nousresearch.com": "Nous Research",
     "jan.ai": "Jan",
     "kilocode.ai": "Kilo Code",
+    "kilo.ai": "Kilo Code",
     "learn.chatgpt.com": "OpenAI",
     "neon.com": "Neon",
     "opencode.ai": "OpenCode",
@@ -553,8 +560,83 @@ var PROVENANCE = {
     unknown: "No directly accessible source has been attached yet; keep the claim marked unknown until one is recorded."
   },
   claims: {
+    "tool/antigravity": {
+      checkedAt: "2026-09-29",
+      corpusUpdatedAt: "2026-09-29",
+      evidenceLevel: "partial",
+      claimNote: "Connection-method audit checked gemini. Other provider cells and unchanged qualifiers were not re-verified."
+    },
+    "tool/chatgpt": {
+      checkedAt: "2026-09-29",
+      corpusUpdatedAt: "2026-09-29",
+      evidenceLevel: "partial",
+      claimNote: "Connection-method audit checked chatgpt. Other provider cells and unchanged qualifiers were not re-verified."
+    },
+    "tool/claude": {
+      checkedAt: "2026-09-29",
+      corpusUpdatedAt: "2026-09-29",
+      evidenceLevel: "partial",
+      claimNote: "Connection-method audit checked claude_sub. Other provider cells and unchanged qualifiers were not re-verified."
+    },
+    "tool/cline": {
+      checkedAt: "2026-09-29",
+      corpusUpdatedAt: "2026-09-29",
+      evidenceLevel: "partial",
+      claimNote: "Connection-method audit checked chatgpt, claude_sub. Other provider cells and unchanged qualifiers were not re-verified. OpenAI API keys and Codex OAuth: https://docs.cline.bot/provider-config/openai."
+    },
+    "tool/goose": {
+      checkedAt: "2026-09-29",
+      corpusUpdatedAt: "2026-09-29",
+      evidenceLevel: "partial",
+      claimNote: "Connection-method audit checked chatgpt, claude_sub. Other provider cells and unchanged qualifiers were not re-verified."
+    },
     "tool/hermes": {
-      checkedAt: "2026-08-26"
+      checkedAt: "2026-09-29",
+      corpusUpdatedAt: "2026-09-29",
+      evidenceLevel: "partial",
+      claimNote: "Connection-method audit checked grok, claude_sub. Other provider cells and unchanged qualifiers were not re-verified."
+    },
+    "tool/kilocode": {
+      checkedAt: "2026-09-29",
+      corpusUpdatedAt: "2026-09-29",
+      evidenceLevel: "partial",
+      claimNote: "Connection-method audit checked chatgpt, claude_sub. Other provider cells and unchanged qualifiers were not re-verified."
+    },
+    "tool/openclaw": {
+      checkedAt: "2026-09-29",
+      corpusUpdatedAt: "2026-09-29",
+      evidenceLevel: "partial",
+      claimNote: "Connection-method audit checked chatgpt, claude_sub, openrouter. Other provider cells and unchanged qualifiers were not re-verified. OpenAI: https://docs.openclaw.ai/providers/openai/authentication; OpenRouter: https://docs.openclaw.ai/providers/openrouter."
+    },
+    "tool/opencode": {
+      checkedAt: "2026-09-29",
+      corpusUpdatedAt: "2026-09-29",
+      evidenceLevel: "partial",
+      claimNote: "Connection-method audit checked chatgpt, claude_sub. Other provider cells and unchanged qualifiers were not re-verified."
+    },
+    "tool/pi": {
+      checkedAt: "2026-09-29",
+      corpusUpdatedAt: "2026-09-29",
+      evidenceLevel: "partial",
+      claimNote: "Connection-method audit checked chatgpt, grok, claude_sub, openrouter. Other provider cells and unchanged qualifiers were not re-verified."
+    },
+    "tool/osaurus": {
+      checkedAt: "2026-09-29",
+      corpusUpdatedAt: "2026-09-29",
+      evidenceLevel: "partial",
+      claimNote: "Connection-method audit checked chatgpt, grok, openrouter. Other provider cells and unchanged qualifiers were not re-verified."
+    },
+    "tool/t3": {
+      checkedAt: "2026-09-29",
+      corpusUpdatedAt: "2026-09-29",
+      sourcePublisher: "T3 Code",
+      claimNote: "Connections use the underlying agents' authentication. Claude login, API keys, and OpenRouter routing are documented in docs/user/providers-claude.md; Gemini sign-in and API keys in docs/user/providers-antigravity.md; OpenAI API keys and Copilot access through the OpenCode integration and OpenCode's provider docs."
+    },
+    "tool/zed": {
+      checkedAt: "2026-09-29",
+      corpusUpdatedAt: "2026-09-29",
+      evidenceLevel: "partial",
+      claimNote: "The Claude and ChatGPT cells were checked against Zed's Use API Access and Use an Existing Subscription docs: Anthropic uses an API key in Zed's own provider settings; OpenAI supports both API keys and ChatGPT sign-in. Other provider cells were not re-verified in this pass."
     },
     "layer/c-instr/hermes": {
       checkedAt: "2026-08-26"
@@ -728,9 +810,9 @@ var CREDENTIALS = [
 var TOOLS = [
   {
     id: "antigravity", name: "Antigravity", kind: "IDE + CLI",
-    support: { chatgpt: "no", gemini: "oauth", grok: "no", claude_sub: "no", copilot: "no", openrouter: "no" },
-    note: "Google's agent-first IDE (a VS Code fork, plus a CLI and SDK). Sign in with your Google account for Gemini; add an Anthropic API key to run Claude; GPT-OSS-120B open weights and a custom endpoint are available (custom models on Linux/Cloudtop only).",
-    url: "https://antigravity.google/docs/models"
+    support: { chatgpt: "no", gemini: ["oauth", { method: "apikey", via: "Antigravity CLI" }], grok: "no", claude_sub: "no", copilot: "no", openrouter: "no" },
+    note: "Google's agent-first IDE, CLI, and SDK. Sign in with your Google account for Gemini; the Antigravity CLI also accepts a Gemini API key. Model availability and custom endpoints depend on the client.",
+    url: "https://antigravity.google/docs/cli/install/"
   },
   {
     id: "anythingllm", name: "AnythingLLM", kind: "Desktop app",
@@ -746,21 +828,21 @@ var TOOLS = [
   },
   {
     id: "chatgpt", name: "ChatGPT", kind: "Desktop + CLI",
-    support: { chatgpt: "native", gemini: "no", grok: "no", claude_sub: "no", copilot: "no", openrouter: "no" },
-    note: "In July 2026 the old Codex desktop app became the new ChatGPT app — Chat, Work, and Codex now live in one shell (the prior app is now 'ChatGPT Classic'). It's account sign-in only, no API key, but that includes every plan down to Free. Codex CLI is the separate terminal tool: sign in with ChatGPT or an OpenAI key, plus Azure/Bedrock via a gateway and local models offline.",
-    url: "https://developers.openai.com/codex/local-config"
+    support: { chatgpt: ["native", { method: "apikey", via: "Codex local work" }], gemini: "no", grok: "no", claude_sub: "no", copilot: "no", openrouter: "no" },
+    note: "ChatGPT combines Chat, Work, and Codex in its desktop app. Codex local work in the app, CLI, and IDE extension supports ChatGPT sign-in or an OpenAI API key. API keys use separate API billing; Codex cloud work requires ChatGPT sign-in.",
+    url: "https://learn.chatgpt.com/docs/auth"
   },
   {
     id: "claude", name: "Claude", kind: "Chat + CLI",
-    support: { chatgpt: "no", gemini: "no", grok: "no", claude_sub: "native", copilot: "no", openrouter: "no" },
-    note: "The app (web/desktop/mobile) is subscription-only — your Claude Enterprise seat lives there and doesn't hand out an API to other tools. Claude Code adds an API key, Bedrock/Vertex/Foundry, and local via Ollama + LiteLLM. Subscription sign-in is limited to Anthropic's official clients: the Feb 2026 terms banned subscription OAuth in third-party tools and enforcement landed on 4 April 2026. Third-party harnesses that still offer a Claude sign-in now bill it as metered extra usage on a Max plan rather than drawing on plan limits.",
-    url: "https://docs.claude.com/en/docs/claude-code/model-config"
+    support: { chatgpt: "no", gemini: "no", grok: "no", claude_sub: ["native", { method: "apikey", via: "Claude Code" }], copilot: "no", openrouter: "no" },
+    note: "Claude chat uses your Claude account. Claude Code supports Claude subscription sign-in or an Anthropic API key, with separate API billing, plus supported cloud providers. Third-party tools that run Claude Code authenticate through that client; direct Anthropic API access uses an API key.",
+    url: "https://code.claude.com/docs/en/authentication"
   },
   {
     id: "cline", name: "Cline", kind: "IDE + CLI",
-    support: { chatgpt: "oauth", gemini: "apikey", grok: "apikey", claude_sub: "no", copilot: "no", openrouter: "apikey" },
-    note: "Bring-your-own-key across 30+ providers and any OpenAI-compatible endpoint; local via Ollama / LM Studio. Also offers a ChatGPT-subscription sign-in (Codex OAuth) for OpenAI models.",
-    url: "https://docs.cline.bot/provider-config/other-30-plus-providers"
+    support: { chatgpt: ["oauth", "apikey"], gemini: "apikey", grok: "apikey", claude_sub: ["apikey", { method: "oauth", via: "Claude Code" }], copilot: "no", openrouter: "apikey" },
+    note: "Bring-your-own-key across 30+ providers and OpenAI-compatible endpoints; local via Ollama / LM Studio. OpenAI supports API keys or ChatGPT subscription sign-in through Codex OAuth. Anthropic supports an API key, or Claude Pro/Max through the installed Claude Code CLI.",
+    url: "https://docs.cline.bot/provider-config/anthropic"
   },
   {
     id: "copilot", name: "GitHub Copilot", kind: "Desktop + IDE + CLI",
@@ -776,51 +858,64 @@ var TOOLS = [
   },
   {
     id: "goose", name: "Goose", kind: "Desktop + CLI",
-    support: { chatgpt: "oauth", gemini: "apikey", grok: "apikey", claude_sub: "apikey", copilot: "oauth", openrouter: "apikey" },
-    note: "Now stewarded by the Linux Foundation's Agentic AI Foundation rather than Block alone. Keys for ~38 providers, a built-in GitHub Copilot provider via OAuth device-code sign-in, and a ChatGPT Codex provider for subscription sign-in. Anthropic is API-key only here — a Claude subscription is reachable only indirectly through the Claude Code ACP pass-through, and Anthropic's terms constrain that. The older claude-code / codex / gemini-cli CLI providers are deprecated in favour of Cursor Agent CLI plus Claude and Codex ACP. Local via Ollama.",
-    url: "https://goose-docs.ai/docs/getting-started/providers"
+    support: { chatgpt: ["oauth", "apikey"], gemini: "apikey", grok: "apikey", claude_sub: ["apikey", { method: "oauth", via: "Claude Code ACP" }], copilot: "oauth", openrouter: "apikey" },
+    note: "Supports direct provider API keys, GitHub Copilot device-code sign-in, and ChatGPT Codex subscription sign-in. Claude subscription access runs through Claude Code over ACP; direct Anthropic access uses an API key. Codex is also available through ACP. Local models via Ollama.",
+    url: "https://goose-docs.ai/docs/getting-started/providers/"
   },
   {
     id: "hermes", name: "Hermes Agent", kind: "Desktop + CLI",
-    support: { chatgpt: "oauth", gemini: "apikey", grok: "oauth", claude_sub: "oauth", copilot: "oauth", openrouter: "apikey" },
-    note: "Supports 40 first-class providers plus custom endpoints. Codex, Copilot, MiniMax, SuperGrok, and Nous Portal sign-in (device-code works over SSH); other keys directly; local Ollama/vLLM; Bedrock/Azure too. The Claude path reuses Claude Code credentials but now requires Claude Max plus purchased extra-usage credits — it bills per token instead of drawing on your plan allowance, and Pro can't use it at all.",
+    support: { chatgpt: "oauth", gemini: "apikey", grok: ["oauth", "apikey"], claude_sub: ["oauth", "apikey"], copilot: "oauth", openrouter: "apikey" },
+    note: "Supports first-class providers and custom endpoints, including Codex and Copilot sign-in, direct API keys, and local Ollama/vLLM. xAI supports an API key or eligible SuperGrok/X account sign-in. Anthropic supports an API key or Claude OAuth credentials; that OAuth route requires Claude Max with purchased extra-usage credits and does not consume the base plan allowance. Claude Pro cannot use that route.",
     url: "https://hermes-agent.nousresearch.com/docs/integrations/providers"
   },
   {
     id: "kilocode", name: "Kilo Code", kind: "IDE + CLI",
-    support: { chatgpt: "oauth", gemini: "apikey", grok: "apikey", claude_sub: "no", copilot: "no", openrouter: "apikey" },
+    support: { chatgpt: ["oauth", "apikey"], gemini: "apikey", grok: "apikey", claude_sub: "apikey", copilot: "no", openrouter: "apikey" },
     note: "Spans VS Code, JetBrains, and CLI with 500+ models. Lineage is layered: the extension descends from Roo Code, itself a Cline fork, while the CLI is a fork of OpenCode. Keys for Anthropic / OpenAI / Gemini / Bedrock / Vertex, local via Ollama or LM Studio, and a ChatGPT-subscription sign-in that skips the key entirely.",
-    url: "https://kilocode.ai/docs/providers"
+    url: "https://kilo.ai/docs/getting-started/setup-authentication"
   },
   {
     id: "openclaw", name: "OpenClaw", kind: "Desktop + CLI",
-    support: { chatgpt: "oauth", gemini: "apikey", grok: "apikey", claude_sub: "restricted", copilot: "oauth", openrouter: "oauth" },
-    note: "An open-source personal-assistant framework. OpenAI hired its creator in Feb 2026 and funds the non-profit foundation that now holds it, but it was not acquired and remains independent. Codex/ChatGPT subscription via browser or device-code sign-in, a GitHub Copilot provider via device login, OpenRouter OAuth, Anthropic and Gemini keys, and local models. Claude Pro/Max plan quota is off the table since Anthropic's Feb 2026 terms change and April 2026 cutoff — the sanctioned path is an API key or reusing the Claude CLI. Pass-through covers the Claude and Gemini CLIs; the bundled Codex CLI backend was replaced by the native Codex app-server route.",
-    url: "https://docs.openclaw.ai/providers"
+    support: { chatgpt: ["oauth", "apikey"], gemini: "apikey", grok: "apikey", claude_sub: ["apikey", { method: "oauth", via: "Claude Code CLI" }], copilot: "oauth", openrouter: ["oauth", "apikey"] },
+    note: "An open-source personal-assistant framework. OpenAI supports API keys, Codex OAuth, or Sign in with ChatGPT (Beta). Anthropic supports direct API keys or the installed Claude Code CLI with its existing login. OpenRouter supports manual API keys or browser OAuth that creates and stores an API key; it uses OpenRouter billing rather than a ChatGPT-style subscription. Also supports Copilot device login, Gemini keys, and local models.",
+    url: "https://docs.openclaw.ai/providers/anthropic"
   },
   {
     id: "opencode", name: "OpenCode", kind: "Desktop + CLI",
-    support: { chatgpt: "oauth", gemini: "apikey", grok: "apikey", claude_sub: "restricted", copilot: "oauth", openrouter: "apikey" },
-    note: "ChatGPT, Copilot, and GitLab Duo subscriptions all work via sign-in (GitLab Duo is experimental and needs Premium/Ultimate). Anthropic's terms prohibit a Claude Pro/Max subscription here — the bundled OAuth plugin was removed in v1.3.0 after a legal request in March 2026, so bring your API key instead.",
+    support: { chatgpt: ["oauth", "apikey"], gemini: "apikey", grok: "apikey", claude_sub: "apikey", copilot: "oauth", openrouter: "apikey" },
+    note: "OpenAI supports ChatGPT sign-in or an API key; Anthropic supports an API key. Claude Pro/Max subscription access through third-party OAuth plugins is prohibited, and the bundled plugin was removed in v1.3.0. Copilot and GitLab Duo also support sign-in; GitLab Duo is experimental and requires Premium/Ultimate.",
     url: "https://opencode.ai/docs/providers"
   },
   {
     id: "pi", name: "Pi", kind: "CLI",
-    support: { chatgpt: "oauth", gemini: "apikey", grok: "oauth", claude_sub: "oauth", copilot: "oauth", openrouter: "oauth" },
+    support: { chatgpt: ["oauth", "apikey"], gemini: "apikey", grok: ["oauth", "apikey"], claude_sub: ["oauth", "apikey"], copilot: "oauth", openrouter: ["oauth", "apikey"] },
     note: "An open-source, provider-agnostic terminal agent (earendil-works, pi.dev) — not to be confused with Inflection AI's Pi companion app. Routes to 30+ providers by key, or signs in with ChatGPT Plus/Pro, GitHub Copilot, Grok/X, OpenRouter (PKCE), or Claude Pro/Max. Note the asterisk on that last one: per Pi's own docs, third-party harness usage draws on metered extra usage billed per token, not against your Claude plan limits. Also reaches Bedrock, Azure, and Vertex, and runs local models via Ollama.",
     url: "https://pi.dev/docs/latest/providers"
   },
   {
     id: "osaurus", name: "Osaurus", kind: "Desktop + CLI",
-    support: { chatgpt: "oauth", gemini: "apikey", grok: "oauth", claude_sub: "apikey", copilot: "no", openrouter: "oauth" },
-    note: "A native Apple-Silicon MLX server that other tools point at as their local endpoint. Speaks OpenAI / Anthropic / Ollama APIs and is a full MCP server. Sign in with your ChatGPT, SuperGrok/X Premium+, or OpenRouter account; Anthropic, Google, and local (Ollama/LM Studio) connect by API key instead.",
-    url: "https://docs.osaurus.ai/models"
+    support: { chatgpt: ["oauth", "apikey"], gemini: "apikey", grok: ["oauth", "apikey"], claude_sub: "apikey", copilot: "no", openrouter: ["oauth", "apikey"] },
+    note: "A native Apple-Silicon MLX server that other tools can use as a local endpoint. Speaks OpenAI / Anthropic / Ollama APIs and provides MCP support. OpenAI, xAI, and OpenRouter accept API keys or browser sign-in; Anthropic and Google use API keys. Local providers include Ollama and LM Studio.",
+    url: "https://docs.osaurus.ai/remote-providers"
+  },
+  {
+    id: "t3", name: "T3 Code", kind: "Desktop + web + mobile",
+    support: {
+      chatgpt: [{ method: "oauth", via: "Codex" }, { method: "apikey", via: "OpenCode" }],
+      gemini: [{ method: "oauth", via: "Antigravity" }, { method: "apikey", via: "Antigravity" }],
+      grok: { method: "oauth", via: "Grok Build" },
+      claude_sub: [{ method: "oauth", via: "Claude Code" }, { method: "apikey", via: "Claude Code" }],
+      copilot: { method: "oauth", via: "OpenCode" },
+      openrouter: { method: "apikey", via: "Claude Code / OpenCode" }
+    },
+    note: "An open-source control surface for Codex, Claude Code, Cursor, Grok Build, OpenCode, and Antigravity. Uses the connected agents' credentials: ChatGPT through Codex, Claude through Claude Code, Google/Gemini through Antigravity, and Grok through Grok Build. GitHub Copilot sign-in is indirect through OpenCode. API keys and custom endpoints are configured per agent; OpenRouter works through a Claude Code router configuration or OpenCode. Available as desktop, web, and mobile apps.",
+    url: "https://github.com/pingdotgg/t3code/blob/main/docs/user/install.md"
   },
   {
     id: "zed", name: "Zed", kind: "IDE",
-    support: { chatgpt: "oauth", gemini: "oauth", grok: "apikey", claude_sub: "oauth", copilot: "oauth", openrouter: "apikey" },
-    note: "A Rust-based multi-provider editor with 15+ LLM providers behind one Agent Panel. Sign in with ChatGPT Plus/Pro, Google (Gemini), or a Copilot Pro/Business/Enterprise subscription. Claude Pro/Max never appears in the Agent Panel's provider list — where Anthropic is API-key — and is instead reached by running /login inside a Claude agent (ACP) thread, or a terminal thread running Claude Code. xAI and OpenRouter are API-key only. Local models via Ollama.",
-    url: "https://zed.dev/docs/ai/overview"
+    support: { chatgpt: ["oauth", "apikey"], gemini: "oauth", grok: "apikey", claude_sub: "apikey", copilot: "oauth", openrouter: "apikey" },
+    note: "A Rust-based multi-provider editor with 15+ LLM providers behind one Agent Panel. Sign in with ChatGPT Plus/Pro, Google (Gemini), or a Copilot Pro/Business/Enterprise subscription. Claude in Zed's own provider settings uses an Anthropic API key, not Claude subscription sign-in. External Claude agents and terminal threads configure authentication separately in Claude Code. xAI and OpenRouter are API-key only. Local models via Ollama.",
+    url: "https://zed.dev/docs/ai/use-api-access"
   }
 ];
 
@@ -2518,9 +2613,19 @@ function jump(id){ openCard(id, true); }
 function pmVisibleCreds(){
   return CREDENTIALS.filter(function(c){ return pmState.have[c.id]; });
 }
+function pmConnections(t, id){
+  var value = t.support[id] || 'no';
+  return (Array.isArray(value) ? value : [value]).map(function(connection){
+    return typeof connection === 'string' ? { method: connection } : connection;
+  });
+}
 function pmUsable(t, creds, mode){
-  if (mode === 'sub') return creds.some(function(c){ var m = t.support[c.id] || 'no'; return m === 'oauth' || m === 'native'; });
-  return creds.some(function(c){ var m = t.support[c.id] || 'no'; return m !== 'no' && m !== 'restricted'; });
+  return creds.some(function(c){
+    return pmConnections(t, c.id).some(function(connection){
+      var m = connection.method;
+      return mode === 'sub' ? (m === 'oauth' || m === 'native') : (m !== 'no' && m !== 'restricted');
+    });
+  });
 }
 function pmShownTools(creds){
   if (pmState.filter === 'all') return TOOLS;
@@ -2585,11 +2690,17 @@ function pmRenderFilter(){
   }).join('');
 }
 function pmMechCell(t, c){
-  var m = t.support[c.id] || 'no';
-  var meta = MECH[m];
-  var tip = esc(t.name + ' · ' + c.label + ': ' + meta.label);
-  if (m === 'no') return '<td title="' + tip + '"><span class="dash">—</span></td>';
-  return '<td title="' + tip + '"><span class="mech m-' + m + '"><i></i>' + esc(meta.label) + '</span></td>';
+  var connections = pmConnections(t, c.id);
+  var tip = esc(t.name + ' · ' + c.label + ': ' + connections.map(function(connection){
+    return MECH[connection.method].label + (connection.via ? ' via ' + connection.via : '');
+  }).join('; '));
+  var html = connections.map(function(connection){
+    var m = connection.method;
+    if (m === 'no') return '<span class="dash">—</span>';
+    return '<span class="pm-connection"><span class="mech m-' + esc(m) + '"><i aria-hidden="true"></i>' + esc(MECH[m].label) + '</span>' +
+      (connection.via ? '<span class="pm-via">via ' + esc(connection.via) + '</span>' : '') + '</span>';
+  }).join('');
+  return '<td title="' + tip + '"><div class="pm-connections">' + html + '</div></td>';
 }
 function pmToolRow(t, creds){
   var sel = pmState.detail === t.id;
