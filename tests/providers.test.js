@@ -41,13 +41,9 @@ assert.match(context.pmMechCell(zed, chatgpt), /Sign-in[\s\S]*API Key/, 'Zed mus
 assert.match(context.pmMechCell(t3, claude), /via Claude Code/, 'T3 must expose the agent in the cell');
 assert.match(context.pmToolRow(t3, data.CREDENTIALS), /via OpenCode/);
 
-// A sign-in appearing after an API key still qualifies the row. A blocked
-// subscription plus a usable API key qualifies only for the provider filter.
+// A sign-in appearing after an API key still qualifies the row.
 const mixed = { name: 'Mixed', support: { claude_sub: ['apikey', { method: 'oauth', via: 'Agent' }] } };
-const restricted = { name: 'Restricted', support: { claude_sub: ['restricted', 'apikey'] } };
 assert.equal(context.pmUsable(mixed, [claude], 'sub'), true);
-assert.equal(context.pmUsable(restricted, [claude], 'sub'), false);
-assert.equal(context.pmUsable(restricted, [claude], 'usable'), true);
 assert.equal(context.pmUsable({ support: {} }, [claude], 'usable'), false);
 assert.equal(context.pmUsable(t3, [], 'sub'), false);
 

@@ -28,12 +28,14 @@ function resolveClaimProvenance(claim, provenance) {
   const override = (provenance.claims && provenance.claims[claim.id]) || {};
   const sourceUrl = override.sourceUrl || claim.url;
   const evidenceLevel = override.evidenceLevel || defaultEvidenceLevel(claim);
-  const checkedAt = override.checkedAt || provenance.defaultCheckedAt;
+  const checkedAt = override.checkedAt ||
+    (provenance.scopeCheckedAt && provenance.scopeCheckedAt[claim.scope]) ||
+    provenance.defaultCheckedAt;
   const sourceTitle = override.sourceTitle || null;
   const sourcePublisher = override.sourcePublisher || publisherForUrl(sourceUrl, provenance);
   const claimNote = Object.prototype.hasOwnProperty.call(override, 'claimNote')
     ? override.claimNote
-    : defaultClaimNote(claim, evidenceLevel, provenance);
+    : (claim.status && claim.caveat) || defaultClaimNote(claim, evidenceLevel, provenance);
 
   return {
     sourceUrl,
