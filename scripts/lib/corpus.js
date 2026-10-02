@@ -92,6 +92,33 @@ function collectSourceClaims(data = loadIndexContext()) {
     }
   });
 
+  // One claim per ADE row, plus its repository and pricing page when they are
+  // separate links in the detail panel, so the link checker covers all three.
+  data.ADES.forEach(row => {
+    pushClaim(claims, {
+      id: `ade/${row.id}`,
+      scope: 'ade',
+      field: 'url',
+      url: row.url,
+      status: row.status === 'verified' ? null : row.status,
+      caveat: row.caveat || null,
+      entry: row
+    });
+    [['repo', 'ade-repo'], ['priceUrl', 'ade-price']].forEach(([field, scope]) => {
+      if (!(field in row)) return;
+      pushClaim(claims, {
+        id: `${scope}/${row.id}`,
+        scope,
+        field,
+        url: row[field],
+        status: null,
+        optional: true,
+        entry: row,
+        parent: row
+      });
+    });
+  });
+
   return claims;
 }
 

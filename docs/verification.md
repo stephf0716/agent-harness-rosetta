@@ -19,14 +19,18 @@ Only add a `PROVENANCE.claims[...]` override when the defaults are not enough.
 | Permissions row | `permissions/<harnessId>` |
 | Infrastructure row | `infra/<serviceId>` |
 | Infrastructure free-tier source | `infra-free/<serviceId>` |
+| ADE row | `ade/<adeId>` |
+| ADE repository link | `ade-repo/<adeId>` |
+| ADE pricing link | `ade-price/<adeId>` |
 
 Defaults already resolve most metadata from the corpus:
 
 - `sourceUrl` defaults to the row or cell `url` (or `freeUrl` for free-tier claims)
-- `checkedAt` defaults to `PROVENANCE.defaultCheckedAt`
+- `checkedAt` defaults to the claim scope's `PROVENANCE.scopeCheckedAt` date when one is set (the ADE tab uses this), otherwise `PROVENANCE.defaultCheckedAt`
 - `corpusUpdatedAt` is optional, but when present it records the corpus refresh date that `checkedAt` must not predate
 - `sourcePublisher` defaults from the hostname map, falling back to the hostname itself
 - `evidenceLevel` defaults to `primary-docs`, unless the claim is already marked `partial` / `unverified`
+- `claimNote` for a partial ADE row defaults to that row's `caveat`, the same text the detail panel shows
 
 ## Updating a claim
 

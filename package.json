@@ -2,7 +2,7 @@
   "name": "agent-harness-rosetta",
   "private": true,
   "scripts": {
-    "test": "node tests/harness-layers.test.js && node tests/provenance.test.js && node tests/providers.test.js",
+    "test": "node tests/harness-layers.test.js && node tests/provenance.test.js && node tests/providers.test.js && node tests/ades.test.js && node tests/changes.test.js",
     "check:links": "node scripts/check-links.js"
   }
 }

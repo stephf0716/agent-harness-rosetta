@@ -1,12 +1,12 @@
-# Agent Harness Rosetta
+# Agent Rosetta
 
 A dependency-free, interactive reference for comparing AI developer tools.
 
 [View the live reference](https://agent-harness-rosetta.vercel.app) · [Report a correction](https://github.com/stephf0716/agent-harness-rosetta/issues/new)
 
-![Agent Harness Rosetta social preview](./social-preview.png)
+![Agent Rosetta social preview](./social-preview.png)
 
-Use it to see how agent harnesses name and organize their extension layers, which credentials different tools accept, what configuration is portable, what actions run without approval, and how much infrastructure access an agent can receive.
+Use it to see how agent harnesses name and organize their extension layers, which credentials different tools accept, what configuration is portable, what actions run without approval, how much infrastructure access an agent can receive, and how the ADEs that run several agents side by side compare.
 
 Everything still renders from a single `index.html` file—no framework or build step. The repository now also includes a minimal Node-based verification layer for deterministic tests and optional link checks.
 
@@ -15,12 +15,13 @@ Everything still renders from a single `index.html` file—no framework or build
 | Reference | Question it answers |
 | --- | --- |
 | **Harness layers** | How do 13 agent harnesses represent instructions, skills, tool access/MCP, bundles, and delegation? |
-| **Provider matrix** | Can a tool use your API key, subscription sign-in, or a built-in provider connection? |
 | **Portability** | Which instructions, skills, MCP settings, and agent definitions survive a switch between harnesses? |
 | **Permissions** | Will a harness edit files or run shell commands before asking, and what contains it? |
+| **ADEs** | Which agentic development environments run agents from more than one vendor, which agents and platforms they support, how they isolate and review work, and what they cost? |
+| **Provider matrix** | Can a tool use your API key, subscription sign-in, or a built-in provider connection? |
 | **Infrastructure** | Which hosting and database platforms provide the capabilities you need, what is free, and what their agent integrations can change or delete? |
 
-The Harness layers reference covers Claude, Codex/ChatGPT, Goose, Hermes Agent, Osaurus, Gemini CLI, Grok Build, Cursor, OpenCode, OpenClaw, GitHub Copilot, Zed, and Pi. Jan appears only in the provider matrix. The provider and infrastructure matrices cover a broader set of AI tools and infrastructure providers.
+The Harness layers reference covers Claude, Codex/ChatGPT, Goose, Hermes Agent, Osaurus, Gemini CLI, Grok Build, Cursor, OpenCode, OpenClaw, GitHub Copilot, Zed, and Pi. Jan appears only in the provider matrix. The provider and infrastructure matrices cover a broader set of AI tools and infrastructure providers. The ADE tab covers ten multi-vendor ADEs: Claude Squad, Conductor, Emdash, Maestro, Nimbalyst, Orca, Paseo, Superset, T3 Code, and Termic. Single-vendor apps and sunset projects are left out on purpose.
 
 ## Run locally
 
@@ -52,11 +53,13 @@ For a concise maintainer guide, see [`docs/verification.md`](./docs/verification
 
 ## Using the reference
 
-- Switch among the five tabs; each tab has a stable URL hash.
-- Filter the harness, provider, and infrastructure matrices to the tools or capabilities you care about.
+- Switch among the six tabs; each tab has a stable URL hash.
+- Filter the harness, provider, and infrastructure matrices to the tools or capabilities you care about, and the ADE table to the platform you're on.
 - Select cells and rows for source links, qualifications, and fuller explanations.
 - Choose dark, light, or system theme.
-- Share specific sections with hashes such as `#harnesses`, `#providers`, `#portability`, `#permissions`, `#infra`, or an individual layer such as `#c-mcp`.
+- Share specific sections with hashes such as `#harnesses`, `#portability`, `#permissions`, `#ades`, `#providers`, `#infra`, or an individual layer such as `#c-mcp`.
+
+A collapsed **What's new** list at the foot of every tab records reader-facing changes; `#changes` opens it.
 
 Theme and filter selections are saved in `localStorage` when available. The interface supports keyboard navigation and reduced-motion preferences.
 
@@ -84,12 +87,14 @@ The data model also lives in `index.html`:
 - `CREDENTIALS`, `TOOLS`, and `MECH` drive the provider matrix.
 - `PORTABILITY` and `PERMISSIONS` drive their corresponding tabs.
 - `INFRA` drives the capability, free-tier, and blast-radius tables.
+- `ADES`, `ADE_DRIVE`, `ADE_PAY`, and `ADE_OS` drive the ADE tab.
+- `CHANGES` drives the What's new list.
 
 A missing harness-layer entry throws instead of silently degrading. Research records can be marked `verified`, `partial`, or `unverified`; caveats for anything short of verified appear in the detail view. Provenance metadata resolves those existing statuses into the explicit evidence labels `primary-docs`, `secondary`, `partial`, and `unknown`.
 
 ## Accuracy and scope
 
-This is a point-in-time reference, not a compatibility guarantee. The core dataset was fact-checked against vendor documentation in July 2026, with Grok Build added in August 2026. Some vendor documentation and pricing pages block automated access; affected records are marked `partial` and explain the limitation.
+This is a point-in-time reference, not a compatibility guarantee. The core dataset was fact-checked against vendor documentation in July 2026, with Grok Build added in August 2026 and the ADE tab added and verified against each project's site, docs, and repository in October 2026. Some vendor documentation and pricing pages block automated access; affected records are marked `partial` and explain the limitation.
 
 Provider support, product names, permissions, pricing, and free tiers change quickly. Follow the source links in the interface before making a security, purchasing, or architecture decision.
 

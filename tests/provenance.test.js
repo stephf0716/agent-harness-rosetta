@@ -30,13 +30,17 @@ assert.deepEqual(
   'evidence level enum must stay explicit and documented'
 );
 assert.ok(isIsoDate(provenance.defaultCheckedAt), 'defaultCheckedAt must be an ISO date');
+for (const [scope, date] of Object.entries(provenance.scopeCheckedAt || {})) {
+  assert.ok(isIsoDate(date), `scopeCheckedAt.${scope} must be an ISO date`);
+}
 
 const resolvedClaims = resolveCorpusProvenance(data);
 assert.ok(resolvedClaims.length > 0, 'expected source-backed claims to validate');
 
 // Losing a source must fail validation, not silently remove the claim from it.
-for (const claim of resolvedClaims) {
-  const field = claim.scope === 'infra-free' ? 'freeUrl' : 'url';
+// Optional links (an ADE's separate repo or pricing page) may be absent.
+for (const claim of resolvedClaims.filter(c => !c.optional)) {
+  const field = claim.field || (claim.scope === 'infra-free' ? 'freeUrl' : 'url');
   const originalUrl = claim.entry[field];
   try {
     delete claim.entry[field];
@@ -50,6 +54,10 @@ for (const claim of resolvedClaims) {
 }
 
 const knownClaimIds = new Set(resolvedClaims.map(claim => claim.id));
+const knownScopes = new Set(resolvedClaims.map(claim => claim.scope));
+for (const scope of Object.keys(provenance.scopeCheckedAt || {})) {
+  assert.ok(knownScopes.has(scope), `scopeCheckedAt.${scope} is not a known claim scope`);
+}
 for (const claimId of Object.keys(provenance.claims || {})) {
   assert.ok(knownClaimIds.has(claimId), `${claimId} is not a known source-backed claim`);
 }

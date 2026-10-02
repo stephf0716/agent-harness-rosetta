@@ -1,6 +1,6 @@
 <!DOCTYPE html>
 <!--
-  Agent Harness Rosetta — https://github.com/stephf0716/agent-harness-rosetta
+  Agent Rosetta — https://github.com/stephf0716/agent-harness-rosetta
 
   This file is dual-licensed, because it holds both the implementation and the
   reference content. Copying the whole file means honoring both terms.
@@ -11,7 +11,8 @@
 
   Reference data and editorial content — CC BY 4.0 (see LICENSE-CONTENT). The
   BUILD, TABS, HARNESSES, LAYERS, CREDENTIALS, TOOLS, MECH, CLOSED, PORTABILITY,
-  PERMISSIONS, INFRA, CAPS, CAPVIA, FREE, LOCK, MCPKIND and REACH constants, and
+  PERMISSIONS, INFRA, CAPS, CAPVIA, FREE, LOCK, MCPKIND, REACH, ADES, ADE_DRIVE,
+  ADE_PAY, ADE_OS and CHANGES constants, and
   the prose rendered from them. Reuse needs attribution and an indication of
   changes.
 
@@ -22,14 +23,14 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>AI Tool Reference</title>
-<meta name="description" content="Five interactive references for AI developer tools: the Agent Harness Rosetta Stone, mapping the five extension layers across thirteen harnesses, plus matrices of which credentials each tool accepts, what config ports between them, what each one does without asking, and what each host and database gives an agent to work with — or break.">
+<title>Agent Rosetta</title>
+<meta name="description" content="Six interactive references for AI developer tools: a map of the five extension layers across thirteen harnesses, plus matrices of which credentials each tool accepts, what config ports between them, what each one does without asking, what each host and database gives an agent to work with — or break — and how the ADEs that run several agents at once compare.">
 <meta property="og:type" content="website">
 <meta property="og:url" content="https://agent-harness-rosetta.vercel.app/">
-<meta property="og:title" content="AI Tool Reference">
-<meta property="og:description" content="The five extension layers of AI agent harnesses, mapped across thirteen platforms — plus which credentials each AI developer tool accepts, what config travels between them, and what each one does without asking.">
+<meta property="og:title" content="Agent Rosetta">
+<meta property="og:description" content="The five extension layers of AI agent harnesses, mapped across thirteen platforms — plus which credentials each AI developer tool accepts, what config travels between them, what each one does without asking, and how multi-agent ADEs compare.">
 <meta property="og:image" content="https://agent-harness-rosetta.vercel.app/social-preview.png">
-<meta property="og:image:alt" content="Agent Harness Rosetta — compare agent layers, providers, portability, permissions, and infrastructure in one interactive reference.">
+<meta property="og:image:alt" content="Agent Rosetta — compare agent layers, providers, portability, permissions, infrastructure, and ADEs in one interactive reference.">
 <meta name="twitter:card" content="summary_large_image">
 <link rel="icon" href="data:image/svg+xml,%3Csvg%20xmlns='http://www.w3.org/2000/svg'%20viewBox='0%200%2032%2032'%3E%3Crect%20width='32'%20height='32'%20rx='6'%20fill='%2314161A'/%3E%3Cg%3E%3Crect%20x='6'%20y='5'%20width='20'%20height='3'%20rx='1.5'%20fill='%23DFA83E'/%3E%3Crect%20x='6'%20y='10'%20width='20'%20height='3'%20rx='1.5'%20fill='%2342C0A5'/%3E%3Crect%20x='6'%20y='15'%20width='20'%20height='3'%20rx='1.5'%20fill='%235EA9F2'/%3E%3Crect%20x='6'%20y='20'%20width='20'%20height='3'%20rx='1.5'%20fill='%23A88EF5'/%3E%3Crect%20x='6'%20y='25'%20width='20'%20height='3'%20rx='1.5'%20fill='%23E4718F'/%3E%3C/g%3E%3C/svg%3E">
 <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -70,6 +71,20 @@
   .theme-seg button[aria-pressed="true"]{background:var(--line);color:var(--text);font-weight:600}
   .theme-seg button:focus-visible{outline:2px solid var(--c-mcp);outline-offset:-2px}
 
+  /* what's new: a collapsed, dated list at the foot of every tab */
+  .changes{margin-top:56px;border-top:1px solid var(--line);padding-top:14px}
+  .changes summary{cursor:pointer;font-family:'IBM Plex Mono',monospace;font-size:11.5px;letter-spacing:.12em;text-transform:uppercase;color:var(--muted);min-height:32px;display:flex;align-items:center}
+  .changes summary:hover,.changes[open] summary{color:var(--text)}
+  .changes summary:focus-visible{outline:2px solid var(--c-mcp);outline-offset:2px}
+  .changes ol{list-style:none;margin:10px 0 0;padding:0}
+  .changes li{display:grid;grid-template-columns:88px 1fr;gap:4px 14px;padding:9px 0;border-top:1px solid var(--line)}
+  .changes li:first-child{border-top:none}
+  .changes .cdate{font-family:'IBM Plex Mono',monospace;font-size:11.5px;color:var(--faint);padding-top:2px}
+  .changes .ctxt{font-size:14px;line-height:1.5;color:var(--text)}
+  .changes .ctag{appearance:none;background:none;border:1px solid var(--line);border-radius:2px;font-family:'IBM Plex Mono',monospace;font-size:10px;letter-spacing:.08em;text-transform:uppercase;color:var(--muted);padding:1px 6px;margin-right:6px;cursor:pointer}
+  .changes .ctag:hover{color:var(--text);border-color:var(--text)}
+  .changes .cfoot{margin-top:10px;font-family:'IBM Plex Mono',monospace;font-size:11px;color:var(--faint)}
+  .changes+footer{margin-top:20px}
   /* tabs */
   .tabs{display:flex;gap:4px;border-bottom:1px solid var(--line);margin-top:6px}
   .tabs button{appearance:none;background:none;border:none;border-bottom:2px solid transparent;color:var(--muted);font-family:'IBM Plex Mono',monospace;font-size:13px;padding:13px 14px 11px;cursor:pointer;margin-bottom:-1px;min-height:44px}
@@ -111,6 +126,14 @@
   .hpick.pm-filter{position:static;margin-top:-6px}
   .hpick button[aria-checked="true"]{background:var(--surface);color:var(--text);border-color:var(--m-local);font-weight:600}
   .hpick button.bulk{color:var(--faint)}
+  /* Phones: a strip of chips that scrolls sideways hides whatever is past the
+     edge, so short strips wrap (and stop being sticky, or they'd eat the
+     screen). The harness picker is too long to wrap, so it and the tab bar
+     keep scrolling and fade at the right edge to show there's more. */
+  @media(max-width:719px){
+    .hpick:not(.hscroll){flex-wrap:wrap;overflow-x:visible;position:static}
+    .hpick.hscroll,.tabs{-webkit-mask-image:linear-gradient(to right,#000 85%,transparent);mask-image:linear-gradient(to right,#000 85%,transparent)}
+  }
 
   /* single-harness filtering: every harness-owned row and tile carries
      data-h="<harness id>"; applyHarness() toggles the hidden attribute, so
@@ -234,12 +257,11 @@
   tr.pm-row:focus-visible{outline:2px solid var(--c-mcp);outline-offset:-2px}
   .mech{font-family:'IBM Plex Mono',monospace;font-size:12px;font-weight:600;display:inline-flex;align-items:center;gap:7px;color:var(--mc);white-space:nowrap}
   .mech i{width:8px;height:8px;border-radius:1px;background:var(--mc);transform:rotate(45deg);flex:none}
-  .mech.m-restricted{border-bottom:1px dashed var(--mc);padding-bottom:1px}
   #pmMatrix th:not(:first-child),#pmMatrix td:not(:first-child){min-width:124px}
   .pm-connections{display:flex;flex-direction:column;align-items:flex-start;gap:10px}
   .pm-connection{display:flex;flex-direction:column;align-items:flex-start;gap:2px}
   .pm-via{font-size:11.5px;line-height:1.35;color:var(--muted);padding-left:15px;max-width:126px;overflow-wrap:anywhere}
-  .m-apikey{--mc:var(--m-key)} .m-oauth{--mc:var(--m-oauth)} .m-native{--mc:var(--m-native)} .m-restricted{--mc:var(--m-restr)}
+  .m-apikey{--mc:var(--m-key)} .m-oauth{--mc:var(--m-oauth)} .m-native{--mc:var(--m-native)}
   /* portability + autonomy badges reuse the same diamond, different hues */
   .m-own{--mc:var(--m-native)} .m-reads{--mc:var(--c-mcp)}
   .m-gated{--mc:var(--m-oauth)} .m-mixed{--mc:var(--m-key)} .m-open{--mc:var(--m-restr)}
@@ -254,6 +276,9 @@
      rather than red — a harness that cannot run shell at all is not a risk. */
   .m-ask,.m-conditional{--mc:var(--m-oauth)} .m-free{--mc:var(--m-restr)} .m-notool{--mc:var(--m-native)}
   .pm-shell td .loc{margin-top:5px}
+  /* ADEs: how it drives agents, and what the ADE itself costs */
+  .m-anycli{--mc:var(--m-local)} .m-adapter{--mc:var(--m-key)}
+  .m-adefree{--mc:var(--m-local)} .m-freemium{--mc:var(--m-key)}
   /* infrastructure: capability cells, their qualifiers, and the picked columns */
   .pm-shell td .cap{display:block;font-size:12.5px;color:var(--text)}
   .via{display:inline-block;margin-top:6px;font-family:'IBM Plex Mono',monospace;font-size:9.5px;letter-spacing:.1em;text-transform:uppercase;color:var(--m-key);border:1px dashed var(--m-key);border-radius:2px;padding:1px 5px;white-space:nowrap}
@@ -283,7 +308,7 @@
 <div class="wrap">
 
 <div class="masthead">
-  <span id="buildTag">ai-tool-reference</span>
+  <span id="buildTag">agent-rosetta</span>
   <div class="theme-seg" role="group" aria-label="Color theme">
     <button id="themeDark"   onclick="setTheme('dark')"   aria-pressed="false">dark</button>
     <button id="themeLight"  onclick="setTheme('light')"  aria-pressed="false">light</button>
@@ -293,12 +318,12 @@
 
 <nav class="tabs" role="tablist" aria-label="Reference sections" id="tabBar" onkeydown="tabsKey(event)"></nav>
 
-<noscript><p class="lede">All five reference tables render from data with JavaScript — enable it to see the content.</p></noscript>
+<noscript><p class="lede">All six references render from data with JavaScript — enable it to see the content.</p></noscript>
 
 <main id="panel-harness" role="tabpanel" aria-labelledby="tab-harness">
 
 <header class="title">
-  <h1>Agent Harness<br><span class="dim">Rosetta Stone</span></h1>
+  <h1>Agent Harness<br><span class="dim">Layers</span></h1>
   <p class="lede">Every agent harness implements the same five extension layers — only the names differ, and occasionally conflict. <strong>Instructions persist, skills teach, MCP connects, bundles ship, subagents delegate.</strong> Tap a layer heading for detail.</p>
 </header>
 
@@ -310,7 +335,7 @@
   <button onclick="jump('c-agent')"><span class="sq" style="background:var(--c-agent)"></span>L5 delegation</button>
 </nav>
 
-<div class="hpick" role="group" aria-label="Filter by harness">
+<div class="hpick hscroll" role="group" aria-label="Filter by harness">
   <span class="plabel">Show</span>
   <span id="hPickBtns" style="display:contents"></span>
 </div>
@@ -360,39 +385,6 @@
 
 </main>
 
-<main id="panel-providers" role="tabpanel" aria-labelledby="tab-providers" hidden>
-
-<header class="title">
-  <h1>Provider<br><span class="dim">Compatibility Matrix</span></h1>
-  <p class="lede">Each row is an AI developer tool; each column is a credential you might hold. Every cell records <strong>how that credential connects</strong> — an API key, a subscription sign-in, a built-in first-party path, or not at all. Multiple methods are listed together; “via” names the agent handling the connection. Select the credentials you have, and tap any row for connection details and provider docs.</p>
-</header>
-
-<nav class="legend" aria-label="Connection type legend" id="pmLegend"></nav>
-
-<div class="hpick" role="group" aria-label="Credentials you have">
-  <span class="plabel">I have</span>
-  <button class="bulk" onclick="pmCredsAll(true)">all</button>
-  <button class="bulk" onclick="pmCredsAll(false)">none</button>
-  <span id="pmCreds" style="display:contents"></span>
-</div>
-<div class="hpick pm-filter" role="radiogroup" aria-label="Row filter" id="pmFilter">
-  <span class="plabel">Show</span>
-  <span id="pmFilterBtns" style="display:contents"></span>
-</div>
-
-<div class="matrix-shell pm-shell">
-<div class="matrix-scroll" tabindex="0" role="region" aria-label="Provider compatibility matrix, scroll horizontally">
-<div id="pmMatrix"></div>
-</div>
-<div class="hint"><span class="scrollnote">← scroll → on mobile · </span>tap a row for connection details · toggle credentials to filter columns</div>
-</div>
-
-<div class="pm-detail" id="pmDetail"></div>
-
-<p class="pm-foot">provider support changes frequently — this is a point-in-time snapshot; consult each tool's linked documentation before relying on it</p>
-
-</main>
-
 <main id="panel-portability" role="tabpanel" aria-labelledby="tab-portability" hidden>
 
 <header class="title">
@@ -434,6 +426,65 @@
 <div class="pm-detail" id="permDetail"></div>
 
 <p class="pm-foot">defaults affect what can run without approval and change between releases — confirm against your installed version, not this table</p>
+
+</main>
+
+<main id="panel-ades" role="tabpanel" aria-labelledby="tab-ades" hidden>
+
+<header class="title">
+  <h1>ADEs<br><span class="dim">Agentic Development Environments</span></h1>
+  <p class="lede">A harness runs one agent. An ADE runs several side by side, usually from different vendors, each in its own git worktree, and handles the work around them: watching, reviewing the diff, opening the PR. <strong>They differ on which agents they drive, where those agents run, how much review happens in the app, and what the ADE costs on top.</strong> Most reuse the sign-ins your CLIs already have, and few sandbox anything on your machine. Tap a row for remote access, extras and maturity.</p>
+</header>
+
+<div class="hpick pm-filter" role="radiogroup" aria-label="Platform filter" id="adeOsFilter">
+  <span class="plabel">I'm on</span>
+  <span id="adeOsBtns" style="display:contents"></span>
+</div>
+
+<nav class="legend" aria-label="ADE legend" id="adeLegend"></nav>
+
+<div class="matrix-shell pm-shell">
+<div class="matrix-scroll" tabindex="0" role="region" aria-label="ADE comparison matrix, scroll horizontally">
+<div id="adeMatrix"></div>
+</div>
+<div class="hint"><span class="scrollnote">← scroll → on mobile · </span>tap a row for remote and mobile access, extras, maturity and sources</div>
+</div>
+
+<div class="pm-detail" id="adeDetail"></div>
+
+
+</main>
+
+<main id="panel-providers" role="tabpanel" aria-labelledby="tab-providers" hidden>
+
+<header class="title">
+  <h1>Provider<br><span class="dim">Compatibility Matrix</span></h1>
+  <p class="lede">Already paying for ChatGPT, Claude, Gemini or Copilot? This table shows which tools will take that account, which want an API key instead, and which won't connect at all. Turn off the credentials you don't have and the rows narrow to what you can use. When a tool reaches a provider through another agent, the cell names that agent. Tap a row for details and the vendor's docs.</p>
+</header>
+
+<nav class="legend" aria-label="Connection type legend" id="pmLegend"></nav>
+
+<div class="hpick" role="group" aria-label="Credentials you have">
+  <span class="plabel">I have</span>
+  <button class="bulk" onclick="pmCredsAll(true)">all</button>
+  <button class="bulk" onclick="pmCredsAll(false)">none</button>
+  <span id="pmCreds" style="display:contents"></span>
+</div>
+<div class="hpick pm-filter" role="radiogroup" aria-label="Row filter" id="pmFilter">
+  <span class="plabel">Show</span>
+  <span id="pmFilterBtns" style="display:contents"></span>
+</div>
+
+<div class="matrix-shell pm-shell">
+<div class="matrix-scroll" tabindex="0" role="region" aria-label="Provider compatibility matrix, scroll horizontally">
+<div id="pmMatrix"></div>
+</div>
+<div class="hint"><span class="scrollnote">← scroll → on mobile · </span>tap a row for connection details · toggle credentials to filter columns</div>
+</div>
+
+<div class="pm-detail" id="pmDetail"></div>
+
+<p class="pm-foot">provider support changes frequently — this is a point-in-time snapshot; consult each tool's linked documentation before relying on it</p>
 
 </main>
 
@@ -483,6 +534,11 @@
 
 </main>
 
+<details class="changes" id="changes">
+<summary>What's new</summary>
+<div id="changesList"></div>
+</details>
+
 <footer>
   <span id="buildFoot"></span>
   <span>terminology moves fast — verify against each project's docs before betting a workflow on it · <a href="https://github.com/stephf0716/agent-harness-rosetta" style="color:inherit;text-decoration:underline;text-underline-offset:2px">source</a> · <a href="https://creativecommons.org/licenses/by/4.0/" style="color:inherit;text-decoration:underline;text-underline-offset:2px">CC BY 4.0</a></span>
@@ -498,21 +554,25 @@
 // from these constants. CLOSED lists the tool ids grouped as closed source.
 // ---------------------------------------------------------------------------
 // Edit the build stamp here only — the masthead and footer both render from it.
-var BUILD = { version: "v22", compiled: "july 2026", updated: "19 aug 2026" };
+var BUILD = { version: "v23", compiled: "july 2026", updated: "1 oct 2026" };
 
 // Provenance is intentionally incremental: existing rows and cells keep their
 // current `url`, `status` and `freeStatus` fields, while this metadata block
 // resolves those into a documented source record for validation tooling. Most
-// claims inherit `defaultCheckedAt`, reuse the entry's own URL, and derive the
+// claims inherit `defaultCheckedAt` (or their scope's `scopeCheckedAt` date when a
+// whole tab was checked in one pass), reuse the entry's own URL, and derive the
 // publisher from the hostname. Add a per-claim override only when the default
 // is not descriptive enough or a claim needs a tighter note or evidence level.
 var PROVENANCE = {
   defaultCheckedAt: "2026-08-19",
+  // The ADE tab was researched and then re-verified row by row on this date.
+  scopeCheckedAt: { "ade": "2026-10-01", "ade-repo": "2026-10-01", "ade-price": "2026-10-01" },
   evidenceLevels: ["primary-docs", "secondary", "partial", "unknown"],
   publishers: {
     "antigravity.google": "Google",
     "brave.com": "Brave",
     "code.claude.com": "Anthropic",
+    "conductor.build": "Conductor",
     "cursor.com": "Cursor",
     "developers.cloudflare.com": "Cloudflare",
     "developers.openai.com": "OpenAI",
@@ -538,16 +598,23 @@ var PROVENANCE = {
     "goose-docs.ai": "Goose",
     "hermes-agent.nousresearch.com": "Nous Research",
     "jan.ai": "Jan",
-    "kilocode.ai": "Kilo Code",
     "kilo.ai": "Kilo Code",
+    "kilocode.ai": "Kilo Code",
     "learn.chatgpt.com": "OpenAI",
     "neon.com": "Neon",
+    "nimbalyst.com": "Nimbalyst",
+    "onorca.dev": "Orca",
     "opencode.ai": "OpenCode",
+    "paseo.sh": "Paseo",
     "pi.dev": "Pi",
     "planetscale.com": "PlanetScale",
     "render.com": "Render",
+    "runmaestro.ai": "Maestro",
     "supabase.com": "Supabase",
+    "superset.sh": "Superset",
+    "t3.codes": "T3 Code",
     "tavily.com": "Tavily",
+    "termic.dev": "Termic",
     "upstash.com": "Upstash",
     "vercel.com": "Vercel",
     "www.convex.dev": "Convex",
@@ -631,6 +698,60 @@ var PROVENANCE = {
       corpusUpdatedAt: "2026-09-29",
       sourcePublisher: "T3 Code",
       claimNote: "Connections use the underlying agents' authentication. Claude login, API keys, and OpenRouter routing are documented in docs/user/providers-claude.md; Gemini sign-in and API keys in docs/user/providers-antigravity.md; OpenAI API keys and Copilot access through the OpenCode integration and OpenCode's provider docs."
+    },
+    "tool/orca": {
+      checkedAt: "2026-10-01",
+      corpusUpdatedAt: "2026-10-01",
+      evidenceLevel: "partial",
+      claimNote: "Cells follow the agents Orca launches and the sign-in methods those agents document; Orca doesn't document each provider route itself."
+    },
+    "tool/superset": {
+      checkedAt: "2026-10-01",
+      corpusUpdatedAt: "2026-10-01",
+      evidenceLevel: "partial",
+      claimNote: "Cells follow the agents Superset launches and the sign-in methods those agents document; Superset doesn't document each provider route itself."
+    },
+    "tool/conductor": {
+      checkedAt: "2026-10-01",
+      corpusUpdatedAt: "2026-10-01",
+      evidenceLevel: "partial",
+      claimNote: "Claude, ChatGPT and OpenRouter routes come from Conductor's providers guide. The Gemini, Grok and Copilot cells follow OpenCode's documented providers and are not described by Conductor itself."
+    },
+    "tool/emdash": {
+      checkedAt: "2026-10-01",
+      corpusUpdatedAt: "2026-10-01",
+      evidenceLevel: "partial",
+      claimNote: "Cells follow the agents Emdash launches and the sign-in methods those agents document; Emdash doesn't document each provider route itself."
+    },
+    "tool/maestro": {
+      checkedAt: "2026-10-01",
+      corpusUpdatedAt: "2026-10-01",
+      evidenceLevel: "partial",
+      claimNote: "Cells follow the agents Maestro launches and the sign-in methods those agents document; Maestro doesn't document each provider route itself."
+    },
+    "tool/nimbalyst": {
+      checkedAt: "2026-10-01",
+      corpusUpdatedAt: "2026-10-01",
+      evidenceLevel: "partial",
+      claimNote: "Cells follow the agents Nimbalyst launches and the sign-in methods those agents document; Nimbalyst doesn't document each provider route itself."
+    },
+    "tool/paseo": {
+      checkedAt: "2026-10-01",
+      corpusUpdatedAt: "2026-10-01",
+      evidenceLevel: "partial",
+      claimNote: "Cells follow the agents Paseo launches and the sign-in methods those agents document; Paseo doesn't document each provider route itself."
+    },
+    "tool/termic": {
+      checkedAt: "2026-10-01",
+      corpusUpdatedAt: "2026-10-01",
+      evidenceLevel: "partial",
+      claimNote: "Cells follow the agents Termic launches and the sign-in methods those agents document; Termic doesn't document each provider route itself."
+    },
+    "tool/claudesquad": {
+      checkedAt: "2026-10-01",
+      corpusUpdatedAt: "2026-10-01",
+      evidenceLevel: "partial",
+      claimNote: "Cells follow the agents Claude Squad launches and the sign-in methods those agents document; Claude Squad doesn't document each provider route itself."
     },
     "tool/zed": {
       checkedAt: "2026-09-29",
@@ -779,14 +900,30 @@ var PROVENANCE = {
   }
 };
 
+// What's new, newest first. Reader-facing changes only — not copy edits or
+// tooling. `tabs` lists the tabs an entry touched; each renders as a link.
+var CHANGES = [
+  { date: "2026-10-01", tabs: ["ades"], text: "New tab: ten ADEs that run agents from more than one vendor, compared on the agents they drive, where those agents run, how they review work, and what they cost." },
+  { date: "2026-10-01", tabs: ["providers"], text: "The nine new ADEs join the matrix, with each cell naming the agent a sign-in goes through. Groups are now Source available and Closed source." },
+  { date: "2026-10-01", tabs: [], text: "The site is now called Agent Rosetta, since it covers more than harnesses." },
+  { date: "2026-10-01", tabs: [], text: "Tabs reordered so the three harness tabs sit together, and filters no longer run off the edge on phones." },
+  { date: "2026-09-30", tabs: ["providers"], text: "T3 Code added, and a cell can now show more than one way to connect." },
+  { date: "2026-09-22", tabs: ["harness", "portability"], text: "Claude Code doesn't read .agents/skills; the symlink workaround is documented." },
+  { date: "2026-09-11", tabs: ["harness", "infra"], text: "Bots are separated from throwaway subagents, and Browserbase joins Infrastructure." },
+  { date: "2026-09-01", tabs: ["harness"], text: "Copilot also reads Claude's plugin manifests, so the bundle layer was corrected." },
+  { date: "2026-08-25", tabs: ["infra"], text: "Exa, Tavily, Firecrawl and Brave Search added as search providers." },
+  { date: "2026-08-17", tabs: ["harness", "portability", "permissions"], text: "Grok Build added across the harness tabs." }
+];
+
 // The tab bar renders from this: one entry per reference, in display order.
 // `hash` is the public deep link (#harnesses, #providers, …) — don't rename
 // existing ones, they're shared. Each needs a <main id="panel-<id>">.
 var TABS = [
   { id: "harness",     hash: "harnesses",   label: "Harness layers" },
-  { id: "providers",   hash: "providers",   label: "Provider matrix" },
   { id: "portability", hash: "portability", label: "Portability" },
   { id: "permissions", hash: "permissions", label: "Permissions" },
+  { id: "ades",        hash: "ades",        label: "ADEs" },
+  { id: "providers",   hash: "providers",   label: "Provider matrix" },
   { id: "infra",       hash: "infra",       label: "Infrastructure" }
 ];
 
@@ -794,7 +931,6 @@ var MECH = {
   apikey:     { label: "API Key" },
   oauth:      { label: "Sign-in" },
   native:     { label: "Built in" },
-  restricted: { label: "Not allowed" },
   no:         { label: "—" }
 };
 
@@ -916,10 +1052,127 @@ var TOOLS = [
     support: { chatgpt: ["oauth", "apikey"], gemini: "oauth", grok: "apikey", claude_sub: "apikey", copilot: "oauth", openrouter: "apikey" },
     note: "A Rust-based multi-provider editor with 15+ LLM providers behind one Agent Panel. Sign in with ChatGPT Plus/Pro, Google (Gemini), or a Copilot Pro/Business/Enterprise subscription. Claude in Zed's own provider settings uses an Anthropic API key, not Claude subscription sign-in. External Claude agents and terminal threads configure authentication separately in Claude Code. xAI and OpenRouter are API-key only. Local models via Ollama.",
     url: "https://zed.dev/docs/ai/use-api-access"
+  },
+  {
+    id: "orca", name: "Orca", kind: "Desktop + mobile",
+    support: {
+      chatgpt: [{ method: "oauth", via: "Codex" }, { method: "apikey", via: "Codex" }],
+      gemini: [{ method: "oauth", via: "Gemini CLI" }, { method: "apikey", via: "Gemini CLI" }],
+      grok: [{ method: "oauth", via: "Grok Build" }, { method: "apikey", via: "OpenCode / Pi" }],
+      claude_sub: [{ method: "oauth", via: "Claude Code" }, { method: "apikey", via: "Claude Code" }],
+      copilot: { method: "oauth", via: "Copilot CLI" },
+      openrouter: [{ method: "oauth", via: "Pi" }, { method: "apikey", via: "OpenCode / Pi" }]
+    },
+    note: "An ADE that runs each agent's own CLI in a terminal, with Claude Code, Codex, Gemini CLI, Copilot CLI, Grok Build, OpenCode and Pi among its presets. It has no sign-in of its own: ChatGPT connects through Codex, Claude through Claude Code, Gemini through Gemini CLI, Copilot through Copilot CLI, and API keys or OpenRouter through OpenCode or Pi.",
+    url: "https://www.onorca.dev/docs/agents/supported"
+  },
+  {
+    id: "superset", name: "Superset", kind: "Desktop + mobile",
+    support: {
+      chatgpt: [{ method: "oauth", via: "Codex" }, { method: "apikey", via: "Codex" }],
+      gemini: [{ method: "oauth", via: "Gemini CLI" }, { method: "apikey", via: "Gemini CLI" }],
+      grok: [{ method: "oauth", via: "Grok Build" }, { method: "apikey", via: "OpenCode" }],
+      claude_sub: [{ method: "oauth", via: "Claude Code" }, { method: "apikey", via: "Claude Code" }],
+      copilot: { method: "oauth", via: "Copilot CLI" },
+      openrouter: { method: "apikey", via: "Claude Code / OpenCode" }
+    },
+    note: "An ADE that wraps the CLIs it launches — Claude Code, Codex, Gemini CLI, Copilot, Grok Build, OpenCode and twenty-odd more — so each provider connects the way that agent does. Its docs cover pointing Claude Code at OpenRouter, Bedrock, Vertex or Vercel's gateway.",
+    url: "https://docs.superset.sh/agent-integration"
+  },
+  {
+    id: "conductor", name: "Conductor", kind: "Desktop + iOS",
+    support: {
+      chatgpt: [{ method: "oauth", via: "Codex" }, { method: "apikey", via: "Codex" }],
+      gemini: { method: "apikey", via: "OpenCode" },
+      grok: { method: "apikey", via: "OpenCode" },
+      claude_sub: [{ method: "oauth", via: "Claude Code" }, { method: "apikey", via: "Claude Code" }],
+      copilot: { method: "oauth", via: "OpenCode" },
+      openrouter: { method: "apikey", via: "Claude Code / OpenCode" }
+    },
+    note: "A Mac ADE for Claude Code, Codex, OpenCode and Cursor. Claude takes a subscription, CLI login or API key, Codex takes ChatGPT sign-in or a key, and OpenRouter works by setting environment variables for Claude Code or a key for OpenCode. Cursor runs through Cursor's API with a Cursor key, which isn't one of the credentials here.",
+    url: "https://www.conductor.build/docs/guides/providers"
+  },
+  {
+    id: "emdash", name: "Emdash", kind: "Desktop",
+    support: {
+      chatgpt: [{ method: "oauth", via: "Codex" }, { method: "apikey", via: "Codex" }],
+      gemini: [{ method: "oauth", via: "Antigravity" }, { method: "apikey", via: "Antigravity" }],
+      grok: [{ method: "oauth", via: "Grok Build" }, { method: "apikey", via: "OpenCode" }],
+      claude_sub: [{ method: "oauth", via: "Claude Code" }, { method: "apikey", via: "Claude Code" }],
+      copilot: { method: "oauth", via: "Copilot CLI" },
+      openrouter: { method: "apikey", via: "OpenCode" }
+    },
+    note: "An ADE with a fixed list of 35 agent CLIs that it detects on your machine, including Claude Code, Codex, Antigravity, Copilot CLI, Grok Build and OpenCode. Each provider connects through whichever of those agents you use; Emdash adds no sign-in of its own.",
+    url: "https://emdash.com/docs/providers"
+  },
+  {
+    id: "maestro", name: "Maestro", kind: "Desktop",
+    support: {
+      chatgpt: [{ method: "oauth", via: "Codex" }, { method: "apikey", via: "Codex" }],
+      gemini: { method: "apikey", via: "OpenCode" },
+      grok: { method: "apikey", via: "OpenCode" },
+      claude_sub: [{ method: "oauth", via: "Claude Code" }, { method: "apikey", via: "Claude Code" }],
+      copilot: { method: "oauth", via: "Copilot CLI" },
+      openrouter: { method: "apikey", via: "OpenCode" }
+    },
+    note: "An ADE for Claude Code, Codex, OpenCode, Factory Droid and Copilot CLI (beta), which passes through each agent's existing sign-in. Gemini, Grok and OpenRouter have no first-party agent here, so they come in as API keys through OpenCode.",
+    url: "https://github.com/RunMaestro/Maestro/blob/main/docs/installation.md"
+  },
+  {
+    id: "nimbalyst", name: "Nimbalyst", kind: "Desktop + iOS",
+    support: {
+      chatgpt: [{ method: "oauth", via: "Codex" }, { method: "apikey", via: "Codex" }],
+      gemini: [{ method: "oauth", via: "Antigravity" }, { method: "apikey", via: "OpenCode" }],
+      grok: [{ method: "oauth", via: "Grok Build" }, { method: "apikey", via: "OpenCode" }],
+      claude_sub: [{ method: "oauth", via: "Claude Code" }, { method: "apikey", via: "Claude Code" }],
+      copilot: { method: "oauth", via: "Copilot" },
+      openrouter: { method: "apikey", via: "OpenCode" }
+    },
+    note: "An ADE built around Claude Code and Codex, either of which takes a subscription or an API key. Its other agents — OpenCode, Copilot, Grok Build, Cursor and Gemini through Antigravity — are alpha integrations, so those routes are newer and less settled.",
+    url: "https://nimbalyst.com/docs/setup-nimbalyst/ai-provider-setup-and-notifications/"
+  },
+  {
+    id: "paseo", name: "Paseo", kind: "Desktop + mobile + web",
+    support: {
+      chatgpt: [{ method: "oauth", via: "Codex" }, { method: "apikey", via: "Codex" }],
+      gemini: [{ method: "oauth", via: "Antigravity" }, { method: "apikey", via: "Antigravity" }],
+      grok: [{ method: "oauth", via: "Pi" }, { method: "apikey", via: "OpenCode / Pi" }],
+      claude_sub: [{ method: "oauth", via: "Claude Code" }, { method: "apikey", via: "Claude Code" }],
+      copilot: { method: "oauth", via: "Copilot" },
+      openrouter: [{ method: "oauth", via: "Pi" }, { method: "apikey", via: "OpenCode / Pi" }]
+    },
+    note: "An ADE whose daemon runs Claude Code, Codex, Copilot, OpenCode, Pi and Antigravity natively, plus about 36 more agents over ACP. Each provider connects through the agent you pick; Grok and OpenRouter sign-in come through Pi.",
+    url: "https://paseo.sh/docs/supported-providers"
+  },
+  {
+    id: "termic", name: "Termic", kind: "Desktop",
+    support: {
+      chatgpt: [{ method: "oauth", via: "Codex" }, { method: "apikey", via: "Codex" }],
+      gemini: [{ method: "oauth", via: "Antigravity" }, { method: "apikey", via: "Antigravity" }],
+      grok: [{ method: "oauth", via: "Grok Build" }, { method: "apikey", via: "OpenCode / Pi" }],
+      claude_sub: [{ method: "oauth", via: "Claude Code" }, { method: "apikey", via: "Claude Code" }],
+      copilot: { method: "oauth", via: "Copilot CLI" },
+      openrouter: [{ method: "oauth", via: "Pi" }, { method: "apikey", via: "OpenCode / Pi" }]
+    },
+    note: "An ADE that runs each vendor's interactive CLI in a terminal, with Claude Code, Codex, Antigravity, Copilot, Grok, OpenCode and Pi built in. Because it runs the real CLIs, your subscriptions apply as they would in a terminal.",
+    url: "https://termic.dev/docs/agents/"
+  },
+  {
+    id: "claudesquad", name: "Claude Squad", kind: "Terminal UI",
+    support: {
+      chatgpt: [{ method: "oauth", via: "Codex" }, { method: "apikey", via: "Codex" }],
+      gemini: [{ method: "oauth", via: "Gemini CLI" }, { method: "apikey", via: "Gemini CLI" }],
+      grok: { method: "apikey", via: "OpenCode" },
+      claude_sub: [{ method: "oauth", via: "Claude Code" }, { method: "apikey", via: "Claude Code" }],
+      copilot: { method: "oauth", via: "OpenCode" },
+      openrouter: { method: "apikey", via: "OpenCode" }
+    },
+    note: "A terminal ADE that starts Claude Code, Codex, Gemini CLI, Aider, OpenCode or Amp in tmux. Nothing to sign in to: each agent uses its own login, and Copilot, Grok and OpenRouter need OpenCode.",
+    url: "https://github.com/smtg-ai/claude-squad"
   }
 ];
 
-var CLOSED = { antigravity: 1, chatgpt: 1, claude: 1, cursor: 1, copilot: 1 };
+var CLOSED = { antigravity: 1, chatgpt: 1, claude: 1, conductor: 1, cursor: 1, copilot: 1 };
 
 // ---------------------------------------------------------------------------
 // Harness matrix data. HARNESSES fixes the row order of the matrix and the
@@ -2361,6 +2614,206 @@ var INFRA = [
   }
 ];
 
+// ---------------------------------------------------------------------------
+// ADEs: apps whose job is running several coding agents side by side and
+// shepherding their output to a merge. Own rows, like INFRA.
+// Only tools that run more than one vendor's agent qualify; single-vendor apps
+// (Claude Code desktop, the Codex app, Cursor's Agents Window, Jules) are out.
+// `drive` is our reading of how it talks to agents, not a vendor label:
+//   anycli  = launches any terminal agent in its own PTY; a named list is preset
+//   adapter = a per-agent integration (SDK, ACP or a bundled binary), so only
+//             the listed agents work, but the app understands their sessions
+// `pay` is what the ADE itself costs on top of the agents you already pay for.
+// `os` drives the platform filter: mac / win / linux / phone.
+// Checked 2026-10-01 against each project's site, README and GitHub API.
+// ---------------------------------------------------------------------------
+var ADE_DRIVE = {
+  anycli:  { label: "Any CLI agent" },
+  adapter: { label: "Listed agents" }
+};
+var ADE_PAY = {
+  adefree:   { label: "Free" },
+  freemium:  { label: "Free + paid tier" }
+};
+var ADE_OS = [
+  { id: "all",   label: "Any" },
+  { id: "mac",   label: "macOS" },
+  { id: "win",   label: "Windows" },
+  { id: "linux", label: "Linux" },
+  { id: "phone", label: "Phone app" }
+];
+var ADES = [
+  {
+    id: "termic", name: "Termic", kind: "Desktop",
+    maker: "Simion Agavriloaei (individual)",
+    drive: "anycli", agents: "Claude Code · Codex · Antigravity · Copilot · Grok · OpenCode · Pi · Muse Code · Devin · any terminal CLI",
+    platforms: "macOS · Linux · Windows 11 (experimental, unsigned)", os: { mac: 1, win: 1, linux: 1 },
+    iso: "Worktree per task, or the main checkout", isoq: "multi-repo tasks · opt-in Seatbelt sandbox with network allowlist (macOS) · Docker sandbox (experimental)",
+    review: "Diff vs HEAD · inline comments batched back to the agent · staging and commits · GitHub PR / GitLab MR with checks and comments routed back to the agent",
+    pay: "adefree", price: "agents use your own CLI plans",
+    license: "AGPL-3.0",
+    remote: "— · mobile companion on the roadmap",
+    extras: "Broadcast one prompt to many agents · two accounts per agent, switch at the plan limit · per-agent usage meters · kanban board · termic CLI · prompt library · no account, backend or telemetry",
+    maturity: "First release May 2026 · v1.11.3 on 30 Sep 2026 · ~225 stars",
+    note: "A Tauri app that runs each vendor's own interactive CLI in a terminal rather than wrapping an SDK, which its FAQ says keeps Claude usage on Pro and Max plan limits. A task can span several repos, and on macOS it can run inside a Seatbelt sandbox with a per-CLI hostname allowlist — one of the few ADEs here that sandboxes what it launches.",
+    url: "https://termic.dev",
+    repo: "https://github.com/simion/termic",
+    status: "verified"
+  },
+  {
+    id: "paseo", name: "Paseo", kind: "Desktop + mobile + web",
+    maker: "Mohamed Boudra (solo, sponsor-funded)",
+    drive: "adapter", agents: "Claude Code · Codex · Copilot · OpenCode · Pi · Antigravity · Muse Code · ~36 more over ACP (Gemini CLI · Cursor · Amp · goose · Droid …)",
+    platforms: "macOS · Windows · Linux · iOS / Android · web · CLI", os: { mac: 1, win: 1, linux: 1, phone: 1 },
+    iso: "Worktree per workspace", isoq: "daemon on a laptop, VPS or Docker · check out a PR into a worktree",
+    review: "Diff against the base branch · commit · merge or archive the workspace",
+    pay: "freemium", price: "app free · optional hosted Hub: 50 runs/mo free, Pro $15/seat/mo",
+    license: "Apache-2.0",
+    remote: "Native iOS and Android apps · web UI · end-to-end-encrypted relay (opt-in) or direct TCP / Tailscale",
+    extras: "Voice mode · TypeScript SDK and CLI · plugins · orchestration skills · Hub triggers from GitHub, Slack and Discord · schedules · no telemetry",
+    maturity: "First commit Oct 2025 · v0.10.2 on 29 Sep 2026 · ~19k stars",
+    note: "A local daemon manages the agent CLIs and serves desktop, mobile, web and CLI clients, which connect directly or through an encrypted relay. Agents come in through native integrations or the Agent Client Protocol, and work runs in worktree workspaces. An optional Hub, self-hosted or paid hosted, starts agents from GitHub, Slack or Discord events.",
+    url: "https://paseo.sh",
+    repo: "https://github.com/getpaseo/paseo",
+    status: "verified"
+  },
+  {
+    id: "maestro", name: "Maestro", kind: "Desktop",
+    maker: "RunMaestro (Pedram Amini)",
+    drive: "adapter", agents: "Claude Code · Codex · OpenCode · Factory Droid · Copilot CLI (beta)",
+    platforms: "macOS · Windows · Linux · phone via web remote", os: { mac: 1, win: 1, linux: 1 },
+    iso: "Worktree per sub-agent", isoq: "setup script per worktree · SSH remotes · no sandbox of its own",
+    review: "Diff viewer · git log · one-click PR",
+    pay: "adefree", price: "no paid tier found · agents' own logins",
+    license: "AGPL-3.0",
+    remote: "Built-in web server with a QR code for phone control · Cloudflare tunnel · SSH remote execution",
+    extras: "Auto Run playbooks (markdown checklists, a fresh session per task) · group chat with a moderator agent · Maestro Cue event triggers · maestro-cli for headless and CI · usage dashboard",
+    maturity: "Repo since Nov 2025 · v0.17.5 on 25 Sep 2026 · ~3.4k stars",
+    note: "A keyboard-first Electron app that drives each supported agent in non-interactive batch mode (codex exec, opencode run), passing through your existing MCP servers, skills and sign-ins. Auto Run works through a markdown checklist one task per fresh session, and a moderator agent can coordinate several agents in one group chat.",
+    url: "https://runmaestro.ai",
+    repo: "https://github.com/RunMaestro/Maestro",
+    status: "verified"
+  },
+  {
+    id: "orca", name: "Orca", kind: "Desktop + mobile",
+    maker: "Stably AI (YC)",
+    drive: "anycli", agents: "Claude Code · Codex · Cursor · Gemini · Copilot · OpenCode · Grok · Pi",
+    platforms: "macOS · Windows · Linux · iOS / Android", os: { mac: 1, win: 1, linux: 1, phone: 1 },
+    iso: "Worktree per agent", isoq: "SSH remote worktrees · port forwarding",
+    review: "Inline diff comments batched back to the agent · in-app PR review · CI · compare parallel runs, merge the winner",
+    pay: "adefree", price: "your own agent subscriptions",
+    license: "MIT",
+    remote: "iOS and Android companion (beta) with notifications · headless Linux server mode",
+    extras: "Design mode (a Chromium window per worktree) · GPU-rendered terminals · Orca CLI · GitHub, GitLab, Bitbucket, Linear, Jira and more",
+    maturity: "Repo since Mar 2026 · v1.4.218 on 30 Sep 2026 · ~83k GitHub stars",
+    note: "Every agent gets its own worktree and terminal, you annotate the diff inline and send the comments back as a batch, then review and approve the PR without leaving the app. It wraps the agents' own CLIs, so anything that runs in a terminal works.",
+    url: "https://www.onorca.dev/",
+    repo: "https://github.com/stablyai/orca",
+    status: "verified"
+  },
+  {
+    id: "t3", name: "T3 Code", kind: "Desktop + web + mobile",
+    maker: "T3 Tools Inc. (Theo, Julius)",
+    drive: "adapter", agents: "Codex · Claude Code · Cursor · Grok Build · OpenCode · Antigravity",
+    platforms: "macOS · Windows · Linux · web · iOS / Android", os: { mac: 1, win: 1, linux: 1, phone: 1 },
+    iso: "Optional worktree per thread", isoq: "worktrees via a t3.json setup script",
+    review: "Inline diff · diff comments sent to the agent as context · one button to commit, push and open a PR · generated PR text · draft and stacked PRs",
+    pay: "adefree", price: "bring your own subscription",
+    license: "MIT",
+    remote: "Remote-ready: the server runs anywhere, reach it over LAN, Tailscale or the T3 Connect relay · web and mobile clients",
+    extras: "MCP tools for agents (device, preview, PRs) · iOS Simulator / Android Emulator panel · self-host with npx t3",
+    maturity: "Repo since Feb 2026 · v0.0.44 on 29 Sep 2026 · ~24k stars · README: \"very very early\"",
+    note: "A Node server with one adapter per provider, and thin clients on top — which is why the same session follows you from desktop to browser to phone. It pitches itself as the open, bring-your-own-subscription answer to the Codex app, Conductor, Claude Desktop and Cursor Glass.",
+    url: "https://t3.codes/",
+    repo: "https://github.com/pingdotgg/t3code",
+    status: "verified"
+  },
+  {
+    id: "superset", name: "Superset", kind: "Desktop + mobile",
+    maker: "Superset Inc.",
+    drive: "anycli", agents: "Claude Code · Codex · OpenCode · Cursor Agent · Gemini CLI · Copilot · Devin · Grok · Kimi Code · any CLI",
+    platforms: "macOS · Linux (experimental) · iOS on Pro · no Windows yet", os: { mac: 1, linux: 1, phone: 1 },
+    iso: "Worktree per workspace", isoq: "no process sandbox · other machines as remote hosts via Superset Relay",
+    review: "Diff viewer with comments and in-place edits · PR feedback to an agent, optionally posted to GitHub · create, review and merge PRs",
+    pay: "freemium", price: "Free solo + local · Pro $20/user/mo ($15 yearly)",
+    license: "ELv2 (source-available)",
+    remote: "Remote hosts, mobile app and automations are Pro features",
+    extras: "Setup and teardown scripts · automatic port detection per workspace · CLI, TypeScript SDK and MCP server · Linear and Slack on Pro",
+    maturity: "Repo since Oct 2025 · desktop v1.33.0 on 30 Sep 2026 · ~15k stars",
+    note: "Workspace-first rather than agent-first: each workspace is a worktree with its own setup and teardown scripts and automatically detected ports. Local-first: repos, worktrees and agent sessions stay on your machine by default, and cloud sync covers account and organization metadata only. Source-available under the Elastic License, not OSI open source.",
+    url: "https://superset.sh/",
+    repo: "https://github.com/superset-sh/superset",
+    priceUrl: "https://superset.sh/pricing",
+    status: "verified"
+  },
+  {
+    id: "conductor", name: "Conductor", kind: "Desktop + iOS",
+    maker: "Melty Labs, Inc.",
+    drive: "adapter", agents: "Claude Code · Codex · OpenCode (bundled, or your own install) · Cursor (via Cursor's API, key required)",
+    platforms: "macOS · iOS companion on Pro · no Windows or Linux yet", os: { mac: 1, phone: 1 },
+    iso: "Worktree + branch per workspace", isoq: "local: unsandboxed, your user permissions · cloud: Linux sandbox on Vercel",
+    review: "Diff → open PR → merge → archive the workspace",
+    pay: "freemium", price: "Free · Pro $50/mo · Teams $60/user/mo (invite-only) · Enterprise custom",
+    license: "Closed source",
+    remote: "Conductor Cloud on Pro and up: Vercel sandboxes that keep running after you close the app · Conductor API · iOS app",
+    extras: "Claude subscription, CLI login or API key · Sign in with ChatGPT · Bedrock, OpenRouter, Vercel AI Gateway and GLM via env vars · multiplayer shared workspaces",
+    maturity: "v0.89.3 (Sep 2026) · seed-funded small team · claims 100k+ users",
+    note: "A Mac app that gives each agent a city-named worktree and opens a PR when it's done. It bundles Claude Code, Codex and OpenCode (or points at your own installs), and Cursor sessions run through Cursor's API with a key rather than a local CLI. Cloud workspaces store chats on Conductor's servers; local ones don't.",
+    url: "https://www.conductor.build/docs",
+    priceUrl: "https://www.conductor.build/pricing",
+    status: "partial", caveat: "Conductor's own pages disagree: the cloud FAQ calls the mobile app coming soon while the homepage links a live App Store listing, and the main FAQ still says it doesn't charge despite paid tiers."
+  },
+  {
+    id: "emdash", name: "Emdash", kind: "Desktop",
+    maker: "General Action (YC W26)",
+    drive: "adapter", agents: "Claude Code · Codex · Cursor · OpenCode · Amp · Devin · Qwen · Droid · Copilot · 35 supported, auto-detected",
+    platforms: "macOS · Windows · Linux (x64 + ARM64)", os: { mac: 1, win: 1, linux: 1 },
+    iso: "Worktree per task", isoq: "SSH / SFTP remote projects",
+    review: "Diff · create PR · watch CI checks · merge",
+    pay: "adefree", price: "your own credentials · Cloud tier not priced",
+    license: "Apache-2.0",
+    remote: "SSH / SFTP remote projects with agent, key or password auth",
+    extras: "Start tasks from Linear, Jira, GitHub, GitLab, Asana, Notion, Monday, Trello and more · scheduled automations · built-in browser",
+    maturity: "v1.2.7 on 27 Sep 2026 · ~5.9k stars · claims 1M+ downloads",
+    note: "Issue-tracker-first: pull a ticket from Linear or Jira, hand it to any of 35 supported agent CLIs, and follow it through CI to merge. Fully cross-platform including Linux ARM.",
+    url: "https://github.com/generalaction/emdash",
+    status: "verified"
+  },
+  {
+    id: "nimbalyst", name: "Nimbalyst", kind: "Desktop + iOS",
+    maker: "Nimbalyst (successor to Crystal)",
+    drive: "adapter", agents: "Claude Code · Codex · alpha: OpenCode, Copilot (over ACP), Grok Build, Cursor Agent, Gemini via Antigravity",
+    platforms: "macOS · Windows · Linux · iOS", os: { mac: 1, win: 1, linux: 1, phone: 1 },
+    iso: "Optional worktree per session",
+    review: "Inline diffs across code, markdown, mockups and diagrams · approve before changes land · kanban session history",
+    pay: "freemium", price: "free for individuals · Teams free in beta, then $20/user/mo",
+    license: "MIT",
+    remote: "iOS app",
+    extras: "Visual editors for markdown, CSV, mockups and diagrams · multiplayer docs and trackers · extension marketplace",
+    maturity: "v0.79.1 on 30 Sep 2026 · ~1.8k stars · replaced Crystal in Feb 2026",
+    note: "Leans toward the non-code half of the work — the agent edits a spec, a mockup or a CSV as readily as source, and every change is reviewed as a diff. Beyond Claude Code and Codex, every agent is an alpha with its own integration; only Copilot comes in over ACP.",
+    url: "https://nimbalyst.com/",
+    repo: "https://github.com/nimbalyst/nimbalyst",
+    status: "verified"
+  },
+  {
+    id: "claudesquad", name: "Claude Squad", kind: "Terminal UI",
+    maker: "smtg-ai",
+    drive: "anycli", agents: "Claude Code · Codex · Gemini · Aider · OpenCode · Amp",
+    platforms: "Any terminal with tmux (Windows: tmux via WSL)", os: { mac: 1, win: 1, linux: 1 },
+    iso: "Worktrees", isoq: "tmux session per agent",
+    review: "Preview and diff tabs · commit · push the branch",
+    pay: "adefree", price: "agents' own logins · gh needed to push",
+    license: "AGPL-3.0",
+    remote: "—",
+    extras: "Homebrew install · no GUI",
+    maturity: "v1.0.20 on 20 Aug 2026 · ~8.6k stars",
+    note: "The minimal version of the idea: tmux plus worktrees plus a diff pane, in your terminal. No PR review, no CI, nothing to sign up for.",
+    url: "https://github.com/smtg-ai/claude-squad",
+    status: "verified"
+  }
+];
+
 var STORAGE_KEY = "ai_tool_matrix_prefs";
 // Selected-row state for the four row-detail tables. These must be assigned
 // before the init IIFE runs — `var` hoists the declaration but not the value.
@@ -2371,6 +2824,7 @@ var pmState = { have: {}, filter: "all", detail: null };
 var portState = { detail: null }, permState = { detail: null };
 // `need` is the capability filter on the infrastructure tab: cap id -> wanted.
 var infraState = { detail: null, need: {}, filter: "covers" };
+var adeState = { detail: null, os: "all" };
 var CARD_IDS = LAYERS.map(function(L){ return L.id; });
 
 function loadPrefs(){
@@ -2384,6 +2838,7 @@ function savePrefs(){
       filter: pmState.filter,
       need: infraState.need,
       ineed: infraState.filter,
+      adeos: adeState.os,
       theme: document.documentElement.getAttribute("data-theme") || 'system',
       tab: document.body.getAttribute("data-tab"),
       hf: document.body.getAttribute("data-hf")
@@ -2414,6 +2869,7 @@ function cellMeta(s){
   if(theme !== 'system') document.documentElement.setAttribute('data-theme', theme);
   updateThemeBtns(theme);
   renderTabs();
+  renderChanges();
   renderHarnessPicker();
   renderHarnessMatrix();
   renderLayerCards();
@@ -2426,8 +2882,9 @@ function cellMeta(s){
     infraState.need[c.id] = !!(saved.need && saved.need[c.id]);
   });
   infraState.filter = saved.ineed === 'all' ? 'all' : 'covers';
+  ADE_OS.forEach(function(o){ if (o.id === saved.adeos) adeState.os = o.id; });
 
-  document.getElementById('buildTag').textContent = 'ai-tool-reference · ' + BUILD.version;
+  document.getElementById('buildTag').textContent = 'agent-rosetta · ' + BUILD.version;
   document.getElementById('buildFoot').textContent = 'compiled ' + BUILD.compiled + ' · updated ' + BUILD.updated;
 
   // The hash addresses either a tab (#harnesses, #providers, …) or a layer card (#c-skill).
@@ -2443,11 +2900,19 @@ function cellMeta(s){
   renderPortability();
   renderPermissions();
   renderInfra();
+  renderAdes();
   if (isCard) openCard(target, false);
+  // Wait for fonts and layout to settle, and stop a reload from restoring the
+  // old scroll position over ours, or the scroll lands short of the list.
+  if (target === 'changes'){
+    if ('scrollRestoration' in history) history.scrollRestoration = 'manual';
+    window.addEventListener('load', openChanges);
+  }
   // Hash changes are same-document navigations — this code doesn't re-run, so
   // follow them here for both tab links and layer cards.
   window.addEventListener('hashchange', function(){
     var id = location.hash.replace('#', '');
+    if (id === 'changes'){ openChanges(); return; }
     if (CARD_IDS.indexOf(id) !== -1){
       if (document.body.getAttribute('data-tab') !== 'harness') applyTab('harness', false);
       openCard(id, false);
@@ -2459,6 +2924,44 @@ function cellMeta(s){
   });
 })();
 
+function fmtDate(iso){
+  // Months live in here, not a top-level var: the init IIFE calls this before
+  // any assignment further down the file has run.
+  var months = ["Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec"];
+  var p = iso.split('-');
+  return Number(p[2]) + ' ' + months[Number(p[1]) - 1] + ' ' + p[0];
+}
+// Only the last month shows; older entries stay in CHANGES for the record and
+// the GitHub history link covers them. `now` is a parameter so tests can pin it.
+function recentChanges(now){
+  var d = new Date(now.getTime());
+  d.setMonth(d.getMonth() - 1);
+  var pad = function(n){ return (n < 10 ? '0' : '') + n; };
+  var cutoff = d.getFullYear() + '-' + pad(d.getMonth() + 1) + '-' + pad(d.getDate());
+  return CHANGES.filter(function(c){ return c.date >= cutoff; });
+}
+function renderChanges(){
+  var el = document.getElementById('changesList');
+  if (!el) return;
+  var recent = recentChanges(new Date());
+  if (!recent.length){
+    el.innerHTML = '<p class="cfoot">Nothing new in the last month · full history on <a href="https://github.com/stephf0716/agent-harness-rosetta/commits/main" target="_blank" rel="noopener noreferrer" style="color:inherit">GitHub</a></p>';
+    return;
+  }
+  el.innerHTML = '<ol>' + recent.map(function(c){
+    var tags = c.tabs.map(function(id){
+      var t = tabById(id);
+      return t ? '<button class="ctag" onclick="setTab(\'' + esc(id) + '\')">' + esc(t.label) + '</button>' : '';
+    }).join('');
+    return '<li><div class="cdate">' + esc(fmtDate(c.date)) + '</div><div class="ctxt">' + tags + esc(c.text) + '</div></li>';
+  }).join('') + '</ol><div class="cfoot">showing the last month · full history on <a href="https://github.com/stephf0716/agent-harness-rosetta/commits/main" target="_blank" rel="noopener noreferrer" style="color:inherit">GitHub</a></div>';
+}
+// #changes opens the list and brings it into view; it starts collapsed otherwise.
+function openChanges(){
+  var el = document.getElementById('changes');
+  el.open = true;
+  el.scrollIntoView();
+}
 function tabById(id){
   for (var i = 0; i < TABS.length; i++){ if (TABS[i].id === id) return TABS[i]; }
   return null;
@@ -2478,6 +2981,14 @@ function applyTab(tab, updateHash){
     if (btn) btn.setAttribute('aria-selected', t.id === tab ? 'true' : 'false');
     if (panel) panel.hidden = (t.id !== tab);
   });
+  // On a narrow screen the tab bar scrolls sideways; bring the active tab into
+  // view without moving the page itself.
+  var bar = document.getElementById('tabBar');
+  var active = document.getElementById('tab-' + tab);
+  if (bar && active && bar.scrollWidth > bar.clientWidth){
+    var b = bar.getBoundingClientRect(), a = active.getBoundingClientRect();
+    bar.scrollLeft += (a.left - b.left) - (b.width - a.width) / 2;
+  }
   if (updateHash && window.history && history.replaceState) {
     history.replaceState(null, '', '#' + tabById(tab).hash);
   }
@@ -2623,7 +3134,7 @@ function pmUsable(t, creds, mode){
   return creds.some(function(c){
     return pmConnections(t, c.id).some(function(connection){
       var m = connection.method;
-      return mode === 'sub' ? (m === 'oauth' || m === 'native') : (m !== 'no' && m !== 'restricted');
+      return mode === 'sub' ? (m === 'oauth' || m === 'native') : m !== 'no';
     });
   });
 }
@@ -2727,7 +3238,7 @@ function pmRenderMatrix(){
     creds.map(function(c){
       return '<th><span class="chd">' + esc(c.label) + '</span></th>';
     }).join('') + '</tr></thead><tbody>';
-  if (open.length) html += pmBand('Open source', open.length, cols) + open.map(function(t){ return pmToolRow(t, creds); }).join('');
+  if (open.length) html += pmBand('Source available', open.length, cols) + open.map(function(t){ return pmToolRow(t, creds); }).join('');
   if (closed.length) html += pmBand('Closed source', closed.length, cols) + closed.map(function(t){ return pmToolRow(t, creds); }).join('');
   if (!shown.length) html += '<tr class="pm-band"><td colspan="' + cols + '">no tools match the current filter</td></tr>';
   html += '</tbody></table>';
@@ -3054,6 +3565,78 @@ function renderInfraDetail(rows){
     (sel.url ? '<br><a href="' + esc(sel.url) + '" target="_blank" rel="noopener noreferrer">' + esc(sel.name) + ' docs <span aria-hidden="true">↗</span></a>' : '');
 }
 
+/* ---- ADE tab ---- */
+function adeSelect(id){
+  adeState.detail = id;
+  renderAdes();
+  var row = document.querySelector('#adeMatrix tr[data-tool="' + id + '"]');
+  if (row) row.focus({preventScroll:true});
+}
+function adeSetOs(id){ adeState.os = id; savePrefs(); renderAdes(); }
+function adeRows(){
+  return ADES.filter(function(r){ return adeState.os === 'all' || r.os[adeState.os]; })
+    .sort(function(a, b){ return a.name.localeCompare(b.name); });
+}
+function adeBadgeCell(map, v, sub){
+  if (!v || !map[v]) return '<span class="dash">—</span>';
+  return badge(v, map[v].label) + (sub ? '<span class="loc">' + cellMeta(sub) + '</span>' : '');
+}
+function adeRow(r){
+  var sel = adeState.detail === r.id;
+  return '<tr class="pm-row' + (sel ? ' sel' : '') + '" data-tool="' + esc(r.id) + '"' + (sel ? ' aria-current="true"' : '') +
+    ' tabindex="0" onclick="adeSelect(\'' + esc(r.id) + '\')"' +
+    ' onkeydown="if(event.key===\'Enter\'||event.key===\' \'){event.preventDefault();adeSelect(\'' + esc(r.id) + '\')}">' +
+    '<td class="pm-tool"><div class="tname">' + esc(r.name) + '</div><div class="tkind">' + esc(r.kind) + '</div>' +
+    '</td>' +
+    '<td>' + adeBadgeCell(ADE_DRIVE, r.drive, r.agents) + '</td>' +
+    '<td><span class="note">' + esc(r.platforms) + '</span></td>' +
+    '<td><span class="cap">' + esc(r.iso) + '</span>' + (r.isoq ? '<span class="loc">' + cellMeta(r.isoq) + '</span>' : '') + '</td>' +
+    '<td><span class="loc">' + cellMeta(r.review) + '</span></td>' +
+    '<td>' + adeBadgeCell(ADE_PAY, r.pay, r.price) + '</td>' +
+    '<td><span class="note">' + esc(r.license) + '</span></td></tr>';
+}
+function renderAdes(){
+  legendFrom(ADE_DRIVE, 'adeLegend');
+  var btns = document.getElementById('adeOsBtns');
+  if (btns) btns.innerHTML = ADE_OS.map(function(o){
+    return '<button role="radio" aria-checked="' + (adeState.os === o.id) +
+      '" onclick="adeSetOs(\'' + esc(o.id) + '\')">' + esc(o.label) + '</button>';
+  }).join('');
+  var host = document.getElementById('adeMatrix');
+  if (!host) return;
+  var rows = adeRows();
+  var cols = 7;
+  host.innerHTML = '<table><caption class="sr-only">ADEs: each row is an agentic development environment, each column how it runs and reviews agents</caption><thead><tr><th class="pm-tool-h">Tool</th>' +
+    ['Drives', 'Runs on', 'Isolation', 'Review loop', 'Cost of the ADE', 'License'].map(function(l){
+      return '<th><span class="chd">' + esc(l) + '</span></th>';
+    }).join('') + '</tr></thead><tbody>' +
+    rows.map(adeRow).join('') +
+    (rows.length ? '' : '<tr class="pm-band"><td colspan="' + cols + '">nothing here runs on that platform</td></tr>') +
+    '</tbody></table>';
+  var sel = null;
+  rows.forEach(function(r){ if (r.id === adeState.detail) sel = r; });
+  var el = document.getElementById('adeDetail');
+  if (!sel){ el.style.display = 'none'; return; }
+  el.style.display = '';
+  el.innerHTML = '<div class="dname">' + esc(sel.name) + '</div>' +
+    '<div class="dkind">' + esc(sel.kind + ' · ' + sel.maker) + '</div>' +
+    '<p class="dnote">' + esc(sel.note) + '</p>' +
+    dgrid([
+      ['Agents', badge(sel.drive, ADE_DRIVE[sel.drive].label) + '<span class="loc">' + cellMeta(sel.agents) + '</span>'],
+      ['Isolation', esc(sel.iso) + (sel.isoq ? ' — ' + esc(sel.isoq) : '')],
+      ['Review loop', esc(sel.review)],
+      ['Remote & mobile', esc(sel.remote)],
+      ['Extras', esc(sel.extras)],
+      ['Cost', badge(sel.pay, ADE_PAY[sel.pay].label, true) + '<span class="loc">' + cellMeta(sel.price) + '</span>'],
+      ['License', esc(sel.license)],
+      ['Maturity', esc(sel.maturity)]
+    ]) +
+    (sel.status && sel.status !== 'verified'
+      ? '<div class="unver">partly unverified — ' + esc(sel.caveat || 'see docs') + '</div>' : '') +
+    '<br><a href="' + esc(sel.url) + '" target="_blank" rel="noopener noreferrer">' + esc(sel.name) + ' <span aria-hidden="true">↗</span></a>' +
+    (sel.repo ? ' · <a href="' + esc(sel.repo) + '" target="_blank" rel="noopener noreferrer">repo <span aria-hidden="true">↗</span></a>' : '') +
+    (sel.priceUrl ? ' · <a href="' + esc(sel.priceUrl) + '" target="_blank" rel="noopener noreferrer">pricing <span aria-hidden="true">↗</span></a>' : '');
+}
 function pmRenderDetail(){
   var t = null;
   for (var i = 0; i < TOOLS.length; i++) if (TOOLS[i].id === pmState.detail) t = TOOLS[i];
