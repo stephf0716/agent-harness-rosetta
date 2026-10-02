@@ -19,6 +19,14 @@ for (const r of ades) {
   }
   assert.ok(data.ADE_DRIVE[r.drive], `${r.id} has an unknown drive value`);
   assert.ok(data.ADE_PAY[r.pay], `${r.id} has an unknown pay value`);
+  assert.ok(data.ADE_REMOTE[r.remoteKind], `${r.id} has an unknown remoteKind value`);
+  if (r.remoteGate !== undefined) {
+    assert.ok(typeof r.remoteGate === 'string' && r.remoteGate.trim(), `${r.id} has an empty remoteGate`);
+    assert.notEqual(r.remoteKind, 'no', `${r.id} gates remote access it does not have`);
+  }
+  assert.ok(data.ADE_STAGE[r.stage], `${r.id} has an unknown stage value`);
+  assert.ok(data.ADE_UI[r.ui], `${r.id} has an unknown ui value`);
+  assert.ok(typeof r.uiq === 'string' && r.uiq.trim(), `${r.id} needs a uiq qualifier`);
   const os = Object.keys(r.os || {});
   assert.ok(os.length, `${r.id} needs at least one platform`);
   for (const key of os) assert.ok(osIds.includes(key), `${r.id} has an unknown platform ${key}`);
