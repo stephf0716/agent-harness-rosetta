@@ -12,7 +12,7 @@
   Reference data and editorial content — CC BY 4.0 (see LICENSE-CONTENT). The
   BUILD, TABS, HARNESSES, LAYERS, CREDENTIALS, TOOLS, MECH, CLOSED, PORTABILITY,
   PERMISSIONS, INFRA, CAPS, CAPVIA, FREE, LOCK, MCPKIND, REACH, ADES, ADE_DRIVE,
-  ADE_PAY, ADE_OS and CHANGES constants, and
+  ADE_PAY, ADE_REMOTE, ADE_STAGE, ADE_UI, ADE_OS and CHANGES constants, and
   the prose rendered from them. Reuse needs attribution and an indication of
   changes.
 
@@ -279,6 +279,12 @@
   /* ADEs: how it drives agents, and what the ADE itself costs */
   .m-anycli{--mc:var(--m-local)} .m-adapter{--mc:var(--m-key)}
   .m-adefree{--mc:var(--m-local)} .m-freemium{--mc:var(--m-key)}
+  .m-rapp{--mc:var(--m-local)} .m-rweb{--mc:var(--m-oauth)} .m-rrelay{--mc:var(--m-native)}
+  /* ADE maturity: a small outlined tag in the detail panel, hue by stage */
+  .stage,.uitag{display:inline-block;margin-top:6px;font-family:'IBM Plex Mono',monospace;font-size:9.5px;letter-spacing:.1em;text-transform:uppercase;color:var(--sc);border:1px solid var(--sc);border-radius:2px;padding:1px 5px;white-space:nowrap}
+  .s-early{--sc:var(--m-key)} .s-maturing{--sc:var(--m-oauth)} .s-established{--sc:var(--m-native)}
+  /* ADE chat surface: a tag under the Drives badge */
+  .u-tui{--sc:var(--m-local)} .u-native{--sc:var(--m-oauth)} .u-both{--sc:var(--m-native)}
   /* infrastructure: capability cells, their qualifiers, and the picked columns */
   .pm-shell td .cap{display:block;font-size:12.5px;color:var(--text)}
   .via{display:inline-block;margin-top:6px;font-family:'IBM Plex Mono',monospace;font-size:9.5px;letter-spacing:.1em;text-transform:uppercase;color:var(--m-key);border:1px dashed var(--m-key);border-radius:2px;padding:1px 5px;white-space:nowrap}
@@ -433,7 +439,7 @@
 
 <header class="title">
   <h1>ADEs<br><span class="dim">Agentic Development Environments</span></h1>
-  <p class="lede">A harness runs one agent. An ADE runs several side by side, usually from different vendors, each in its own git worktree, and handles the work around them: watching, reviewing the diff, opening the PR. <strong>They differ on which agents they drive, where those agents run, how much review happens in the app, and what the ADE costs on top.</strong> Most reuse the sign-ins your CLIs already have, and few sandbox anything on your machine. Tap a row for remote access, extras and maturity.</p>
+  <p class="lede">A harness runs one agent. An ADE runs several side by side, usually from different vendors, each in its own git worktree, and handles the work around them: watching, reviewing the diff, opening the PR. <strong>They differ most in how they drive each agent and how much of the review they handle.</strong> Most reuse the sign-ins your CLIs already have, and few sandbox anything on your machine. Tap a row for remote access, license, maturity and extras.</p>
 </header>
 
 <div class="hpick pm-filter" role="radiogroup" aria-label="Platform filter" id="adeOsFilter">
@@ -441,13 +447,11 @@
   <span id="adeOsBtns" style="display:contents"></span>
 </div>
 
-<nav class="legend" aria-label="ADE legend" id="adeLegend"></nav>
-
 <div class="matrix-shell pm-shell">
 <div class="matrix-scroll" tabindex="0" role="region" aria-label="ADE comparison matrix, scroll horizontally">
 <div id="adeMatrix"></div>
 </div>
-<div class="hint"><span class="scrollnote">← scroll → on mobile · </span>tap a row for remote and mobile access, extras, maturity and sources</div>
+<div class="hint"><span class="scrollnote">← scroll → on mobile · </span>tap a row for remote access, license, maturity, extras and sources</div>
 </div>
 
 <div class="pm-detail" id="adeDetail"></div>
@@ -554,7 +558,7 @@
 // from these constants. CLOSED lists the tool ids grouped as closed source.
 // ---------------------------------------------------------------------------
 // Edit the build stamp here only — the masthead and footer both render from it.
-var BUILD = { version: "v23", compiled: "july 2026", updated: "1 oct 2026" };
+var BUILD = { version: "v24", compiled: "july 2026", updated: "2 oct 2026" };
 
 // Provenance is intentionally incremental: existing rows and cells keep their
 // current `url`, `status` and `freeStatus` fields, while this metadata block
@@ -903,6 +907,7 @@ var PROVENANCE = {
 // What's new, newest first. Reader-facing changes only — not copy edits or
 // tooling. `tabs` lists the tabs an entry touched; each renders as a link.
 var CHANGES = [
+  { date: "2026-10-02", tabs: ["ades"], text: "ADE details gain a maturity stage and a remote-access badge, and each row gets a tag showing whether you work in the agent's own TUI, a native chat, or either." },
   { date: "2026-10-01", tabs: ["ades"], text: "New tab: ten ADEs that run agents from more than one vendor, compared on the agents they drive, where those agents run, how they review work, and what they cost." },
   { date: "2026-10-01", tabs: ["providers"], text: "The nine new ADEs join the matrix, with each cell naming the agent a sign-in goes through. Groups are now Source available and Closed source." },
   { date: "2026-10-01", tabs: [], text: "The site is now called Agent Rosetta, since it covers more than harnesses." },
@@ -2625,6 +2630,20 @@ var INFRA = [
 //             the listed agents work, but the app understands their sessions
 // `pay` is what the ADE itself costs on top of the agents you already pay for.
 // `os` drives the platform filter: mac / win / linux / phone.
+// `remoteKind` is the strongest way to reach it away from the desk, read from
+// `remote`: rapp (a phone app) > rweb (a browser UI) > rrelay (runs projects on
+// remote hosts over SSH, but no phone or web client reaches the app) > no. `remoteGate` names the paid
+// tier when that access is not in the free app.
+// `stage` is our reading of `maturity`, not a vendor label:
+//   early       = first release under six months ago, or the README says early
+//   established = 1.0 or later and 5k+ stars or 100k+ claimed users
+//   maturing    = everything in between
+// `ui` is what you look at while an agent works, on the desktop:
+//   tui    = the agent CLI's own interactive TUI in an embedded terminal
+//   native = the ADE draws its own chat from an SDK, ACP or batch-mode stream
+//   both   = either, per tab or per conversation
+// A plain shell pane next to a chat doesn't count as tui. `uiq` qualifies it.
+// `ui` checked 2026-10-02 against docs, READMEs and source.
 // Checked 2026-10-01 against each project's site, README and GitHub API.
 // ---------------------------------------------------------------------------
 var ADE_DRIVE = {
@@ -2634,6 +2653,22 @@ var ADE_DRIVE = {
 var ADE_PAY = {
   adefree:   { label: "Free" },
   freemium:  { label: "Free + paid tier" }
+};
+var ADE_REMOTE = {
+  rapp:   { label: "Phone app" },
+  rweb:   { label: "Web UI" },
+  rrelay: { label: "SSH remote projects" },
+  no:     { label: "—" }
+};
+var ADE_STAGE = {
+  early:       { label: "early" },
+  maturing:    { label: "maturing" },
+  established: { label: "established" }
+};
+var ADE_UI = {
+  tui:    { label: "Agent's TUI" },
+  native: { label: "Native chat" },
+  both:   { label: "TUI or chat" }
 };
 var ADE_OS = [
   { id: "all",   label: "Any" },
@@ -2646,6 +2681,8 @@ var ADES = [
   {
     id: "termic", name: "Termic", kind: "Desktop",
     maker: "Simion Agavriloaei (individual)",
+    remoteKind: "no", stage: "early",
+    ui: "tui", uiq: "runs the real CLIs in PTYs",
     drive: "anycli", agents: "Claude Code · Codex · Antigravity · Copilot · Grok · OpenCode · Pi · Muse Code · Devin · any terminal CLI",
     platforms: "macOS · Linux · Windows 11 (experimental, unsigned)", os: { mac: 1, win: 1, linux: 1 },
     iso: "Worktree per task, or the main checkout", isoq: "multi-repo tasks · opt-in Seatbelt sandbox with network allowlist (macOS) · Docker sandbox (experimental)",
@@ -2663,11 +2700,13 @@ var ADES = [
   {
     id: "paseo", name: "Paseo", kind: "Desktop + mobile + web",
     maker: "Mohamed Boudra (solo, sponsor-funded)",
+    remoteKind: "rapp", stage: "maturing",
+    ui: "native", uiq: "Claude Agent SDK, Codex app-server and ACP adapters",
     drive: "adapter", agents: "Claude Code · Codex · Copilot · OpenCode · Pi · Antigravity · Muse Code · ~36 more over ACP (Gemini CLI · Cursor · Amp · goose · Droid …)",
     platforms: "macOS · Windows · Linux · iOS / Android · web · CLI", os: { mac: 1, win: 1, linux: 1, phone: 1 },
     iso: "Worktree per workspace", isoq: "daemon on a laptop, VPS or Docker · check out a PR into a worktree",
     review: "Diff against the base branch · commit · merge or archive the workspace",
-    pay: "freemium", price: "app free · optional hosted Hub: 50 runs/mo free, Pro $15/seat/mo",
+    pay: "adefree", price: "app free · the separate Paseo Hub service has paid plans",
     license: "Apache-2.0",
     remote: "Native iOS and Android apps · web UI · end-to-end-encrypted relay (opt-in) or direct TCP / Tailscale",
     extras: "Voice mode · TypeScript SDK and CLI · plugins · orchestration skills · Hub triggers from GitHub, Slack and Discord · schedules · no telemetry",
@@ -2680,6 +2719,8 @@ var ADES = [
   {
     id: "maestro", name: "Maestro", kind: "Desktop",
     maker: "RunMaestro (Pedram Amini)",
+    remoteKind: "rweb", stage: "maturing",
+    ui: "native", uiq: "agents run in batch mode, not interactively",
     drive: "adapter", agents: "Claude Code · Codex · OpenCode · Factory Droid · Copilot CLI (beta)",
     platforms: "macOS · Windows · Linux · phone via web remote", os: { mac: 1, win: 1, linux: 1 },
     iso: "Worktree per sub-agent", isoq: "setup script per worktree · SSH remotes · no sandbox of its own",
@@ -2697,6 +2738,8 @@ var ADES = [
   {
     id: "orca", name: "Orca", kind: "Desktop + mobile",
     maker: "Stably AI (YC)",
+    remoteKind: "rapp", stage: "established",
+    ui: "both", uiq: "terminal by default · Chat UI is experimental (Claude, Codex, Grok, OMP), toggled per tab",
     drive: "anycli", agents: "Claude Code · Codex · Cursor · Gemini · Copilot · OpenCode · Grok · Pi",
     platforms: "macOS · Windows · Linux · iOS / Android", os: { mac: 1, win: 1, linux: 1, phone: 1 },
     iso: "Worktree per agent", isoq: "SSH remote worktrees · port forwarding",
@@ -2714,6 +2757,8 @@ var ADES = [
   {
     id: "t3", name: "T3 Code", kind: "Desktop + web + mobile",
     maker: "T3 Tools Inc. (Theo, Julius)",
+    remoteKind: "rapp", stage: "early",
+    ui: "native", uiq: "one adapter per provider, e.g. the Claude Agent SDK",
     drive: "adapter", agents: "Codex · Claude Code · Cursor · Grok Build · OpenCode · Antigravity",
     platforms: "macOS · Windows · Linux · web · iOS / Android", os: { mac: 1, win: 1, linux: 1, phone: 1 },
     iso: "Optional worktree per thread", isoq: "worktrees via a t3.json setup script",
@@ -2731,6 +2776,8 @@ var ADES = [
   {
     id: "superset", name: "Superset", kind: "Desktop + mobile",
     maker: "Superset Inc.",
+    remoteKind: "rapp", remoteGate: "Pro", stage: "established",
+    ui: "tui", uiq: "chat panes for Claude Code and Codex are behind feature flags · Superset Chat is its own agent",
     drive: "anycli", agents: "Claude Code · Codex · OpenCode · Cursor Agent · Gemini CLI · Copilot · Devin · Grok · Kimi Code · any CLI",
     platforms: "macOS · Linux (experimental) · iOS on Pro · no Windows yet", os: { mac: 1, linux: 1, phone: 1 },
     iso: "Worktree per workspace", isoq: "no process sandbox · other machines as remote hosts via Superset Relay",
@@ -2749,6 +2796,8 @@ var ADES = [
   {
     id: "conductor", name: "Conductor", kind: "Desktop + iOS",
     maker: "Melty Labs, Inc.",
+    remoteKind: "rapp", remoteGate: "Pro and up", stage: "maturing",
+    ui: "native", uiq: "agents run as chats · connection method not documented",
     drive: "adapter", agents: "Claude Code · Codex · OpenCode (bundled, or your own install) · Cursor (via Cursor's API, key required)",
     platforms: "macOS · iOS companion on Pro · no Windows or Linux yet", os: { mac: 1, phone: 1 },
     iso: "Worktree + branch per workspace", isoq: "local: unsandboxed, your user permissions · cloud: Linux sandbox on Vercel",
@@ -2757,7 +2806,7 @@ var ADES = [
     license: "Closed source",
     remote: "Conductor Cloud on Pro and up: Vercel sandboxes that keep running after you close the app · Conductor API · iOS app",
     extras: "Claude subscription, CLI login or API key · Sign in with ChatGPT · Bedrock, OpenRouter, Vercel AI Gateway and GLM via env vars · multiplayer shared workspaces",
-    maturity: "v0.89.3 (Sep 2026) · seed-funded small team · claims 100k+ users",
+    maturity: "v0.89.5 (29 Sep 2026) · seed-funded small team · claims 100k+ users",
     note: "A Mac app that gives each agent a city-named worktree and opens a PR when it's done. It bundles Claude Code, Codex and OpenCode (or points at your own installs), and Cursor sessions run through Cursor's API with a key rather than a local CLI. Cloud workspaces store chats on Conductor's servers; local ones don't.",
     url: "https://www.conductor.build/docs",
     priceUrl: "https://www.conductor.build/pricing",
@@ -2766,6 +2815,8 @@ var ADES = [
   {
     id: "emdash", name: "Emdash", kind: "Desktop",
     maker: "General Action (YC W26)",
+    remoteKind: "rrelay", stage: "established",
+    ui: "both", uiq: "Chat UI or TUI per conversation · chat only for ACP-capable agents",
     drive: "adapter", agents: "Claude Code · Codex · Cursor · OpenCode · Amp · Devin · Qwen · Droid · Copilot · 35 supported, auto-detected",
     platforms: "macOS · Windows · Linux (x64 + ARM64)", os: { mac: 1, win: 1, linux: 1 },
     iso: "Worktree per task", isoq: "SSH / SFTP remote projects",
@@ -2782,6 +2833,8 @@ var ADES = [
   {
     id: "nimbalyst", name: "Nimbalyst", kind: "Desktop + iOS",
     maker: "Nimbalyst (successor to Crystal)",
+    remoteKind: "rapp", stage: "maturing",
+    ui: "native", uiq: "opt-in Claude Code CLI provider keeps the real TUI in a drawer for slash commands",
     drive: "adapter", agents: "Claude Code · Codex · alpha: OpenCode, Copilot (over ACP), Grok Build, Cursor Agent, Gemini via Antigravity",
     platforms: "macOS · Windows · Linux · iOS", os: { mac: 1, win: 1, linux: 1, phone: 1 },
     iso: "Optional worktree per session",
@@ -2799,6 +2852,8 @@ var ADES = [
   {
     id: "claudesquad", name: "Claude Squad", kind: "Terminal UI",
     maker: "smtg-ai",
+    remoteKind: "no", stage: "established",
+    ui: "tui", uiq: "attach to each agent's tmux session",
     drive: "anycli", agents: "Claude Code · Codex · Gemini · Aider · OpenCode · Amp",
     platforms: "Any terminal with tmux (Windows: tmux via WSL)", os: { mac: 1, win: 1, linux: 1 },
     iso: "Worktrees", isoq: "tmux session per agent",
@@ -3588,15 +3643,13 @@ function adeRow(r){
     ' onkeydown="if(event.key===\'Enter\'||event.key===\' \'){event.preventDefault();adeSelect(\'' + esc(r.id) + '\')}">' +
     '<td class="pm-tool"><div class="tname">' + esc(r.name) + '</div><div class="tkind">' + esc(r.kind) + '</div>' +
     '</td>' +
-    '<td>' + adeBadgeCell(ADE_DRIVE, r.drive, r.agents) + '</td>' +
+    '<td>' + adeBadgeCell(ADE_DRIVE, r.drive, r.agents) + '<span class="uitag u-' + esc(r.ui) + '" title="' + esc(r.uiq) + '">' + esc(ADE_UI[r.ui].label) + '</span></td>' +
     '<td><span class="note">' + esc(r.platforms) + '</span></td>' +
     '<td><span class="cap">' + esc(r.iso) + '</span>' + (r.isoq ? '<span class="loc">' + cellMeta(r.isoq) + '</span>' : '') + '</td>' +
     '<td><span class="loc">' + cellMeta(r.review) + '</span></td>' +
-    '<td>' + adeBadgeCell(ADE_PAY, r.pay, r.price) + '</td>' +
-    '<td><span class="note">' + esc(r.license) + '</span></td></tr>';
+    '<td>' + adeBadgeCell(ADE_PAY, r.pay, r.price) + '</td></tr>';
 }
 function renderAdes(){
-  legendFrom(ADE_DRIVE, 'adeLegend');
   var btns = document.getElementById('adeOsBtns');
   if (btns) btns.innerHTML = ADE_OS.map(function(o){
     return '<button role="radio" aria-checked="' + (adeState.os === o.id) +
@@ -3605,9 +3658,9 @@ function renderAdes(){
   var host = document.getElementById('adeMatrix');
   if (!host) return;
   var rows = adeRows();
-  var cols = 7;
+  var cols = 6;
   host.innerHTML = '<table><caption class="sr-only">ADEs: each row is an agentic development environment, each column how it runs and reviews agents</caption><thead><tr><th class="pm-tool-h">Tool</th>' +
-    ['Drives', 'Runs on', 'Isolation', 'Review loop', 'Cost of the ADE', 'License'].map(function(l){
+    ['Drives', 'Runs on', 'Isolation', 'Review loop', 'Cost of the ADE'].map(function(l){
       return '<th><span class="chd">' + esc(l) + '</span></th>';
     }).join('') + '</tr></thead><tbody>' +
     rows.map(adeRow).join('') +
@@ -3623,13 +3676,14 @@ function renderAdes(){
     '<p class="dnote">' + esc(sel.note) + '</p>' +
     dgrid([
       ['Agents', badge(sel.drive, ADE_DRIVE[sel.drive].label) + '<span class="loc">' + cellMeta(sel.agents) + '</span>'],
+      ['Chat surface', '<span class="uitag u-' + esc(sel.ui) + '">' + esc(ADE_UI[sel.ui].label) + '</span><span class="loc">' + cellMeta(sel.uiq) + '</span>'],
       ['Isolation', esc(sel.iso) + (sel.isoq ? ' — ' + esc(sel.isoq) : '')],
       ['Review loop', esc(sel.review)],
-      ['Remote & mobile', esc(sel.remote)],
+      ['Remote & mobile', (sel.remoteKind !== 'no' ? badge(sel.remoteKind, ADE_REMOTE[sel.remoteKind].label, true) + (sel.remoteGate ? ' <span class="note">on ' + esc(sel.remoteGate) + '</span>' : '') + '<br>' : '') + esc(sel.remote)],
       ['Extras', esc(sel.extras)],
       ['Cost', badge(sel.pay, ADE_PAY[sel.pay].label, true) + '<span class="loc">' + cellMeta(sel.price) + '</span>'],
       ['License', esc(sel.license)],
-      ['Maturity', esc(sel.maturity)]
+      ['Maturity', '<span class="stage s-' + esc(sel.stage) + '">' + esc(ADE_STAGE[sel.stage].label) + '</span><span class="loc">' + cellMeta(sel.maturity) + '</span>']
     ]) +
     (sel.status && sel.status !== 'verified'
       ? '<div class="unver">partly unverified — ' + esc(sel.caveat || 'see docs') + '</div>' : '') +

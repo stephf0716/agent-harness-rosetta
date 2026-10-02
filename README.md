@@ -87,7 +87,7 @@ The data model also lives in `index.html`:
 - `CREDENTIALS`, `TOOLS`, and `MECH` drive the provider matrix.
 - `PORTABILITY` and `PERMISSIONS` drive their corresponding tabs.
 - `INFRA` drives the capability, free-tier, and blast-radius tables.
-- `ADES`, `ADE_DRIVE`, `ADE_PAY`, and `ADE_OS` drive the ADE tab.
+- `ADES`, `ADE_DRIVE`, `ADE_PAY`, `ADE_REMOTE`, `ADE_STAGE`, `ADE_UI`, and `ADE_OS` drive the ADE tab.
 - `CHANGES` drives the What's new list.
 
 A missing harness-layer entry throws instead of silently degrading. Research records can be marked `verified`, `partial`, or `unverified`; caveats for anything short of verified appear in the detail view. Provenance metadata resolves those existing statuses into the explicit evidence labels `primary-docs`, `secondary`, `partial`, and `unknown`.
