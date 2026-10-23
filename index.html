@@ -373,7 +373,7 @@
 
 <section class="mcp-sec r-mcp">
   <div class="rule-h hue"><h2>The layer underneath: MCP</h2></div>
-  <p>The <strong><a class="slink" href="https://modelcontextprotocol.io/" target="_blank" rel="noopener noreferrer">Model Context Protocol</a></strong> (open standard, released by Anthropic in Nov 2024) is the shared plumbing for the "tool access" row — a JSON-RPC protocol where a server publishes tools any compatible agent can discover and call. This is why the ecosystem interoperates: a Goose <em>extension</em>, a Claude <em>connector</em>, a Hermes MCP entry, and an MCP server inside a Codex <em>plugin</em> can be the exact same server. Osaurus demonstrates the two-way nature of the standard: it consumes remote MCP servers <em>and</em> exposes its own local tools as an MCP server that other harnesses can connect to — so your Osaurus toolbox can serve Claude Desktop. Skills (SKILL.md / agentskills.io) and instruction files (AGENTS.md) are similarly portable open standards. The names are vendor branding; the files and protocols underneath increasingly are not.</p>
+  <p>The <strong><a class="slink" href="https://modelcontextprotocol.io/" target="_blank" rel="noopener noreferrer">Model Context Protocol</a></strong> (open standard, released by Anthropic in Nov 2024 and now governed by the Linux Foundation's <a class="slink" href="https://aaif.io/news/agentic-ai-foundation-announces-four-new-projects" target="_blank" rel="noopener noreferrer">Agentic AI Foundation</a>) is the shared plumbing for the "tool access" row — a JSON-RPC protocol where a server publishes tools any compatible agent can discover and call. This is why the ecosystem interoperates: a Goose <em>extension</em>, a Claude <em>connector</em>, a Hermes MCP entry, and an MCP server inside a Codex <em>plugin</em> can be the exact same server. Osaurus demonstrates the two-way nature of the standard: it consumes remote MCP servers <em>and</em> exposes its own local tools as an MCP server that other harnesses can connect to — so your Osaurus toolbox can serve Claude Desktop. Skills (SKILL.md / agentskills.io) and instruction files (AGENTS.md) are similarly portable open standards, and since October 2026 all three sit under that same vendor-neutral foundation, alongside goose. The names are vendor branding; the files and protocols underneath increasingly are not.</p>
 </section>
 
 <div class="rule-h">
@@ -395,7 +395,7 @@
 
 <header class="title">
   <h1>Portability</h1>
-  <p class="lede">You've set one harness up; what survives if you add or switch to another? Three things travel as open standards — <strong>AGENTS.md instructions, SKILL.md skills, and MCP servers</strong> — and several tools read each other's directories outright, so one folder can serve many. Everything else is stranded. Tap any row for the exact paths.</p>
+  <p class="lede">You've set one harness up; what survives if you add or switch to another? Three things travel as open standards — <strong>AGENTS.md instructions, SKILL.md skills, and MCP servers</strong>, all now governed by the vendor-neutral Agentic AI Foundation — and several tools read each other's directories outright, so one folder can serve many. Everything else is stranded. Tap any row for the exact paths.</p>
 </header>
 
 <nav class="legend" aria-label="Portability legend" id="portLegend"></nav>
@@ -558,7 +558,7 @@
 // from these constants. CLOSED lists the tool ids grouped as closed source.
 // ---------------------------------------------------------------------------
 // Edit the build stamp here only — the masthead and footer both render from it.
-var BUILD = { version: "v24", compiled: "july 2026", updated: "2 oct 2026" };
+var BUILD = { version: "v24", compiled: "july 2026", updated: "23 oct 2026" };
 
 // Provenance is intentionally incremental: existing rows and cells keep their
 // current `url`, `status` and `freeStatus` fields, while this metadata block
@@ -907,6 +907,7 @@ var PROVENANCE = {
 // What's new, newest first. Reader-facing changes only — not copy edits or
 // tooling. `tabs` lists the tabs an entry touched; each renders as a link.
 var CHANGES = [
+  { date: "2026-10-23", tabs: ["harness", "portability"], text: "Agent Skills now belongs to the Agentic AI Foundation, the same neutral home as MCP and AGENTS.md, after Anthropic donated it on 22 October." },
   { date: "2026-10-02", tabs: ["ades"], text: "ADE details gain a maturity stage and a remote-access badge, and each row gets a tag showing whether you work in the agent's own TUI, a native chat, or either." },
   { date: "2026-10-01", tabs: ["ades"], text: "New tab: ten ADEs that run agents from more than one vendor, compared on the agents they drive, where those agents run, how they review work, and what they cost." },
   { date: "2026-10-01", tabs: ["providers"], text: "The nine new ADEs join the matrix, with each cell naming the agent a sign-in goes through. Groups are now Source available and Closed source." },
@@ -1309,7 +1310,7 @@ var LAYERS = [
     oneliner: "Reusable know-how, loaded only when relevant",
     body: [
       "<p>A folder containing a <code>SKILL.md</code> file (instructions + YAML frontmatter) plus optional scripts, references, and templates. The key trick is <strong>progressive disclosure</strong>: the agent sees only each skill's name and description up front, and loads the full instructions only when the task matches. That's why fifty installed skills don't blow up your context window. Skills teach <em>how</em> to do something — a review checklist, a document format, a deployment procedure. They make no network calls and need no credentials.</p>",
-      "<p>This is the layer where the ecosystem has genuinely converged: the same SKILL.md format is an open standard (Agent Skills / <a class=\"slink\" href=\"https://agentskills.io/home\" target=\"_blank\" rel=\"noopener noreferrer\">agentskills.io</a>) shared across vendors, with large cross-harness registries — and every harness on this page now supports it. Several now read each other's directories outright, so one skills folder can serve multiple tools.</p>",
+      "<p>This is the layer where the ecosystem has genuinely converged: the same SKILL.md format is an open standard (Agent Skills / <a class=\"slink\" href=\"https://agentskills.io/home\" target=\"_blank\" rel=\"noopener noreferrer\">agentskills.io</a>) shared across vendors, with large cross-harness registries — and every harness on this page now supports it. On 22 Oct 2026 Anthropic <a class=\"slink\" href=\"https://www.anthropic.com/news/donating-agent-skills-to-the-agentic-ai-foundation\" target=\"_blank\" rel=\"noopener noreferrer\">donated the standard</a> to the Linux Foundation's Agentic AI Foundation, the home of MCP and AGENTS.md. The spec, name, GitHub organization, and domain moved; skills you write stay yours. Maintainers from Anthropic, Google, and OpenAI now steward it. Several now read each other's directories outright, so one skills folder can serve multiple tools.</p>",
       "<p>Reading the skill cells: each one lists the directories that harness discovers skills in, project scope first. <code>SKILL.md</code> is the file in every one of them, so it isn't repeated row by row.</p>"
     ],
     cells: {
