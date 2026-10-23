@@ -228,7 +228,7 @@
   .rule-h.hue{border-top-color:var(--cc)}
 
   /* decision guide */
-  .decide{display:grid;grid-template-columns:repeat(auto-fit,minmax(250px,1fr));gap:1px;background:var(--line);border:1px solid var(--line);border-radius:3px;overflow:hidden}
+  .decide{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:1px;background:var(--line);border:1px solid var(--line);border-radius:3px;overflow:hidden}
   .decide .d{background:var(--surface);padding:14px 16px;box-shadow:inset 0 3px 0 var(--cc)}
   .decide .want{font-size:13.5px;color:var(--muted);margin-top:4px}
   .decide .use{font-family:'Archivo',sans-serif;font-weight:700;font-size:15px;margin-top:6px;color:var(--cc)}
@@ -333,6 +333,18 @@
   <p class="lede">Every agent harness implements the same five extension layers — only the names differ, and occasionally conflict. <strong>Instructions persist, skills teach, MCP connects, bundles ship, subagents delegate.</strong> Tap a layer heading for detail.</p>
 </header>
 
+<div class="rule-h">
+<h2>Which one do I need?</h2>
+<p class="sub">Start from what you're trying to change, not from the feature name.</p>
+</div>
+<div class="decide">
+  <div class="d r-instr"><div class="want">"Follow these rules in this project, every time"</div><div class="use">Instructions</div><div class="how"><span class="loc-i">CLAUDE.md</span> <span class="loc-i">AGENTS.md</span> <span class="loc-i">SOUL.md</span> <span class="loc-i">.goosehints</span></div></div>
+  <div class="d r-skill"><div class="want">"Do this kind of task my way, when it comes up"</div><div class="use">Skill</div><div class="how">SKILL.md folder</div></div>
+  <div class="d r-mcp"><div class="want">"Read/act on my email, files, tickets, database…"</div><div class="use">MCP server</div><div class="how"><span class="loc-i">Connector</span> <span class="loc-i">Extension</span> <span class="loc-i">app</span></div></div>
+  <div class="d r-bundle"><div class="want">"Give my whole team this setup in one install"</div><div class="use">Plugin / Extension / Package</div><div class="how">bundle of all the above</div></div>
+  <div class="d r-agent"><div class="want">"Split this into parallel or isolated work"</div><div class="use">Subagents</div><div class="how">delegated agent instances</div></div>
+</div>
+
 <nav class="legend" aria-label="Concept legend">
   <button onclick="jump('c-instr')"><span class="sq" style="background:var(--c-instr)"></span>L1 instructions</button>
   <button onclick="jump('c-skill')"><span class="sq" style="background:var(--c-skill)"></span>L2 skills</button>
@@ -376,17 +388,6 @@
   <p>The <strong><a class="slink" href="https://modelcontextprotocol.io/" target="_blank" rel="noopener noreferrer">Model Context Protocol</a></strong> (open standard, released by Anthropic in Nov 2024 and now governed by the Linux Foundation's <a class="slink" href="https://aaif.io/news/agentic-ai-foundation-announces-four-new-projects" target="_blank" rel="noopener noreferrer">Agentic AI Foundation</a>) is the shared plumbing for the "tool access" row — a JSON-RPC protocol where a server publishes tools any compatible agent can discover and call. This is why the ecosystem interoperates: a Goose <em>extension</em>, a Claude <em>connector</em>, a Hermes MCP entry, and an MCP server inside a Codex <em>plugin</em> can be the exact same server. Osaurus demonstrates the two-way nature of the standard: it consumes remote MCP servers <em>and</em> exposes its own local tools as an MCP server that other harnesses can connect to — so your Osaurus toolbox can serve Claude Desktop. Skills (SKILL.md / agentskills.io) and instruction files (AGENTS.md) are similarly portable open standards, and since October 2026 all three sit under that same vendor-neutral foundation, alongside goose. The names are vendor branding; the files and protocols underneath increasingly are not.</p>
 </section>
 
-<div class="rule-h">
-<h2>Which one do I need?</h2>
-<p class="sub">Start from what you're trying to change, not from the feature name.</p>
-</div>
-<div class="decide">
-  <div class="d r-instr"><div class="want">"Follow these rules in this project, every time"</div><div class="use">Instructions</div><div class="how"><span class="loc-i">CLAUDE.md</span> <span class="loc-i">AGENTS.md</span> <span class="loc-i">SOUL.md</span> <span class="loc-i">.goosehints</span></div></div>
-  <div class="d r-skill"><div class="want">"Do this kind of task my way, when it comes up"</div><div class="use">Skill</div><div class="how">SKILL.md folder</div></div>
-  <div class="d r-mcp"><div class="want">"Read/act on my email, files, tickets, database…"</div><div class="use">MCP server</div><div class="how"><span class="loc-i">Connector</span> <span class="loc-i">Extension</span> <span class="loc-i">app</span></div></div>
-  <div class="d r-bundle"><div class="want">"Give my whole team this setup in one install"</div><div class="use">Plugin / Extension / Package</div><div class="how">bundle of all the above</div></div>
-  <div class="d r-agent"><div class="want">"Split this into parallel or isolated work"</div><div class="use">Subagents</div><div class="how">delegated agent instances</div></div>
-</div>
 
 
 </main>
@@ -496,7 +497,7 @@
 
 <header class="title">
   <h1>Infrastructure<br><span class="dim">Your Agent Can Drive</span></h1>
-  <p class="lede">The hosts and databases behind a vibe-coded project increasingly ship their own MCP servers, which means your agent can reach production directly — <strong>all fifteen ship an official MCP server</strong>, and all but Render and the three search providers expose full control through it. Start by picking what you're building — a web app, a web app with a database — and the tables narrow to the platforms that cover it. Tap any row for detail.</p>
+  <p class="lede">The hosts and databases behind a vibe-coded project increasingly ship their own MCP servers, which means your agent can reach production directly — <strong>every one ships an official MCP server</strong>, and all but Render and the three search providers expose full control through it. Start by picking what you're building — a web app, a web app with a database — and the tables narrow to the platforms that cover it. Tap any row for detail.</p>
 </header>
 
 <div class="hpick" role="group" aria-label="What you need to build">
@@ -907,6 +908,7 @@ var PROVENANCE = {
 // What's new, newest first. Reader-facing changes only — not copy edits or
 // tooling. `tabs` lists the tabs an entry touched; each renders as a link.
 var CHANGES = [
+  { date: "2026-10-23", tabs: ["harness"], text: "The \"Which one do I need?\" guide now opens the Harness layers tab instead of closing it." },
   { date: "2026-10-23", tabs: ["harness", "portability"], text: "Agent Skills now belongs to the Agentic AI Foundation, the same neutral home as MCP and AGENTS.md, after Anthropic donated it on 22 October." },
   { date: "2026-10-02", tabs: ["ades"], text: "ADE details gain a maturity stage and a remote-access badge, and each row gets a tag showing whether you work in the agent's own TUI, a native chat, or either." },
   { date: "2026-10-01", tabs: ["ades"], text: "New tab: ten ADEs that run agents from more than one vendor, compared on the agents they drive, where those agents run, how they review work, and what they cost." },
