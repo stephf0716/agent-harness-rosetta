@@ -228,7 +228,7 @@
   .rule-h.hue{border-top-color:var(--cc)}
 
   /* decision guide */
-  .decide{display:grid;grid-template-columns:repeat(auto-fit,minmax(250px,1fr));gap:1px;background:var(--line);border:1px solid var(--line);border-radius:3px;overflow:hidden}
+  .decide{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:1px;background:var(--line);border:1px solid var(--line);border-radius:3px;overflow:hidden}
   .decide .d{background:var(--surface);padding:14px 16px;box-shadow:inset 0 3px 0 var(--cc)}
   .decide .want{font-size:13.5px;color:var(--muted);margin-top:4px}
   .decide .use{font-family:'Archivo',sans-serif;font-weight:700;font-size:15px;margin-top:6px;color:var(--cc)}
@@ -333,6 +333,18 @@
   <p class="lede">Every agent harness implements the same five extension layers — only the names differ, and occasionally conflict. <strong>Instructions persist, skills teach, MCP connects, bundles ship, subagents delegate.</strong> Tap a layer heading for detail.</p>
 </header>
 
+<div class="rule-h">
+<h2>Where to start</h2>
+<p class="sub">Start from what you're trying to change, not from the feature name.</p>
+</div>
+<div class="decide">
+  <div class="d r-instr"><div class="want">"Follow these rules in this project, every time"</div><div class="use">Instructions</div><div class="how"><span class="loc-i">CLAUDE.md</span> <span class="loc-i">AGENTS.md</span> <span class="loc-i">SOUL.md</span> <span class="loc-i">.goosehints</span></div></div>
+  <div class="d r-skill"><div class="want">"Do this kind of task my way, when it comes up"</div><div class="use">Skill</div><div class="how">SKILL.md folder</div></div>
+  <div class="d r-mcp"><div class="want">"Read/act on my email, files, tickets, database…"</div><div class="use">MCP server</div><div class="how"><span class="loc-i">Connector</span> <span class="loc-i">Extension</span> <span class="loc-i">app</span></div></div>
+  <div class="d r-bundle"><div class="want">"Give my whole team this setup in one install"</div><div class="use">Plugin / Extension / Package</div><div class="how">bundle of all the above</div></div>
+  <div class="d r-agent"><div class="want">"Split this into parallel or isolated work"</div><div class="use">Subagents</div><div class="how">delegated agent instances</div></div>
+</div>
+
 <nav class="legend" aria-label="Concept legend">
   <button onclick="jump('c-instr')"><span class="sq" style="background:var(--c-instr)"></span>L1 instructions</button>
   <button onclick="jump('c-skill')"><span class="sq" style="background:var(--c-skill)"></span>L2 skills</button>
@@ -373,20 +385,9 @@
 
 <section class="mcp-sec r-mcp">
   <div class="rule-h hue"><h2>The layer underneath: MCP</h2></div>
-  <p>The <strong><a class="slink" href="https://modelcontextprotocol.io/" target="_blank" rel="noopener noreferrer">Model Context Protocol</a></strong> (open standard, released by Anthropic in Nov 2024) is the shared plumbing for the "tool access" row — a JSON-RPC protocol where a server publishes tools any compatible agent can discover and call. This is why the ecosystem interoperates: a Goose <em>extension</em>, a Claude <em>connector</em>, a Hermes MCP entry, and an MCP server inside a Codex <em>plugin</em> can be the exact same server. Osaurus demonstrates the two-way nature of the standard: it consumes remote MCP servers <em>and</em> exposes its own local tools as an MCP server that other harnesses can connect to — so your Osaurus toolbox can serve Claude Desktop. Skills (SKILL.md / agentskills.io) and instruction files (AGENTS.md) are similarly portable open standards. The names are vendor branding; the files and protocols underneath increasingly are not.</p>
+  <p>The <strong><a class="slink" href="https://modelcontextprotocol.io/" target="_blank" rel="noopener noreferrer">Model Context Protocol</a></strong> (open standard, released by Anthropic in Nov 2024 and now governed by the Linux Foundation's <a class="slink" href="https://aaif.io/news/agentic-ai-foundation-announces-four-new-projects" target="_blank" rel="noopener noreferrer">Agentic AI Foundation</a>) is the shared plumbing for the "tool access" row — a JSON-RPC protocol where a server publishes tools any compatible agent can discover and call. This is why the ecosystem interoperates: a Goose <em>extension</em>, a Claude <em>connector</em>, a Hermes MCP entry, and an MCP server inside a Codex <em>plugin</em> can be the exact same server. Osaurus demonstrates the two-way nature of the standard: it consumes remote MCP servers <em>and</em> exposes its own local tools as an MCP server that other harnesses can connect to — so your Osaurus toolbox can serve Claude Desktop. Skills (SKILL.md / agentskills.io) and instruction files (AGENTS.md) are similarly portable open standards, and since October 2026 all three sit under that same vendor-neutral foundation, alongside goose. The names are vendor branding; the files and protocols underneath increasingly are not.</p>
 </section>
 
-<div class="rule-h">
-<h2>Which one do I need?</h2>
-<p class="sub">Start from what you're trying to change, not from the feature name.</p>
-</div>
-<div class="decide">
-  <div class="d r-instr"><div class="want">"Follow these rules in this project, every time"</div><div class="use">Instructions</div><div class="how"><span class="loc-i">CLAUDE.md</span> <span class="loc-i">AGENTS.md</span> <span class="loc-i">SOUL.md</span> <span class="loc-i">.goosehints</span></div></div>
-  <div class="d r-skill"><div class="want">"Do this kind of task my way, when it comes up"</div><div class="use">Skill</div><div class="how">SKILL.md folder</div></div>
-  <div class="d r-mcp"><div class="want">"Read/act on my email, files, tickets, database…"</div><div class="use">MCP server</div><div class="how"><span class="loc-i">Connector</span> <span class="loc-i">Extension</span> <span class="loc-i">app</span></div></div>
-  <div class="d r-bundle"><div class="want">"Give my whole team this setup in one install"</div><div class="use">Plugin / Extension / Package</div><div class="how">bundle of all the above</div></div>
-  <div class="d r-agent"><div class="want">"Split this into parallel or isolated work"</div><div class="use">Subagents</div><div class="how">delegated agent instances</div></div>
-</div>
 
 
 </main>
@@ -395,7 +396,7 @@
 
 <header class="title">
   <h1>Portability</h1>
-  <p class="lede">You've set one harness up; what survives if you add or switch to another? Three things travel as open standards — <strong>AGENTS.md instructions, SKILL.md skills, and MCP servers</strong> — and several tools read each other's directories outright, so one folder can serve many. Everything else is stranded. Tap any row for the exact paths.</p>
+  <p class="lede">Three things travel between harnesses as open standards — <strong>AGENTS.md instructions, SKILL.md skills, and MCP servers</strong>, all now governed by the vendor-neutral Agentic AI Foundation — and several tools read each other's directories outright, so one folder can serve many. Everything else is stranded. Tap any row for the exact paths.</p>
 </header>
 
 <nav class="legend" aria-label="Portability legend" id="portLegend"></nav>
@@ -417,7 +418,7 @@
 
 <header class="title">
   <h1>Permissions<br><span class="dim">&amp; Autonomy</span></h1>
-  <p class="lede">Every harness names this differently — approval modes, allowlists, sandboxes, trust levels — so this table asks the two blunt questions instead: <strong>before checking with you, does it edit your files, and does it run your shell?</strong> Then what contains it, and where you change it. Tap any row for the default in full, approval granularity, and unattended behaviour.</p>
+  <p class="lede">Every harness names this differently — approval modes, allowlists, sandboxes, trust levels — so this table reduces it to two things: <strong>whether it edits your files and whether it runs your shell before checking with you</strong>. Then what contains it, and where you change it. Tap any row for the default in full, approval granularity, and unattended behaviour.</p>
 </header>
 
 <nav class="legend" aria-label="Autonomy legend" id="permLegend"></nav>
@@ -463,7 +464,7 @@
 
 <header class="title">
   <h1>Provider<br><span class="dim">Compatibility Matrix</span></h1>
-  <p class="lede">Already paying for ChatGPT, Claude, Gemini or Copilot? This table shows which tools will take that account, which want an API key instead, and which won't connect at all. Turn off the credentials you don't have and the rows narrow to what you can use. When a tool reaches a provider through another agent, the cell names that agent. Tap a row for details and the vendor's docs.</p>
+  <p class="lede">This table shows which tools will take a ChatGPT, Claude, Gemini, Copilot, Grok or OpenRouter account, which want an API key instead, and which won't connect at all. Turn off the credentials you don't have and the rows narrow to what you can use. When a tool reaches a provider through another agent, the cell names that agent. Tap a row for details and the vendor's docs.</p>
 </header>
 
 <nav class="legend" aria-label="Connection type legend" id="pmLegend"></nav>
@@ -496,7 +497,7 @@
 
 <header class="title">
   <h1>Infrastructure<br><span class="dim">Your Agent Can Drive</span></h1>
-  <p class="lede">The hosts and databases behind a vibe-coded project increasingly ship their own MCP servers, which means your agent can reach production directly — <strong>all fifteen ship an official MCP server</strong>, and all but Render and the three search providers expose full control through it. Start by picking what you're building — a web app, a web app with a database — and the tables narrow to the platforms that cover it. Tap any row for detail.</p>
+  <p class="lede">The hosts and databases behind a vibe-coded project increasingly ship their own MCP servers, which means your agent can reach production directly — <strong>every one ships an official MCP server</strong>, and all but Render and the three search providers expose full control through it. Start by picking what you're building — a web app, a web app with a database — and the tables narrow to the platforms that cover it. Tap any row for detail.</p>
 </header>
 
 <div class="hpick" role="group" aria-label="What you need to build">
@@ -558,7 +559,7 @@
 // from these constants. CLOSED lists the tool ids grouped as closed source.
 // ---------------------------------------------------------------------------
 // Edit the build stamp here only — the masthead and footer both render from it.
-var BUILD = { version: "v24", compiled: "july 2026", updated: "2 oct 2026" };
+var BUILD = { version: "v24", compiled: "july 2026", updated: "23 oct 2026" };
 
 // Provenance is intentionally incremental: existing rows and cells keep their
 // current `url`, `status` and `freeStatus` fields, while this metadata block
@@ -907,6 +908,8 @@ var PROVENANCE = {
 // What's new, newest first. Reader-facing changes only — not copy edits or
 // tooling. `tabs` lists the tabs an entry touched; each renders as a link.
 var CHANGES = [
+  { date: "2026-10-23", tabs: ["harness"], text: "The guide to which layer you need now opens the Harness layers tab instead of closing it." },
+  { date: "2026-10-23", tabs: ["harness", "portability"], text: "Agent Skills now belongs to the Agentic AI Foundation, the same neutral home as MCP and AGENTS.md, after Anthropic donated it on 22 October." },
   { date: "2026-10-02", tabs: ["ades"], text: "ADE details gain a maturity stage and a remote-access badge, and each row gets a tag showing whether you work in the agent's own TUI, a native chat, or either." },
   { date: "2026-10-01", tabs: ["ades"], text: "New tab: ten ADEs that run agents from more than one vendor, compared on the agents they drive, where those agents run, how they review work, and what they cost." },
   { date: "2026-10-01", tabs: ["providers"], text: "The nine new ADEs join the matrix, with each cell naming the agent a sign-in goes through. Groups are now Source available and Closed source." },
@@ -1309,7 +1312,7 @@ var LAYERS = [
     oneliner: "Reusable know-how, loaded only when relevant",
     body: [
       "<p>A folder containing a <code>SKILL.md</code> file (instructions + YAML frontmatter) plus optional scripts, references, and templates. The key trick is <strong>progressive disclosure</strong>: the agent sees only each skill's name and description up front, and loads the full instructions only when the task matches. That's why fifty installed skills don't blow up your context window. Skills teach <em>how</em> to do something — a review checklist, a document format, a deployment procedure. They make no network calls and need no credentials.</p>",
-      "<p>This is the layer where the ecosystem has genuinely converged: the same SKILL.md format is an open standard (Agent Skills / <a class=\"slink\" href=\"https://agentskills.io/home\" target=\"_blank\" rel=\"noopener noreferrer\">agentskills.io</a>) shared across vendors, with large cross-harness registries — and every harness on this page now supports it. Several now read each other's directories outright, so one skills folder can serve multiple tools.</p>",
+      "<p>This is the layer where the ecosystem has genuinely converged: the same SKILL.md format is an open standard (Agent Skills / <a class=\"slink\" href=\"https://agentskills.io/home\" target=\"_blank\" rel=\"noopener noreferrer\">agentskills.io</a>) shared across vendors, with large cross-harness registries — and every harness on this page now supports it. On 22 Oct 2026 Anthropic <a class=\"slink\" href=\"https://www.anthropic.com/news/donating-agent-skills-to-the-agentic-ai-foundation\" target=\"_blank\" rel=\"noopener noreferrer\">donated the standard</a> to the Linux Foundation's Agentic AI Foundation, the home of MCP and AGENTS.md. The spec, name, GitHub organization, and domain moved; skills you write stay yours. Maintainers from Anthropic, Google, and OpenAI now steward it. Several now read each other's directories outright, so one skills folder can serve multiple tools.</p>",
       "<p>Reading the skill cells: each one lists the directories that harness discovers skills in, project scope first. <code>SKILL.md</code> is the file in every one of them, so it isn't repeated row by row.</p>"
     ],
     cells: {
