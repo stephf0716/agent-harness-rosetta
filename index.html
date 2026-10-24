@@ -398,7 +398,7 @@
 
 <header class="title">
   <h1>Portability</h1>
-  <p class="lede">Three things travel between harnesses as open standards — <strong>AGENTS.md instructions, SKILL.md skills, and MCP servers</strong>, all now governed by the vendor-neutral Agentic AI Foundation — and several tools read each other's directories outright, so one folder can serve many. Hooks travel by convention instead: there is no hooks standard, but Copilot, Cursor and Grok run Claude Code's hook files as written. Everything else is stranded. Tap any row for the exact paths.</p>
+  <p class="lede">Three things travel between harnesses as open standards — <strong>AGENTS.md instructions, SKILL.md skills, and MCP servers</strong>, all now governed by the vendor-neutral Agentic AI Foundation — and several tools read each other's directories outright, so one folder can serve many. Hooks travel by convention instead: there is no hooks standard, but Copilot, Cursor and Grok load Claude Code's hook files, though a script may need small changes to its input handling. Everything else is stranded. Tap any row for the exact paths.</p>
 </header>
 
 <nav class="legend" aria-label="Portability legend" id="portLegend"></nav>
@@ -919,7 +919,7 @@ var PROVENANCE = {
 // What's new, newest first. Reader-facing changes only — not copy edits or
 // tooling. `tabs` lists the tabs an entry touched; each renders as a link.
 var CHANGES = [
-  { date: "2026-10-24", tabs: ["portability"], text: "Portability gains a Hooks column: which harnesses have hooks, and which run Claude Code's hook files as written." },
+  { date: "2026-10-24", tabs: ["portability"], text: "Portability gains a Hooks column: which harnesses have hooks, and which load Claude Code's hook files." },
   { date: "2026-10-23", tabs: ["harness"], text: "The guide to which layer you need now opens the Harness layers tab instead of closing it." },
   { date: "2026-10-23", tabs: ["harness", "portability"], text: "Agent Skills now belongs to the Agentic AI Foundation, the same neutral home as MCP and AGENTS.md, after Anthropic donated it on 22 October." },
   { date: "2026-10-02", tabs: ["ades"], text: "ADE details gain a maturity stage and a remote-access badge, and each row gets a tag showing whether you work in the agent's own TUI, a native chat, or either." },
@@ -1740,7 +1740,7 @@ var PORTABILITY = [
              skills: { m: "own", loc: ".claude/skills/ · ~/.claude/skills/ · claude.ai account (Cowork, cloud)" },
              mcp:    { m: "own", loc: ".mcp.json" },
              hooks:  { m: "own", loc: ".claude/settings.json · plugin hooks/hooks.json",
-               how: "PreToolUse can block a call or rewrite its input; other events cover prompts, session start and stop, subagents and compaction. Handlers can be commands, HTTP calls, MCP tools, prompts or agents. Copilot, Cursor and Grok run this file as written.",
+               how: "PreToolUse can block a call or rewrite its input; other events cover prompts, session start and stop, subagents and compaction. Handlers can be commands, HTTP calls, MCP tools, prompts or agents. Copilot, Cursor and Grok load this file, though Grok passes scripts camelCase input.",
                url: "https://code.claude.com/docs/en/hooks", status: "partial" } },
     instr: ["CLAUDE.md", "CLAUDE.local.md", "~/.claude/CLAUDE.md", ".claude/rules/**/*.md"],
     skills: [".claude/skills/<name>/SKILL.md", "~/.claude/skills/<name>/SKILL.md", "claude.ai account (Cowork and cloud sessions)"],
@@ -1848,7 +1848,7 @@ var PORTABILITY = [
              skills: { m: "reads", loc: ".grok/skills · .claude · ~/.agents/skills" },
              mcp:    { m: "reads", loc: "~/.claude.json · .cursor/mcp.json · .mcp.json" },
              hooks:  { m: "reads", loc: ".grok/hooks/*.json · Claude's and Cursor's",
-               how: "Reads Claude's settings.json hooks and Cursor's hooks.json at user and project level, mapping their event and tool names. Each vendor can be switched off with [compat.<vendor>] hooks = false. PreToolUse can deny or rewrite a call, and project hooks need trust first.",
+               how: "Reads Claude's settings.json hooks and Cursor's hooks.json at user and project level, mapping their event and tool names. Each vendor can be switched off with [compat.<vendor>] hooks = false. Scripts get camelCase input, so a Claude script reading .stop_hook_active must read .stopHookActive instead. PreToolUse can deny or rewrite a call, and project hooks need trust first.",
                url: "https://github.com/xai-org/grok-build/blob/main/crates/codegen/xai-grok-pager/docs/user-guide/10-hooks.md" } },
     instr: ["AGENTS.md", "Agents.md", "AGENT.md", "CLAUDE.md", "Claude.md", "CLAUDE.local.md", ".grok/rules/**/*.md", ".claude/rules/", ".cursor/rules/", "~/.grok/"],
     skills: [".grok/skills/", "~/.grok/skills/", "~/.agents/skills/", ".claude/skills/", "<plugin>/skills/"],
@@ -1920,7 +1920,7 @@ var PORTABILITY = [
              skills: { m: "reads", loc: ".claude/skills · .agents/skills" },
              mcp:    { m: "own", loc: ".vscode/mcp.json" },
              hooks:  { m: "reads", loc: ".github/hooks/*.json · .claude/settings.json",
-               how: "The CLI reads a repo's .claude/settings.json hooks and applies Claude's matcher rules to PascalCase events; VS Code does the same once chat.useClaudeHooks is on. preToolUse can deny or rewrite a call. The cloud agent runs only command hooks from .github/hooks/.",
+               how: "The CLI reads a repo's .claude/settings.json hooks and applies Claude's matcher rules to PascalCase events; VS Code does the same once chat.useClaudeHooks is on. preToolUse can deny or rewrite a call. The cloud agent reads only .github/hooks/*.json, and its firewall limits HTTP hooks to allow-listed hosts.",
                url: "https://docs.github.com/en/copilot/reference/hooks-reference" } },
     instr: [".github/copilot-instructions.md", ".github/instructions/**/*.instructions.md", "AGENTS.md", "CLAUDE.md"],
     skills: [".github/skills", ".claude/skills", ".agents/skills", "~/.copilot/skills", "~/.agents/skills"],

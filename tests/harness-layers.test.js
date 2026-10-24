@@ -40,7 +40,7 @@ for (const r of portability) {
   assert.equal(hooks.m === 'no', r.hookFiles.length === 0, `${r.id} hookFiles must be empty exactly when it has no hooks`);
 }
 for (const id of ['copilot', 'cursor', 'grok']) {
-  assert.equal(portability.find(r => r.id === id).cells.hooks.m, 'reads', `${id} runs Claude's hook files`);
+  assert.equal(portability.find(r => r.id === id).cells.hooks.m, 'reads', `${id} loads Claude's hook files`);
 }
 // ...and no row outlives the harness it belongs to: alphaHarnessOrder walks
 // HARNESSES, so an orphaned id would silently never render again.
