@@ -28,6 +28,20 @@ for (const h of harnesses) {
   assert.equal(portability.some(r => r.id === h.id), true, `Portability is missing ${h.id}`);
   assert.equal(permissions.some(r => r.id === h.id), true, `Permissions is missing ${h.id}`);
 }
+
+// Hooks sit on the Portability tab, not as a layer: every row states its hooks
+// support and cites a hooks page, and a harness with none still says so.
+for (const r of portability) {
+  const hooks = r.cells.hooks;
+  assert.ok(hooks, `${r.id} needs a hooks cell`);
+  assert.ok(['own', 'reads', 'no'].includes(hooks.m), `${r.id} hooks cell has an unknown mechanism`);
+  assert.ok(hooks.how && hooks.url, `${r.id} hooks cell needs how and url`);
+  assert.ok(Array.isArray(r.hookFiles), `${r.id} needs a hookFiles list`);
+  assert.equal(hooks.m === 'no', r.hookFiles.length === 0, `${r.id} hookFiles must be empty exactly when it has no hooks`);
+}
+for (const id of ['copilot', 'cursor', 'grok']) {
+  assert.equal(portability.find(r => r.id === id).cells.hooks.m, 'reads', `${id} runs Claude's hook files`);
+}
 // ...and no row outlives the harness it belongs to: alphaHarnessOrder walks
 // HARNESSES, so an orphaned id would silently never render again.
 for (const r of [...portability, ...permissions]) {

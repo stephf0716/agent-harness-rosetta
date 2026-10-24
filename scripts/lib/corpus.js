@@ -59,6 +59,19 @@ function collectSourceClaims(data = loadIndexContext()) {
       status: row.status === 'verified' ? null : row.status,
       entry: row
     });
+
+    // The hooks cell cites its own page, separate from the row's source.
+    const hooks = row.cells && row.cells.hooks;
+    if (hooks) {
+      pushClaim(claims, {
+        id: `port-hooks/${row.id}`,
+        scope: 'port-hooks',
+        url: hooks.url,
+        status: hooks.status === 'verified' ? null : (hooks.status || null),
+        entry: hooks,
+        parent: row
+      });
+    }
   });
 
   data.PERMISSIONS.forEach(row => {

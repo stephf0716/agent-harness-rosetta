@@ -16,6 +16,7 @@ Only add a `PROVENANCE.claims[...]` override when the defaults are not enough.
 | Provider/tool row | `tool/<toolId>` |
 | Harness-layer cell | `layer/<layerId>/<harnessId>` |
 | Portability row | `portability/<harnessId>` |
+| Portability hooks cell | `port-hooks/<harnessId>` |
 | Permissions row | `permissions/<harnessId>` |
 | Infrastructure row | `infra/<serviceId>` |
 | Infrastructure free-tier source | `infra-free/<serviceId>` |

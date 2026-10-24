@@ -296,6 +296,7 @@
   .pm-detail .dgap{margin-top:10px;font-family:'IBM Plex Mono',monospace;font-size:11.5px;color:var(--faint)}
   .pm-detail .dgrid{display:grid;grid-template-columns:repeat(auto-fit,minmax(210px,1fr));gap:1px;background:var(--line);border:1px solid var(--line);border-radius:3px;overflow:hidden;margin-top:14px}
   .pm-detail .dg{background:var(--surface);padding:11px 13px}
+  .pm-detail .dg.wide{grid-column:1/-1}
   .pm-detail .dg .k{font-family:'IBM Plex Mono',monospace;font-size:10px;letter-spacing:.13em;text-transform:uppercase;color:var(--faint);margin-bottom:5px}
   .pm-detail .dg .v{font-size:12.5px;color:var(--text)}
   .pm-detail .dg .v code{font-size:.9em}
@@ -306,6 +307,7 @@
   .pm-detail .dkind{font-family:'IBM Plex Mono',monospace;font-size:11px;color:var(--faint);margin-top:3px}
   .pm-detail .dnote{color:var(--muted);font-size:14px;line-height:1.65;margin-top:10px}
   .pm-detail a{display:inline-flex;align-items:center;gap:6px;margin-top:12px;font-family:'IBM Plex Mono',monospace;font-size:12.5px;color:var(--m-oauth);text-decoration:none;border-bottom:1px solid var(--m-oauth);padding-bottom:1px}
+  .pm-detail .dg .v a{margin-top:0}
   .pm-detail a:focus-visible{outline:2px solid var(--c-mcp);outline-offset:2px}
   .pm-foot{margin-top:18px;color:var(--faint);font-size:12px;font-family:'IBM Plex Mono',monospace}
 </style>
@@ -396,7 +398,7 @@
 
 <header class="title">
   <h1>Portability</h1>
-  <p class="lede">Three things travel between harnesses as open standards — <strong>AGENTS.md instructions, SKILL.md skills, and MCP servers</strong>, all now governed by the vendor-neutral Agentic AI Foundation — and several tools read each other's directories outright, so one folder can serve many. Everything else is stranded. Tap any row for the exact paths.</p>
+  <p class="lede">Three things travel between harnesses as open standards — <strong>AGENTS.md instructions, SKILL.md skills, and MCP servers</strong>, all now governed by the vendor-neutral Agentic AI Foundation — and several tools read each other's directories outright, so one folder can serve many. Hooks travel by convention instead: there is no hooks standard, but Copilot, Cursor and Grok run Claude Code's hook files as written. Everything else is stranded. Tap any row for the exact paths.</p>
 </header>
 
 <nav class="legend" aria-label="Portability legend" id="portLegend"></nav>
@@ -559,7 +561,7 @@
 // from these constants. CLOSED lists the tool ids grouped as closed source.
 // ---------------------------------------------------------------------------
 // Edit the build stamp here only — the masthead and footer both render from it.
-var BUILD = { version: "v24", compiled: "july 2026", updated: "23 oct 2026" };
+var BUILD = { version: "v25", compiled: "july 2026", updated: "24 oct 2026" };
 
 // Provenance is intentionally incremental: existing rows and cells keep their
 // current `url`, `status` and `freeStatus` fields, while this metadata block
@@ -789,6 +791,15 @@ var PROVENANCE = {
     "portability/hermes": {
       checkedAt: "2026-08-26"
     },
+    "port-hooks/claude": {
+      claimNote: "Events and handler types come from Claude Code's changelog and help center; the hooks reference page itself could not be loaded in this pass."
+    },
+    "port-hooks/codex": {
+      claimNote: "Events, the PreToolUse decision fields and CLAUDE_PLUGIN_ROOT come from the openai/codex repository; its schema also lists mcpTool, prompt and agent handlers that the docs do not describe, and the public hooks page could not be loaded in this pass."
+    },
+    "port-hooks/cursor": {
+      claimNote: "The hooks.json format and Claude hook loading come from summaries of Cursor's hooks and third-party hooks pages, which could not be loaded in this pass; the full event list is unconfirmed."
+    },
     "permissions/hermes": {
       checkedAt: "2026-08-26"
     },
@@ -908,6 +919,7 @@ var PROVENANCE = {
 // What's new, newest first. Reader-facing changes only — not copy edits or
 // tooling. `tabs` lists the tabs an entry touched; each renders as a link.
 var CHANGES = [
+  { date: "2026-10-24", tabs: ["portability"], text: "Portability gains a Hooks column: which harnesses have hooks, and which run Claude Code's hook files as written." },
   { date: "2026-10-23", tabs: ["harness"], text: "The guide to which layer you need now opens the Harness layers tab instead of closing it." },
   { date: "2026-10-23", tabs: ["harness", "portability"], text: "Agent Skills now belongs to the Agentic AI Foundation, the same neutral home as MCP and AGENTS.md, after Anthropic donated it on 22 October." },
   { date: "2026-10-02", tabs: ["ades"], text: "ADE details gain a maturity stage and a remote-access badge, and each row gets a tag showing whether you work in the agent's own TUI, a native chat, or either." },
@@ -1505,7 +1517,7 @@ var LAYERS = [
     name: "Bundles", question: "shareable packages",
     oneliner: "One installable package that distributes a complete agent setup",
     body: [
-      "<p><strong>L4 is a distribution wrapper, not a new runtime capability.</strong> Its contents — skills, MCP configuration, hooks, agents, commands — can each exist on their own one layer down; what a bundle adds is a name, a source, and a version, so a whole setup installs and updates as one unit. Use it when a workflow has to travel intact between projects or people, and skip it for a personal setup, where adding a skill or MCP server directly is simpler. The product name is usually <em>plugin</em> — Gemini says <em>extension</em>, Pi says <em>package</em> — and Hermes's and OpenCode's are executable code rather than declarative bundles. There is still no shared format: <a class=\"slink\" href=\"https://agent-plugins.org/\" target=\"_blank\" rel=\"noopener noreferrer\">Agent Plugins</a> 1.0.0 is the candidate standard but only three rows here name it, so bundles do not port, and several harnesses read each other's manifests directly instead.</p>",
+      "<p><strong>L4 is a distribution wrapper, not a new runtime capability.</strong> Its contents — skills, MCP configuration, hooks, agents, commands — can each exist on their own one layer down; what a bundle adds is a name, a source, and a version, so a whole setup installs and updates as one unit. Use it when a workflow has to travel intact between projects or people, and skip it for a personal setup, where adding a skill or MCP server directly is simpler. The product name is usually <em>plugin</em> — Gemini says <em>extension</em>, Pi says <em>package</em> — and Hermes's and OpenCode's are executable code rather than declarative bundles. There is still no shared format: <a class=\"slink\" href=\"https://agent-plugins.org/\" target=\"_blank\" rel=\"noopener noreferrer\">Agent Plugins</a> 1.0.0 is the candidate standard but only three rows here name it, so bundles do not port, and several harnesses read each other's manifests directly instead. Hooks are the bundle content most likely to stop working after a move; the Portability tab shows which harnesses run another's hook files.</p>",
       "<p>Reading the bundle cells: each one lists what a bundle can carry, written in the same order every row so two harnesses can be compared item by item. Manifest filenames and install locations are in the tiles below.</p>"
     ],
     cells: {
@@ -1705,6 +1717,8 @@ var LAYERS = [
 // a cell is { m: PORT_MECH key, loc: exact path(s) }; `foreign` lists other
 // vendors' directories this tool also reads, which is what makes one folder
 // serve several tools. `stranded` is what has no equivalent elsewhere.
+// The hooks cell carries its own `how`, `url` and optional `status`, because
+// hook docs live on a different page from the row's instruction-file source.
 // ---------------------------------------------------------------------------
 var PORT_MECH = {
   own:   { label: "Native" },
@@ -1715,7 +1729,8 @@ var PORT_MECH = {
 var PORT_COLS = [
   { id: "agents", label: "AGENTS.md" },
   { id: "skills", label: "SKILL.md skills" },
-  { id: "mcp",    label: "MCP servers" }
+  { id: "mcp",    label: "MCP servers" },
+  { id: "hooks",  label: "Hooks" }
 ];
 
 var PORTABILITY = [
@@ -1723,12 +1738,16 @@ var PORTABILITY = [
     id: "claude",
     cells: { agents: { m: "no", loc: "CLAUDE.md instead" },
              skills: { m: "own", loc: ".claude/skills/ · ~/.claude/skills/ · claude.ai account (Cowork, cloud)" },
-             mcp:    { m: "own", loc: ".mcp.json" } },
+             mcp:    { m: "own", loc: ".mcp.json" },
+             hooks:  { m: "own", loc: ".claude/settings.json · plugin hooks/hooks.json",
+               how: "PreToolUse can block a call or rewrite its input; other events cover prompts, session start and stop, subagents and compaction. Handlers can be commands, HTTP calls, MCP tools, prompts or agents. Copilot, Cursor and Grok run this file as written.",
+               url: "https://code.claude.com/docs/en/hooks", status: "partial" } },
     instr: ["CLAUDE.md", "CLAUDE.local.md", "~/.claude/CLAUDE.md", ".claude/rules/**/*.md"],
     skills: [".claude/skills/<name>/SKILL.md", "~/.claude/skills/<name>/SKILL.md", "claude.ai account (Cowork and cloud sessions)"],
     foreign: [],
     mcp: ".mcp.json (project) · ~/.claude.json (user)",
-    stranded: "hooks, subagents, output styles, plugin manifests, the account-synced Customize configuration",
+    hookFiles: ["~/.claude/settings.json", ".claude/settings.json", ".claude/settings.local.json", "<plugin>/hooks/hooks.json"],
+    stranded: "subagents, output styles, plugin manifests, the account-synced Customize configuration",
     note: "It originated the SKILL.md format and five other harnesses read .claude/skills by default (Copilot, Cursor, OpenCode, goose and Grok), but Claude Code reads nobody else's directory, not even the neutral .agents/skills — sharing with it is strictly one-directional. The documented workaround is a symlink: a skill folder in ~/.claude/skills can point anywhere on disk, and a target reached from several locations loads once. Keep the real folder in ~/.agents/skills and link it in. Don't name a skill folder synced; Claude Code reserves ~/.claude/skills/synced/. Its /init imports rival rule files once at migration time, which is not the same as reading them at runtime. Where a skill lives now depends on the session: local sessions read ~/.claude/skills/, an SSH session reads that path on the remote host, and Cowork and cloud sessions load whatever is enabled on your claude.ai account instead. The desktop Customize sidebar manages connectors, skills and plugins from that account configuration rather than from ~/.claude — config held there is outside the reach of a dotfile repo, and of every harness on this page that reads .claude/ off disk.",
     url: "https://code.claude.com/docs/en/memory",
     status: "verified"
@@ -1737,11 +1756,15 @@ var PORTABILITY = [
     id: "codex",
     cells: { agents: { m: "own", loc: "AGENTS.md · AGENTS.override.md" },
              skills: { m: "reads", loc: ".agents/skills · ~/.agents/skills" },
-             mcp:    { m: "own", loc: "~/.codex/config.toml" } },
+             mcp:    { m: "own", loc: "~/.codex/config.toml" },
+             hooks:  { m: "own", loc: "hooks.json · [hooks] in config.toml · Claude's shape",
+               how: "Event names and the PreToolUse decision fields follow Claude's, and plugin hooks get CLAUDE_PLUGIN_ROOT set for compatibility with existing Claude plugins. It does not read .claude/settings.json. Project hooks load only once the project is trusted.",
+               url: "https://developers.openai.com/codex/hooks", status: "partial" } },
     instr: ["AGENTS.md", "AGENTS.override.md", "~/.codex/AGENTS.md"],
     skills: [".agents/skills", "~/.agents/skills", ".codex/skills"],
     foreign: [".agents/skills", "~/.agents/skills"],
     mcp: "~/.codex/config.toml ([mcp_servers])",
+    hookFiles: ["~/.codex/hooks.json", ".codex/hooks.json", "~/.codex/config.toml ([hooks])", "<plugin>/hooks/hooks.json"],
     stranded: "profiles, sandbox modes, trust levels",
     note: "Joined via the neutral .agents/ path rather than by reading rivals directly — it does not scan .claude/skills. Its own ~/.codex/skills is now deprecated in favour of .agents/skills, which is a vendor deprecating its namespace for the shared one.",
     url: "https://developers.openai.com/codex/guides/agents-md",
@@ -1751,11 +1774,15 @@ var PORTABILITY = [
     id: "goose",
     cells: { agents: { m: "own", loc: "AGENTS.md + .goosehints, concatenated" },
              skills: { m: "reads", loc: ".agents/skills · .claude/skills · .goose/skills" },
-             mcp:    { m: "own", loc: "~/.config/goose/config.yaml" } },
+             mcp:    { m: "own", loc: "~/.config/goose/config.yaml" },
+             hooks:  { m: "own", loc: "plugin hooks/hooks.json only",
+               how: "Hooks exist only inside plugins, in the Open Plugins hook format. PreToolUse and Stop can block; nothing documents a way to rewrite a call. A failing PreToolUse hook lets the call through unless on_failure is set to block.",
+               url: "https://github.com/aaif-goose/goose/blob/main/documentation/docs/guides/context-engineering/hooks.md" } },
     instr: ["AGENTS.md", ".goosehints", "~/.config/goose/AGENTS.md", "~/.config/goose/.goosehints"],
     skills: [".agents/skills", ".goose/skills", ".claude/skills", "~/.agents/skills", "~/.claude/skills"],
     foreign: [".claude/skills", "~/.claude/skills", ".agents/skills", "~/.agents/skills"],
     mcp: "~/.config/goose/config.yaml (extensions:)",
+    hookFiles: ["~/.agents/plugins/<name>/hooks/hooks.json", ".agents/plugins/<name>/hooks/hooks.json"],
     stranded: "recipes, the extension YAML schema, permission.yaml",
     note: "Reads AGENTS.md by default and concatenates rather than picking a winner, so AGENTS.md and .goosehints both apply. It does not read CLAUDE.md or .cursorrules unless you set CONTEXT_FILE_NAMES. Subagents cross over too: it scans .claude/agents.",
     url: "https://goose-docs.ai/docs/guides/using-goosehints",
@@ -1765,11 +1792,15 @@ var PORTABILITY = [
     id: "hermes",
     cells: { agents: { m: "reads", loc: "after .hermes.md · first match wins" },
              skills: { m: "own", loc: "~/.hermes/skills/ · external_dirs opt-in" },
-             mcp:    { m: "own", loc: "~/.hermes/config.yaml" } },
+             mcp:    { m: "own", loc: "~/.hermes/config.yaml" },
+             hooks:  { m: "own", loc: "hooks: in config.yaml · Python plugin hooks",
+               how: "Four separate systems: shell hooks, Python plugin hooks, gateway hooks and outbound webhooks. pre_tool_call can block or modify a call. Shell hooks accept Claude Code's output format, but no other harness's hook file is read.",
+               url: "https://github.com/NousResearch/hermes-agent/blob/main/website/docs/user-guide/features/hooks.md" } },
     instr: [".hermes.md", "HERMES.md", "AGENTS.md", "CLAUDE.md", ".cursorrules"],
     skills: ["~/.hermes/skills/", "skills.external_dirs (opt-in)"],
     foreign: [],
     mcp: "~/.hermes/config.yaml (mcp_servers:)",
+    hookFiles: ["~/.hermes/config.yaml (hooks:)", "~/.hermes/hooks/<name>/HOOK.yaml", "~/.hermes/plugins/<name>/"],
     stranded: "SOUL.md, profiles, skill bundles, gateway adapters",
     note: "Reads four rivals' instruction files but only one loads — first match wins, and AGENTS.md/CLAUDE.md are checked in the working directory only. Skills are the opposite: nothing foreign is scanned unless you list it under skills.external_dirs yourself.",
     url: "https://hermes-agent.nousresearch.com/docs/user-guide/features/context-files",
@@ -1779,11 +1810,15 @@ var PORTABILITY = [
     id: "osaurus",
     cells: { agents: { m: "reads", loc: "after .hermes.md / HERMES.md" },
              skills: { m: "own", loc: "~/.osaurus/skills/" },
-             mcp:    { m: "own", loc: "~/.osaurus/providers/mcp.json" } },
+             mcp:    { m: "own", loc: "~/.osaurus/providers/mcp.json" },
+             hooks:  { m: "no", loc: "Claude hooks imported, never run",
+               how: "An imported Claude plugin's hooks are recorded and flagged as declared but not honored, and its hook scripts are ignored. Osaurus has no hooks of its own; per-tool Ask and Deny approvals are the nearest control.",
+               url: "https://github.com/osaurus-ai/osaurus/blob/main/docs/CLAUDE_PLUGINS.md" } },
     instr: [".hermes.md", "HERMES.md", "AGENTS.md", "CLAUDE.md", ".cursorrules"],
     skills: ["~/.osaurus/skills/<name>/SKILL.md"],
     foreign: [],
     mcp: "~/.osaurus/providers/mcp.json",
+    hookFiles: [],
     stranded: "macOS app config, Claude-plugin imports, local model store",
     note: "The oddest row here: it reads .hermes.md and HERMES.md at top priority — a competitor's native instruction file, ahead of AGENTS.md — and neither project mentions the other. Flat lookup in the mounted folder only, no upward walk. Skills stay in one global library.",
     url: "https://github.com/osaurus-ai/osaurus/blob/main/docs/FEATURES.md#agent-loop--folder-context",
@@ -1793,11 +1828,15 @@ var PORTABILITY = [
     id: "gemini",
     cells: { agents: { m: "no", loc: "opt-in via context.fileName" },
              skills: { m: "reads", loc: "~/.agents/skills · .agents/skills" },
-             mcp:    { m: "own", loc: ".gemini/settings.json" } },
+             mcp:    { m: "own", loc: ".gemini/settings.json" },
+             hooks:  { m: "own", loc: ".gemini/settings.json · extension hooks/hooks.json",
+               how: "Command hooks only. BeforeTool can block a call or rewrite its arguments, and BeforeModel can rewrite the model request. The JSON looks like Claude's and CLAUDE_PROJECT_DIR is set, but no other harness's hook file is read.",
+               url: "https://github.com/google-gemini/gemini-cli/blob/main/docs/hooks/index.md" } },
     instr: ["GEMINI.md", "~/.gemini/GEMINI.md"],
     skills: ["~/.gemini/skills/", ".gemini/skills/", "~/.agents/skills/", ".agents/skills/"],
     foreign: ["~/.agents/skills/", ".agents/skills/"],
     mcp: "~/.gemini/settings.json · .gemini/settings.json",
+    hookFiles: ["~/.gemini/settings.json", ".gemini/settings.json", "/etc/gemini-cli/settings.json", "<extension>/hooks/hooks.json"],
     stranded: "TOML custom commands, extensions, checkpointing",
     note: "Easy one to get backwards: Gemini CLI does not read AGENTS.md by default — GEMINI.md is the default and AGENTS.md only applies if you set context.fileName. Skills are the generous half: .agents/skills works as a documented alias for its own directories.",
     url: "https://github.com/google-gemini/gemini-cli/blob/main/docs/cli/gemini-md.md",
@@ -1807,11 +1846,15 @@ var PORTABILITY = [
     id: "grok",
     cells: { agents: { m: "reads", loc: "AGENTS.md family + CLAUDE.md, all concatenated" },
              skills: { m: "reads", loc: ".grok/skills · .claude · ~/.agents/skills" },
-             mcp:    { m: "reads", loc: "~/.claude.json · .cursor/mcp.json · .mcp.json" } },
+             mcp:    { m: "reads", loc: "~/.claude.json · .cursor/mcp.json · .mcp.json" },
+             hooks:  { m: "reads", loc: ".grok/hooks/*.json · Claude's and Cursor's",
+               how: "Reads Claude's settings.json hooks and Cursor's hooks.json at user and project level, mapping their event and tool names. Each vendor can be switched off with [compat.<vendor>] hooks = false. PreToolUse can deny or rewrite a call, and project hooks need trust first.",
+               url: "https://github.com/xai-org/grok-build/blob/main/crates/codegen/xai-grok-pager/docs/user-guide/10-hooks.md" } },
     instr: ["AGENTS.md", "Agents.md", "AGENT.md", "CLAUDE.md", "Claude.md", "CLAUDE.local.md", ".grok/rules/**/*.md", ".claude/rules/", ".cursor/rules/", "~/.grok/"],
     skills: [".grok/skills/", "~/.grok/skills/", "~/.agents/skills/", ".claude/skills/", "<plugin>/skills/"],
     foreign: ["CLAUDE.md", "Claude.md", "CLAUDE.local.md", ".claude/rules/", ".cursor/rules/", ".claude/skills/", "~/.agents/skills/", "~/.claude.json", ".cursor/mcp.json", ".mcp.json", "Claude Code plugins + marketplaces"],
     mcp: "~/.grok/config.toml ([mcp_servers.<name>])",
+    hookFiles: ["~/.grok/hooks/*.json", ".grok/hooks/*.json", "~/.claude/settings.json", ".claude/settings.json", "~/.cursor/hooks.json", ".cursor/hooks.json", "<plugin>/hooks/hooks.json"],
     stranded: "personas, workflows, LSP servers in plugins, config.toml shape, sandbox profiles",
     note: "Claude Code's plugins and marketplaces load as they are, alongside its skills, agents, hooks and instruction files. All of it is runtime discovery with no import step — the distinction that matters in this column. Grok picks them up unprompted. MCP configuration can also be discovered from other harnesses. The asymmetry is the flip side — nothing on this page reads .grok/.",
     url: "https://docs.x.ai/build/features/project-rules",
@@ -1821,12 +1864,16 @@ var PORTABILITY = [
     id: "cursor",
     cells: { agents: { m: "reads", loc: "root + nested, with .cursor/rules/" },
              skills: { m: "reads", loc: ".claude/skills · .codex/skills · .agents/skills" },
-             mcp:    { m: "own", loc: ".cursor/mcp.json" } },
+             mcp:    { m: "own", loc: ".cursor/mcp.json" },
+             hooks:  { m: "reads", loc: ".cursor/hooks.json · Claude's hooks",
+               how: "Third-party hooks load Claude Code's hook config by default and map its event names. preToolUse can deny a call or rewrite its input; a failing hook lets the call through unless failClosed is set.",
+               url: "https://cursor.com/docs/hooks", status: "partial" } },
     instr: [".cursor/rules/**/*.mdc", "AGENTS.md", "CLAUDE.md", ".cursorrules"],
     skills: [".cursor/skills/", ".claude/skills/", ".codex/skills/", ".agents/skills/"],
     foreign: [".claude/skills/", ".codex/skills/", ".agents/skills/"],
     mcp: ".cursor/mcp.json · ~/.cursor/mcp.json",
-    stranded: "Rules .mdc frontmatter, Team Rules, hooks.json, team- and workspace-scoped Customize entries",
+    hookFiles: [".cursor/hooks.json", "~/.cursor/hooks.json", "<plugin>/hooks/hooks.json", "Claude Code hooks (third-party, on by default)"],
+    stranded: "Rules .mdc frontmatter, Team Rules, team- and workspace-scoped Customize entries",
     note: "Claude's, Codex's and the shared .agents directories all load. Its Customize page manages plugins, skills, MCPs, subagents, rules, commands and hooks in one place, filterable by whether an entry is installed for you, your workspace, or your team — so the paths in this row describe personal scope only, and a teammate's working setup may include entries that never appear in the repo. Where team-scoped config is stored is not documented. Some compatibility details in this row rely on secondary sources; see the partial evidence status.",
     url: "https://cursor.com/docs/context/rules",
     status: "partial"
@@ -1835,11 +1882,15 @@ var PORTABILITY = [
     id: "opencode",
     cells: { agents: { m: "own", loc: "AGENTS.md · CLAUDE.md as fallback" },
              skills: { m: "reads", loc: ".claude/skills · .agents/skills" },
-             mcp:    { m: "own", loc: "opencode.json" } },
+             mcp:    { m: "own", loc: "opencode.json" },
+             hooks:  { m: "own", loc: "JS/TS plugins · .opencode/plugins/",
+               how: "Hooks are functions a plugin returns. Throwing in tool.execute.before blocks a call, and the hook can rewrite its arguments. It does not read any other harness's hook file.",
+               url: "https://github.com/sst/opencode/blob/dev/packages/web/src/content/docs/plugins.mdx" } },
     instr: ["AGENTS.md", "CLAUDE.md", "~/.config/opencode/AGENTS.md"],
     skills: [".opencode/skills/", "~/.config/opencode/skills/", ".claude/skills/", ".agents/skills/"],
     foreign: [".claude/skills/", "~/.claude/skills/", ".agents/skills/", "~/.agents/skills/"],
     mcp: "opencode.json / opencode.jsonc (mcp key)",
+    hookFiles: [".opencode/plugins/", "~/.config/opencode/plugins/", "opencode.json (plugin: npm packages)"],
     stranded: "opencode.json provider, agent, permission and plugin blocks",
     note: "Falls back to CLAUDE.md when no AGENTS.md is present, and labels its skill roots by origin — \"Project Claude-compatible\", \"Global agent-compatible\". The Claude-directory reading can be switched off with OPENCODE_DISABLE_CLAUDE_CODE_SKILLS=1.",
     url: "https://opencode.ai/docs/rules/",
@@ -1849,11 +1900,15 @@ var PORTABILITY = [
     id: "openclaw",
     cells: { agents: { m: "own", loc: "AGENTS.md + SOUL.md" },
              skills: { m: "reads", loc: "workspace/skills · .agents/skills" },
-             mcp:    { m: "own", loc: "~/.openclaw/openclaw.json" } },
+             mcp:    { m: "own", loc: "~/.openclaw/openclaw.json" },
+             hooks:  { m: "own", loc: "HOOK.md + handler.ts · Claude hooks.json not run",
+               how: "Internal hooks observe gateway, session and message events but cannot block or rewrite them. Plugin hooks registered in code can, starting with before_tool_call. An imported Claude bundle's hooks/hooks.json is listed but never executed.",
+               url: "https://github.com/openclaw/openclaw/blob/main/docs/automation/hooks.md" } },
     instr: ["AGENTS.md", "SOUL.md", "USER.md", "IDENTITY.md"],
     skills: ["<workspace>/skills", "<workspace>/.agents/skills", "~/.agents/skills", "~/.openclaw/skills"],
     foreign: ["<workspace>/.agents/skills", "~/.agents/skills"],
     mcp: "~/.openclaw/openclaw.json (mcp.servers)",
+    hookFiles: ["~/.openclaw/hooks/<name>/HOOK.md", "<workspace>/hooks/<name>/HOOK.md (opt-in)", "hooks.internal.entries in openclaw.json"],
     stranded: "gateway and channels, SOUL/IDENTITY bootstrap files, ClawHub",
     note: "Takes the shared .agents path; Codex's $CODEX_HOME/skills is explicitly not an OpenClaw skill root.",
     url: "https://docs.openclaw.ai/concepts/agent-workspace",
@@ -1863,11 +1918,15 @@ var PORTABILITY = [
     id: "copilot",
     cells: { agents: { m: "reads", loc: "nearest in tree wins" },
              skills: { m: "reads", loc: ".claude/skills · .agents/skills" },
-             mcp:    { m: "own", loc: ".vscode/mcp.json" } },
+             mcp:    { m: "own", loc: ".vscode/mcp.json" },
+             hooks:  { m: "reads", loc: ".github/hooks/*.json · .claude/settings.json",
+               how: "The CLI reads a repo's .claude/settings.json hooks and applies Claude's matcher rules to PascalCase events; VS Code does the same once chat.useClaudeHooks is on. preToolUse can deny or rewrite a call. The cloud agent runs only command hooks from .github/hooks/.",
+               url: "https://docs.github.com/en/copilot/reference/hooks-reference" } },
     instr: [".github/copilot-instructions.md", ".github/instructions/**/*.instructions.md", "AGENTS.md", "CLAUDE.md"],
     skills: [".github/skills", ".claude/skills", ".agents/skills", "~/.copilot/skills", "~/.agents/skills"],
     foreign: [".claude/skills", ".agents/skills", "~/.agents/skills", ".claude-plugin/plugin.json", ".claude-plugin/marketplace.json"],
     mcp: ".vscode/mcp.json (VS Code) · repo settings (cloud agent)",
+    hookFiles: [".github/hooks/*.json", ".github/copilot/settings.json", "~/.copilot/settings.json", ".claude/settings.json", ".claude/settings.local.json"],
     stranded: "copilot-setup-steps.yml, agent firewall, org instruction settings",
     note: "Five skill roots across three vendors' namespaces, and it reads AGENTS.md, CLAUDE.md and GEMINI.md as well. Claude plugin and marketplace manifests sit in its own search order, read as written with no conversion, though the source must be registered before anything loads. One caveat that is easy to miss: for code review the directory name itself matters, so a skill folder needs a review-ish name to be picked up.",
     url: "https://docs.github.com/en/copilot/how-tos/configure-custom-instructions/add-repository-instructions",
@@ -1877,11 +1936,15 @@ var PORTABILITY = [
     id: "zed",
     cells: { agents: { m: "own", loc: "AGENTS.md · plus 8 more names" },
              skills: { m: "own", loc: "~/.agents/skills · <project>/.agents/skills" },
-             mcp:    { m: "own", loc: "settings.json (context_servers)" } },
+             mcp:    { m: "own", loc: "settings.json (context_servers)" },
+             hooks:  { m: "no", loc: "tool_permissions rules instead",
+               how: "No hooks. agent.tool_permissions in settings.json can allow, confirm or deny each tool by regex, which covers the blocking use but nothing else. An external agent such as Claude Code keeps its own config when run inside Zed.",
+               url: "https://github.com/zed-industries/zed/blob/main/docs/src/ai/tool-permissions.md" } },
     instr: [".rules", ".cursorrules", ".windsurfrules", ".clinerules", ".github/copilot-instructions.md", "AGENT.md", "AGENTS.md", "CLAUDE.md", "GEMINI.md", "~/.config/zed/AGENTS.md"],
     skills: ["~/.agents/skills/<name>/SKILL.md", "<worktree>/.agents/skills/<name>/SKILL.md"],
     foreign: [".cursorrules", ".windsurfrules", ".clinerules", ".github/copilot-instructions.md", "AGENT.md", "CLAUDE.md", "GEMINI.md", ".agents/skills", "~/.agents/skills"],
     mcp: "settings.json (context_servers) · per-server objects match mcpServers",
+    hookFiles: [],
     stranded: "extension capability grants, create_thread worktree spawning, profiles as an axis separate from permissions",
     note: "Recognizes nine instruction filenames, read live every session rather than imported once. But only the first match loads, and the rival names sort ahead of Zed's own AGENTS.md, so a repo carrying .cursorrules gets that and its AGENTS.md is silently ignored. Skills arrive via the vendor-neutral .agents/skills; it does not read .claude/skills. An MCP config travels by renaming the wrapper key — the per-server objects are wire-identical to mcpServers.",
     url: "https://zed.dev/docs/ai/instructions",
@@ -1891,11 +1954,15 @@ var PORTABILITY = [
     id: "pi",
     cells: { agents: { m: "reads", loc: "AGENTS.md or CLAUDE.md, either name" },
              skills: { m: "reads", loc: "~/.agents/skills · .agents/skills · other vendors' by setting" },
-             mcp:    { m: "no", loc: "no MCP client in core" } },
+             mcp:    { m: "no", loc: "no MCP client in core" },
+             hooks:  { m: "own", loc: "TS extensions · pi.on() events",
+               how: "Extensions subscribe to around thirty events. tool_call can block or rewrite a call and tool_result can replace the result; a tool_call handler that throws blocks the call. It does not read any other harness's hook file.",
+               url: "https://github.com/earendil-works/pi/blob/main/packages/coding-agent/docs/extensions.md" } },
     instr: ["AGENTS.md", "CLAUDE.md", "AGENTS.override.md", "~/.pi/agent/AGENTS.md", "~/.pi/agent/CLAUDE.md", ".pi/SYSTEM.md", "APPEND_SYSTEM.md"],
     skills: [".pi/skills/<name>/SKILL.md", ".agents/skills/<name>/SKILL.md", "~/.pi/agent/skills/<name>/SKILL.md", "~/.agents/skills/<name>/SKILL.md"],
     foreign: ["CLAUDE.md", ".agents/skills", "~/.agents/skills", "~/.claude/skills (added in settings)", "~/.codex/skills (added in settings)"],
     mcp: "nothing to port — MCP is not in core, so a server arrives as an extension instead",
+    hookFiles: ["~/.pi/agent/extensions/", ".pi/extensions/", "Pi packages (package.json pi.extensions)"],
     stranded: "SYSTEM.md and APPEND_SYSTEM.md prompt surgery, trust.json decisions, extensions as the entire tool layer",
     note: "Supports several instruction and skill locations: AGENTS.md and CLAUDE.md are interchangeable at every level, walking up from the working directory, and the skills setting can point at ~/.claude/skills or ~/.codex/skills alongside the vendor-neutral .agents/skills. MCP is the gap — core Pi has no client, so an mcpServers block has nowhere to land until an extension provides one. Project-local settings, resources and skills load only after the folder is trusted.",
     url: "https://pi.dev/docs/latest/usage#context-files",
@@ -3346,9 +3413,10 @@ function detailPanel(host, r, title, grid){
       ? '<div class="unver">' + esc(r.status === 'partial' ? 'partly unverified — see docs' : 'unverified — see docs') + '</div>' : '') +
     (r.url ? '<br><a href="' + esc(r.url) + '" target="_blank" rel="noopener noreferrer">' + esc(harnessName(r.id)) + ' docs <span aria-hidden="true">↗</span></a>' : '');
 }
+// A third element marks a prose value that spans the whole grid row.
 function dgrid(pairs){
   var items = pairs.filter(function(p){ return p[1]; }).map(function(p){
-    return '<div class="dg"><div class="k">' + esc(p[0]) + '</div><div class="v">' + p[1] + '</div></div>';
+    return '<div class="dg' + (p[2] ? ' wide' : '') + '"><div class="k">' + esc(p[0]) + '</div><div class="v">' + p[1] + '</div></div>';
   }).join('');
   return items ? '<div class="dgrid">' + items + '</div>' : '';
 }
@@ -3389,8 +3457,18 @@ function renderPortability(){
     ['Instruction files', pathList(sel.instr)],
     ['Skill directories', pathList(sel.skills)],
     ["Other vendors' dirs it reads", pathList(sel.foreign)],
-    ['MCP config', sel.mcp ? '<code>' + esc(sel.mcp) + '</code>' : '<span class="dash">none</span>']
+    ['MCP config', sel.mcp ? '<code>' + esc(sel.mcp) + '</code>' : '<span class="dash">none</span>'],
+    ['Hook files', pathList(sel.hookFiles)],
+    ['How hooks behave', hookHow(sel.cells.hooks), true]
   ]) : '');
+}
+// The hooks line links its own source, since the row's link is the
+// instruction-file page, and flags a partial hooks claim on its own.
+function hookHow(h){
+  if (!h || !h.how) return '';
+  return esc(h.how) +
+    (h.status && h.status !== 'verified' ? ' <span class="dash">(partly unverified)</span>' : '') +
+    (h.url ? ' <a href="' + esc(h.url) + '" target="_blank" rel="noopener noreferrer">hooks docs <span aria-hidden="true">↗</span></a>' : '');
 }
 
 /* ---- permissions tab ---- */
