@@ -15,7 +15,7 @@ Everything still renders from a single `index.html` file—no framework or build
 | Reference | Question it answers |
 | --- | --- |
 | **Harness layers** | How do 13 agent harnesses represent instructions, skills, tool access/MCP, bundles, and delegation? |
-| **Portability** | Which instructions, skills, MCP settings, and agent definitions survive a switch between harnesses? |
+| **Portability** | Which instructions, skills, MCP settings, hooks, and agent definitions survive a switch between harnesses? |
 | **Permissions** | Will a harness edit files or run shell commands before asking, and what contains it? |
 | **ADEs** | Which agentic development environments run agents from more than one vendor, which agents and platforms they support, how they isolate and review work, and what they cost? |
 | **Provider matrix** | Can a tool use your API key, subscription sign-in, or a built-in provider connection? |
